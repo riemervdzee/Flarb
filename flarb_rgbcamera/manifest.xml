@@ -1,0 +1,16 @@
+<package>
+  <description brief="flarb_rgbcamera">
+
+     flarb_rgbcamera
+
+  </description>
+  <author>Riemer van der Zee</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/flarb_rgbcamera</url>
+  <depend package="std_msgs"/>
+  <depend package="roscpp"/>
+
+</package>
+
+

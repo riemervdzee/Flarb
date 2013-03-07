@@ -1,0 +1,16 @@
+<package>
+  <description brief="flarb_signaler">
+
+     flarb_signaler
+
+  </description>
+  <author>Riemer van der Zee</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/flarb_signaler</url>
+  <depend package="std_msgs"/>
+  <depend package="roscpp"/>
+
+</package>
+
+

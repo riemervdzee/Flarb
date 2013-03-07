@@ -1,0 +1,16 @@
+<package>
+  <description brief="flarb_touchscreen">
+
+     flarb_touchscreen
+
+  </description>
+  <author>Riemer van der Zee</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/flarb_touchscreen</url>
+  <depend package="std_msgs"/>
+  <depend package="roscpp"/>
+
+</package>
+
+
