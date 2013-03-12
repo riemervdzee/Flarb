@@ -5,23 +5,27 @@
 #include "std_msgs/String.h"
 
 #include "flarb_rgbcamera/cController.h"
-
 using namespace std;
 
+// Node defines
+#define NODE_NAME       "example"  // Name of the module
+#define NODE_HERTZ      10         // Amount of loops per second
+#define NODE_CALLBACKS  0          // 0 = false, 1 = true. use when the node has services to offer
+
 /*
-* Main entry of the TrafficController program
-*/
+ * Main entry of the example node
+ */
 int main(int argc, char **argv)
 {
-	// Pass main-arguments to ros, third argument is node-name (TODO add support for two cameras)
-	ros::init( argc, argv, "rgbcamera");
+	// Pass main-arguments to ros, third argument is node-name
+	ros::init( argc, argv, NODE_NAME);
 
-	// cController shizzle
+	// Create a cController object
 	cController controller;
 	controller.Create();
 	
 	// Update timer
-	ros::Rate loop_rate( 10);
+	ros::Rate loop_rate( NODE_HERTZ);
 
 	// Loop
 	while (ros::ok())
@@ -29,14 +33,17 @@ int main(int argc, char **argv)
 		controller.Update();
 
 		// Only use if we have callbacks/services
-		// ros::spinOnce();
+#if NODE_CALLBACKS
+		ros::spinOnce();
+#endif
 
 		// Sleep for a little while
 		loop_rate.sleep();
 	}
 
+	// Destroy the controller obj
 	controller.Destroy();
 
-	// 
+	// return succes
 	return 0;
 }

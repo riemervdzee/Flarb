@@ -5,24 +5,24 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include "flarb_rgbcamera/cController.h"
+#include "flarb_example/cController.h"
 
-// Functions executed at the beginning and end of the Application
+// Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
 	// Topic name / buffer
-	_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 1000);
+	_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 100);
 
 	return true;
 }
 
-
+// Executed when the Node is exiting
 void cController::Destroy()
 {
 
 }
 
-// Updates the Server
+// Updates the controller obj
 void cController::Update()
 {
 	// Increase count

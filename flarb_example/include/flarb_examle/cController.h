@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 
 /*
-* Main controller class of the rgb camera
+* Main controller class of the example node
 */
 class cController
 {
@@ -16,7 +16,7 @@ public:
     bool Create();
     void Destroy();
 
-    // Updates the Server
+    // Updates the Node
     void Update();
 
 private:
