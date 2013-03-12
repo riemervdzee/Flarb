@@ -2,15 +2,14 @@
 #include <iostream>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
 
 #include "flarb_rgbcamera/cController.h"
 
 using namespace std;
 
 /*
-* Main entry of the TrafficController program
-*/
+ * Main entry of the TrafficController program
+ */
 int main(int argc, char **argv)
 {
 	// Pass main-arguments to ros, third argument is node-name (TODO add support for two cameras)
@@ -21,7 +20,7 @@ int main(int argc, char **argv)
 	controller.Create();
 	
 	// Update timer
-	ros::Rate loop_rate( 10);
+	ros::Rate loop_rate( 2);
 
 	// Loop
 	while (ros::ok())

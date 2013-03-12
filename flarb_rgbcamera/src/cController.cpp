@@ -3,15 +3,18 @@
 #include <sstream>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
 
 #include "flarb_rgbcamera/cController.h"
+#include "flarb_rgbcamera/cCamera.h"
 
 // Functions executed at the beginning and end of the Application
 bool cController::Create()
 {
 	// Topic name / buffer
-	_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 1000);
+	_rosTopic = _rosNode.advertise<sensor_msgs::CompressedImage>( "images", 10);
+
+	//
+	_camera.Create( "/dev/video1");
 
 	return true;
 }
@@ -19,20 +22,14 @@ bool cController::Create()
 
 void cController::Destroy()
 {
-
+	_camera.Destroy();
 }
 
-// Updates the Server
+// Get Image and publish it
 void cController::Update()
 {
-	// Increase count
-	_count++;
-
-	// Assemble message
-	std_msgs::String msg;
-	std::stringstream ss;
-	ss << "hello world " << _count;
-	msg.data = ss.str();
+	// Get image
+	sensor_msgs::CompressedImage msg = _camera.getImage();
 
 	// Publish
 	_rosTopic.publish( msg);

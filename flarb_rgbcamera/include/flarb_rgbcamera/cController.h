@@ -3,14 +3,16 @@
 
 #include "ros/ros.h"
 
+#include "flarb_rgbcamera/cCamera.h"
+
 /*
-* Main controller class of the rgb camera
-*/
+ * Main controller class of the rgb camera
+ */
 class cController
 {
 public:
     // Constructor
-    cController() : _count( 0) {}
+    cController(){}
 
     // Functions executed at the beginning and end of the Application
     bool Create();
@@ -27,8 +29,8 @@ private:
 	// We are publishing shizzle
 	ros::Publisher  _rosTopic;
 
-	int _count;
-	
+	// Object which manages the cam for us
+	cCamera _camera;
 };
 
 #endif // CLASS_CONTROLLER_H
