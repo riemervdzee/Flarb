@@ -13,3 +13,6 @@
 
 # build folders
 build/
+
+# Bin folders
+*/bin/
