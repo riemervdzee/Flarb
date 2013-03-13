@@ -19,64 +19,16 @@
 using namespace std;
 
 #include "flarb_rgbcamera/cCamera.h"
+#include "flarb_rgbcamera/yuv.h"
 
+// Defines the quality of the JPEG exported image
 #define JPEG_QUALITY 70
-
 
 // TODO Get this in the cCamera class, problem is the rogue functions below
 // (my_init_destination and etc.)
 #define BLOCK_SIZE 1280 * 800 * 3
 std::vector<uint8_t> my_buffer;
 jpeg_destination_mgr dest;
-
-
-
-/**
-  Convert from YUV422 format to RGB888. Formulae are described on http://en.wikipedia.org/wiki/YUV
-
-  \param width width of image
-  \param height height of image
-  \param src source
-  \param dst destination
-*/
-static void YUV422toRGB888(int width, int height, unsigned char *src, unsigned char *dst)
-{
-	int line, column;
-	unsigned char *py, *pu, *pv;
-	//unsigned char *tmp = dst;
-	unsigned char dst_r, dst_g, dst_b;
-
-	/* In this format each four bytes is two pixels. Each four bytes is two Y's, a Cb and a Cr. 
-	Each Y goes to one of the pixels, and the Cb and Cr belong to both pixels. */
-	py = src;
-	pu = src + 1;
-	pv = src + 3;
-
-	#define CLIP(x) ( (x)>=0xFF ? 0xFF : ( (x) <= 0x00 ? 0x00 : (x) ) )
-
-	for (line = 0; line < height; ++line) {
-		for (column = 0; column < width; ++column) {
-			dst_r = CLIP((double)*py + 1.402*((double)*pv-128.0));
-			dst_g = CLIP((double)*py - 0.344*((double)*pu-128.0) - 0.714*((double)*pv-128.0));      
-			dst_b = CLIP((double)*py + 1.772*((double)*pu-128.0));
-			
-			*dst++ = dst_r;
-			*dst++ = dst_g;
-			*dst++ = dst_b;
-
-			// increase py every time
-			py += 2;
-
-			// increase pu,pv every second time
-			if ((column & 1)==1) {
-				pu += 4;
-				pv += 4;
-			}
-		}
-	}
-
-	#undef CLIP
-}
 
 /**
   Print error message and terminate programm with EXIT_FAILURE return code.
@@ -185,7 +137,8 @@ void cCamera::jpegWrite(unsigned char* img)
 
 int cCamera::frameRead(void)
 {
-	struct v4l2_buffer buf = {};
+	struct v4l2_buffer buf;
+	memset( &buf, 0, sizeof( buf));
 
 	buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	buf.memory = V4L2_MEMORY_MMAP;
@@ -204,7 +157,7 @@ int cCamera::frameRead(void)
 		}
 	}
 
-	assert (buf.index < _mmBuffersAmount);
+	assert ( buf.index < _mmBuffersAmount);
 
 	unsigned char* src = (unsigned char*)_mmBuffers[buf.index].start;
 	//unsigned char* dst = (unsigned char*)malloc(width*height*3*sizeof(char));
@@ -272,10 +225,16 @@ void cCamera::mainLoop(void)
 void cCamera::deviceInit(void)
 {
 	struct v4l2_capability cap;
-	struct v4l2_cropcap cropcap = {};
+	struct v4l2_cropcap cropcap;
 	struct v4l2_crop crop;
-	struct v4l2_format fmt = {};
+	struct v4l2_format fmt;
+	struct v4l2_requestbuffers req;
 	unsigned int min;
+
+	// Zero a few of these structs
+	memset( &cropcap, 0, sizeof( cropcap));
+	memset( &fmt, 0, sizeof( fmt));
+	memset( &req, 0, sizeof( req));
 
 	if (-1 == ioctl_retry( _fileHandle, VIDIOC_QUERYCAP, &cap)) {
 		if (EINVAL == errno) {
@@ -350,8 +309,6 @@ void cCamera::deviceInit(void)
 		fmt.fmt.pix.sizeimage = min;
 
 	// Get mmap buffers
-	struct v4l2_requestbuffers req = {};
-
 	req.count               = 4;
 	req.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	req.memory              = V4L2_MEMORY_MMAP;
@@ -378,7 +335,8 @@ void cCamera::deviceInit(void)
 	}
 
 	for (_mmBuffersAmount = 0; _mmBuffersAmount < req.count; ++_mmBuffersAmount) {
-		struct v4l2_buffer buf = {};
+		struct v4l2_buffer buf;
+		memset( &buf, 0, sizeof( buf));
 
 		buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory      = V4L2_MEMORY_MMAP;
@@ -414,10 +372,10 @@ bool cCamera::Create( const char* DevicePath, int width, int height)
 	// Init device
 	deviceInit();
 
-
 	// Set buffers to mmap capturing
 	for (unsigned int i = 0; i < _mmBuffersAmount; ++i) {
-		struct v4l2_buffer buf = {};
+		struct v4l2_buffer buf;
+		memset( &buf, 0, sizeof( buf));
 
 		buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory      = V4L2_MEMORY_MMAP;
@@ -442,13 +400,13 @@ void cCamera::Destroy()
 	if (-1 == ioctl_retry( _fileHandle, VIDIOC_STREAMOFF, &type))
 		errno_exit("VIDIOC_STREAMOFF");
 
-	// Free buffers
-	for ( unsigned int i = 0; i < _mmBuffersAmount; ++i)
+	// Free mmBuffers
+	for( unsigned int i = 0; i < _mmBuffersAmount; ++i)
 		if (-1 == munmap ( _mmBuffers[i].start, _mmBuffers[i].length))
 			errno_exit("munmap");
-
 	free( _mmBuffers);
 
+	// Only free the rgb buffer if we allocated it
 	if( _tmp_buffer != NULL)
 		free( _tmp_buffer);
 
@@ -456,6 +414,9 @@ void cCamera::Destroy()
 	if (-1 == close (_fileHandle))
 		errno_exit("close");
 
+	// Reset pointers and the filehandle
+	_mmBuffers  = NULL;
+	_tmp_buffer = NULL;
 	_fileHandle = -1;
 }
 

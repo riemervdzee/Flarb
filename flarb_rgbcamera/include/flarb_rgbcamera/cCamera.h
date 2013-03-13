@@ -41,12 +41,12 @@ protected:
 	int _fileHandle;
 
 	// Width and height of the images gained by the camera
-	int _width;
-	int _height;
+	unsigned int _width;
+	unsigned int _height;
 
 	// Our first mmap'ed buffers, with these we can get data from the cam
 	mmap_buffer* _mmBuffers;
-	int _mmBuffersAmount;
+	unsigned int _mmBuffersAmount;
 
 	// Temporary buffer for rgb values
 	unsigned char* _tmp_buffer;
