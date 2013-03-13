@@ -1,9 +1,3 @@
-#define IO_MMAP
-
-#if !defined(IO_READ) && !defined(IO_MMAP) && !defined(IO_USERPTR)
-#error You have to include one of IO_READ, IO_MMAP or IO_USERPTR!
-#endif
-
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,18 +20,12 @@ using namespace std;
 
 #include "flarb_rgbcamera/cCamera.h"
 
-#define CLEAR(x) memset (&(x), 0, sizeof (x))
-
-/*typedef enum {
-	IO_METHOD_MMAP,
-} io_method;*/
-
 struct buffer {
 	void   *start;
 	size_t length;
 };
 
-//static io_method        io              = IO_METHOD_MMAP;
+
 // TODO purge this shit
 static int          fd              = -1;
 struct buffer *     buffers         = NULL;
@@ -226,9 +214,7 @@ static void imageProcess(const void* p)
 
 static int frameRead(void)
 {
-	struct v4l2_buffer buf;
-
-	CLEAR (buf);
+	struct v4l2_buffer buf = {};
 
 	buf.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	buf.memory = V4L2_MEMORY_MMAP;
@@ -312,9 +298,7 @@ static void captureStart(void)
 
 
 	for (i = 0; i < n_buffers; ++i) {
-		struct v4l2_buffer buf;
-
-		CLEAR (buf);
+		struct v4l2_buffer buf = {};
 
 		buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory      = V4L2_MEMORY_MMAP;
@@ -344,9 +328,7 @@ static void captureStop(void)
 
 static void mmapInit(void)
 {
-	struct v4l2_requestbuffers req;
-
-	CLEAR (req);
+	struct v4l2_requestbuffers req = {};
 
 	req.count               = 4;
 	req.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
@@ -374,9 +356,7 @@ static void mmapInit(void)
 	}
 
 	for (n_buffers = 0; n_buffers < req.count; ++n_buffers) {
-		struct v4l2_buffer buf;
-
-		CLEAR (buf);
+		struct v4l2_buffer buf = {};
 
 		buf.type        = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buf.memory      = V4L2_MEMORY_MMAP;
@@ -400,9 +380,9 @@ static void mmapInit(void)
 static void deviceInit(void)
 {
 	struct v4l2_capability cap;
-	struct v4l2_cropcap cropcap;
+	struct v4l2_cropcap cropcap = {};
 	struct v4l2_crop crop;
-	struct v4l2_format fmt;
+	struct v4l2_format fmt = {};
 	unsigned int min;
 
 	if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) {
@@ -426,8 +406,6 @@ static void deviceInit(void)
 
 
 	/* Select video input, video standard and tune here. */
-	CLEAR(cropcap);
-
 	cropcap.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 
 	if (0 == xioctl(fd, VIDIOC_CROPCAP, &cropcap)) {
@@ -444,10 +422,7 @@ static void deviceInit(void)
 				break;
 			}
 		}
-	}
-	// Errors ignored
-
-	CLEAR (fmt);
+	} // Errors ignored
 
 	// v4l2_format
 	fmt.type                = V4L2_BUF_TYPE_VIDEO_CAPTURE;
