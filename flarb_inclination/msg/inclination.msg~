@@ -1,0 +1,4 @@
+#X Axis in Float
+Float32 x
+#Y Axis in Float
+Float32 y

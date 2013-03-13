@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include "flarb_rgbcamera/cController.h"
+#include "flarb_example/cController.h"
 using namespace std;
 
 // Node defines
@@ -25,7 +25,7 @@ int main(int argc, char **argv)
 	controller.Create();
 	
 	// Update timer
-	ros::Rate loop_rate( NODE_HERTZ);
+	ros::Rate loop_rate( NODE_FREQUENCY);
 
 	// Loop
 	while (ros::ok())
