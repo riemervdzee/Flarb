@@ -10,11 +10,11 @@
 // Functions executed at the beginning and end of the Application
 bool cController::Create()
 {
-	// Topic name / buffer
+	// Topic name / buffer TODO get topic-name from argument?
 	_rosTopic = _rosNode.advertise<sensor_msgs::CompressedImage>( "images", 10);
 
-	//
-	_camera.Create( "/dev/video1");
+	// TODO get device path from arguments
+	_camera.Create( "/dev/video1", 1280, 800);
 
 	return true;
 }
