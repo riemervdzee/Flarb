@@ -11,8 +11,14 @@
 #*.la
 #*.a
 
-# build folders
+# build and binfolders
 build/
-
-# Bin folders
 */bin/
+
+# Exclude generated messages
+*/msg_gen/
+*/__init__.py
+*/_*.py
+
+# Ignore backup files from gEdit
+*~
