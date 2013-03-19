@@ -64,10 +64,11 @@ int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed)
     
     // Get version and serial
     // Open the canbus connection to every other can device
-	buff[0] = 'V';
+    // TODO get version and serial#
+	/*buff[0] = 'V';
 	buff[1] = CAN_DELIM;
 
-	SendCommand( buff, 2 );
+	SendCommand( buff, 2 );*/
 	
 	// We succeeded
 	return 0;
@@ -91,7 +92,6 @@ int cCanbus::PortClose()
 	return 0;
 }
 
-// Check for packages TODO determine arguments (vector?)
 // 1  = package read
 // 0  = no packages available
 // <0 = error
@@ -120,11 +120,19 @@ int cCanbus::PortRead( CanMessage* msg)
 // Sends the message mentioned
 int cCanbus::PortSend( CanMessage* msg) { return 0;}
 
-// Clears the modem buffers
+/*
+ * Clears the modem buffers
+ */
 int cCanbus::ClearBuff()
 {
-	char buff[3] = { CAN_DELIM};
-	return SendCommand( buff, 3 );
+	char buff[1] = { CAN_DELIM};
+	int ret = 0;
+
+	// Send /r 3 times
+	for(int i = 0; ret == 0 && i < 3; i++)
+		ret = SendCommand( buff, 1);
+
+	return ret;
 }
 
 /* TODO implement these, duh */
@@ -133,19 +141,39 @@ int cCanbus::GetVersion()  { return 0;}
 int cCanbus::GetSerial()   { return 0;}
 
 // Helper function
-int cCanbus::SendCommand( const char* string, int length)
+int cCanbus::SendCommand( const char* string, int length, int pos)
 {
 	// Vars
 	int ret;
+
+	// Check if our pos ain't out of range
+	if( pos >= BUF_SIZE)
+		return EINVAL;
 
 	// Write the command
 	ret = _serial.Write( string, length);
 	if( ret != length)
 		return ret;
 
-	// TODO poll for read (13 = OK, 7 = fail)
+	// Check the status (13 = OK, 7 = fail)
+	int n = 0;
+	while( n == 0) //TODO don't spin indefinitly, check for errors
+		n = _serial.Read( buf, pos + 1);
 
+	// get the specific char
+	char status = buf[ pos];
 
-	// Succes
-	return 0;
+	// Status stuff
+	switch( status)
+	{
+		case 13:
+			return 0;
+		case 7:
+			return EINVAL; // Input is invalid
+
+		default:
+			printf( "SendCommand: wrong position, oh noes\n");
+			return EINVAL;
+	}
 }
+

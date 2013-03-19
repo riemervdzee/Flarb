@@ -45,7 +45,7 @@ public:
 
 //private:
 	// Helper function
-	int SendCommand( const char* string, int length);
+	int SendCommand( const char* string, int length, int pos = 0);
 
 private:
 	// Serial object

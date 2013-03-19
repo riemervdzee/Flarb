@@ -20,7 +20,7 @@ bool cController::Create()
 	//_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 100);
 	
 	//
-	cout << "canbus result " << _canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 3) << endl;
+	cout << "canbus result " << _canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6) << endl;
 
 	return true;
 }
@@ -46,7 +46,8 @@ void cController::Update()
 	// Publish
 	_rosTopic.publish( msg);*/
 	
-	_canbus.SendCommand( "N\r", 2);
+	//_canbus.SendCommand( "N\r", 2);
 	
 	_canbus.PortRead( NULL);
 }
+

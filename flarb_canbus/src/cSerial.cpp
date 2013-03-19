@@ -98,7 +98,7 @@ int cSerial::Read( char* buffer, int maxlength)
 {
 	// Check if we got a file handle anyway
 	if( _fileDescriptor == -1)
-		return -1; // TODO return real errno code
+		return EBADF;
 
 	//
 	int n = read( _fileDescriptor, buffer, maxlength);
@@ -119,7 +119,7 @@ int cSerial::Write( const char* buffer, int length)
 {
 	// Check if we got a file handle anyway
 	if( _fileDescriptor == -1)
-		return -1; // TODO return real errno code
+		return EBADF;
 
 	// Writes data to the file
 	if( write( _fileDescriptor, buffer, length ) == length)
