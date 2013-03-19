@@ -1,10 +1,7 @@
 #ifndef CLASS_CANBUS_H
 #define CLASS_CANBUS_H
 
-#include <sys/select.h>
-
-#include "ros/ros.h"
-
+#include "flarb_canbus/cSerial.h"
 
 /*
  * Canbus message struct
@@ -23,15 +20,11 @@ class cCanbus
 {
 public:
 	// Constructor
-	cCanbus() : _fileDescriptor( -1) {}
+	cCanbus() {}
 
 	// Functions executed at the beginning and end of the Application
 	int PortOpen( const char* device, int baudrate, int canSpeed);
 	int PortClose();
-	
-	// Checks the topic for messages to send, checks port for messages to
-	// Put on the topic back again
-	//int Update();
 
 	// Check for packages TODO determine arguments (vector?)
 	// 1  = package read
@@ -55,11 +48,9 @@ public:
 	int SendCommand( const char* string, int length);
 
 private:
-	// File handle to the serial port
-	int _fileDescriptor;
-	
-	// Fileset
-	fd_set _fileDescSet;
+	// Serial object
+	cSerial _serial;
 };
 
-#endif // CLASS_CONTROLLER_H
+#endif // CLASS_CANBUS_H
+

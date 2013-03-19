@@ -13,6 +13,10 @@
 #include <termios.h>   // POSIX terminal control definitions
 #include <time.h>      // time calls
 
+// Our great buffer
+#define BUF_SIZE     128
+char buf[ BUF_SIZE];
+
 #include "flarb_canbus/cCanbus.h"
 
 #define CAN_DELIM '\r'   // Modem delimitor
@@ -20,43 +24,15 @@
 // Opens a canbus connection
 int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed) 
 {
-	int ret = 0;
-	// Open the file
-	int fd_flags = O_RDWR | O_NOCTTY /*| O_NDELAY*/ | O_SYNC;
-	_fileDescriptor = open( device, fd_flags);
+	// Vars
+	int ret;
+	char buff[3];
 
-	if( _fileDescriptor < 0)
-	{
-		printf( "Failed to open device %s, error %i: %s\n", device, errno, strerror(errno));
-		return errno;
-	}
-
-	// Configure port
-	struct termios port_settings;
-	memset( &port_settings, 0, sizeof (port_settings));
-
-	cfsetispeed( &port_settings, baudrate);    // set baud rates
-	cfsetospeed( &port_settings, baudrate);
-	
-	port_settings.c_iflag &= ~IGNBRK;         // ignore break signal
-	port_settings.c_lflag = 0;                // no signaling chars, no echo, no canonical processing
-	port_settings.c_oflag = 0;                // no remapping, no delays
-	port_settings.c_cc[VMIN]  = 0;            // read doesn't block
-	port_settings.c_cc[VTIME] = 1;            // 0.1 seconds read timeout
-
-	port_settings.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
-
-	port_settings.c_cflag |= (CLOCAL | CREAD); // ignore modem controls, enable reading
-	port_settings.c_cflag &= ~PARENB;  // Set no parity
-	port_settings.c_cflag &= ~CSTOPB;  // Only 1 stopbit
-	port_settings.c_cflag &= ~CSIZE;   // Clear CSize
-	port_settings.c_cflag |= CS8;      // Set datasize to 8 bits
-
-    // apply the settings to the port
-	if( tcsetattr( _fileDescriptor, TCSANOW, &port_settings) != 0) {
-		printf( "Failed to set serial parameters. device %s, error %i: %s\n", device, errno, strerror(errno));
-		return errno;
-	}
+	// Opens the serial port
+	// The cSerial class outputs nice enough error messages, no need for doing it twice
+	ret = _serial.PortOpen( device, baudrate);
+	if( ret != 0)
+		return ret;
 
 	// Clears the buffer of the just opened canbus
 	ret = ClearBuff();
@@ -66,7 +42,6 @@ int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed)
 	}
 
 	// Set canbus speed
-	char buff[3];
 	buff[0] = 'S';
 	buff[1] = canSpeed + '0';
 	buff[2] = CAN_DELIM;
@@ -86,10 +61,6 @@ int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed)
 		printf( "Failed to open canbus. device %s, error: %i: %s\n", device, ret, strerror(ret));
 		return ret;
 	}
-	
-	// Fill the filedescriptor set
-	FD_ZERO( &_fileDescSet);
-    FD_SET( _fileDescriptor, &_fileDescSet);
     
     // Get version and serial
     // Open the canbus connection to every other can device
@@ -114,18 +85,11 @@ int cCanbus::PortClose()
 
 	SendCommand( buff, 2 );
 	
-	// Close the file
-	close( _fileDescriptor);
+	// Close the serialPort
+	_serial.PortClose();
 	
 	return 0;
 }
-
-// Checks the topic for messages to send, checks port for messages to
-// Put on the topic back again
-//int Update();
-
-#define BUF_SIZE     32
-unsigned char buf[ BUF_SIZE];
 
 // Check for packages TODO determine arguments (vector?)
 // 1  = package read
@@ -137,15 +101,18 @@ unsigned char buf[ BUF_SIZE];
 /* TODO implement properly */
 int cCanbus::PortRead( CanMessage* msg)
 {
-	if( _fileDescriptor == -1)
-		return -1;
+	int n = _serial.Read( buf, BUF_SIZE);
 
-	int n = read( _fileDescriptor, buf, BUF_SIZE);
-
-	if( n == -1)
+	// If no bytes are read, return
+	if( n == 0)
 		return 0;
 
-	printf( "Read bytes, %i, value=%s\n", n, buf);
+	printf( "Read bytes, %i, value= 0x", n);
+	
+	for(int i = 0; i < n; i++)
+		printf( "%02X", *(buf+i));
+		
+	printf( "\n");
 	
 	return 0;
 }
@@ -168,12 +135,13 @@ int cCanbus::GetSerial()   { return 0;}
 // Helper function
 int cCanbus::SendCommand( const char* string, int length)
 {
-	if( _fileDescriptor == -1)
-		return -1;
+	// Vars
+	int ret;
 
 	// Write the command
-	if( write( _fileDescriptor, string, length ) != length)
-		return errno;
+	ret = _serial.Write( string, length);
+	if( ret != length)
+		return ret;
 
 	// TODO poll for read (13 = OK, 7 = fail)
 
