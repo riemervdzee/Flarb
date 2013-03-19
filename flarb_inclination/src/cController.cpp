@@ -11,10 +11,11 @@
 #include <fcntl.h>   /* File control definitions */
 #include <errno.h>   /* Error number definitions */
 #include <termios.h> /* POSIX terminal control definitions */
-
-
-
 #include "flarb_inclination/cController.h"
+
+// Settings
+#define DEV_PORT		"/dev/ttyS1" 	//port 
+#define BAUD_RATE		9600			//Baudrate port
 int open_port(void);
 using namespace std;
 
@@ -32,7 +33,7 @@ bool cController::Create()
 // Executed when the Node is exiting
 void cController::Destroy()
 {
-	close(fd);
+	//close(fd);
 }
 
 // Updates the controller obj
@@ -47,15 +48,10 @@ void cController::Update()
 	//cout << "Hello World" << endl; 
 	ss << "hello world " << _count;
 	msg.data = ss.str();
-
+	cout << "i am alive"<< endl;
 	// Publish
 	_rosTopic.publish(msg);
 	getChar();
-	if(fd =! -1){
-		//ssize_t read(int fd, void *buf, size_t count);
-
-	}
-
 }
 
 	/*
@@ -67,12 +63,14 @@ void cController::Update()
 	*/
 	int cController::open_port()
 	{
-		fd = open("/tmp/nieuw", O_RDWR | O_NOCTTY | O_NDELAY);
+		cout << "Try to open /dev/ttyS1"<< endl;
+		fd = open("/dev/ttyS1", O_RDWR | O_NOCTTY | O_NDELAY);
 		if (fd == -1)
 		{
 	   		//Could not open the port.
 			perror("open_port: Unable to open /dev/ttyS1 - ");
 			//Try again
+			sleep(1);
 			open_port();
 		}
 		else
@@ -99,6 +97,7 @@ bool cController::getChar() {
 			char Temp[1024];
 			// If the port is actually open, grab a String
 			if (fd != -1) {
+				cout << "FD! -1"<< endl;
 				// Return the byte received if it's there
 				int n = read(fd, &Temp, 1);
 				

@@ -12,9 +12,7 @@ using namespace std;
 #define NODE_FREQUENCY  10         		// Amount of loops per second
 #define NODE_CALLBACKS  0          		// 0 = false, 1 = true. use when the node has services to offer
 
-// Settings
-#define DEV_PORT		"/dev/ttyS1" 	//port 
-#define BAUD_RATE		9600			//Baudrate port
+
 
 
 /*
@@ -32,11 +30,13 @@ int main(int argc, char **argv)
 	// Update timer
 	ros::Rate loop_rate( NODE_FREQUENCY);
 
+	
+
 	// Loop
 	while (ros::ok())
 	{
 		controller.Update();
-
+		
 		// Only use if we have callbacks/services
 #if NODE_CALLBACKS
 		ros::spinOnce();
