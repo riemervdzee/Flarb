@@ -100,8 +100,14 @@ int cController::getChar() {
 	cout<< a << endl;
 	
 	for(int i = 0; i < 254; i++){
-		if(buffer[i] == '\n')
-		{cout<<"Found uno"<<endl;}
+		if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
+		{
+			cout<<"Found Y"<<endl;
+		}
+		if(buffer[i] == 'Y' && ( buffer[i + 9] == '\r'))
+		{
+			cout<<"Found X"<<endl;
+		}
 	}	
 	
 	return (-1);	
