@@ -11,8 +11,8 @@ class cController
 {
 public:
     // Constructor
-    cController() : _count( 0) {}
-
+    //cController() : _count( 0) {}
+	cController() : tries( 0) {}
     // Functions executed at the beginning and end of the Application
     int Create();
     void Destroy();
@@ -29,12 +29,16 @@ private:
 
 	// We are publishing shizzle
 	ros::Publisher  _rosTopic;
+	ros::Publisher _data;
 	//Opening FileDescriptor
-	int open_port();
+	int Openport();
 	//File descriptor for the port 
 	int fd;
+	
 	int getChar(); 
-	int _count;
+	int tries;
+	
+	//Temporary strorage for export data	
 	float xaxis;
 	float yaxis;
 	

@@ -4,77 +4,78 @@
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include "flarb_inclination/inclination.h"
-
-#include <stdio.h>   /* Standard input/output definitions */
-#include <string.h>  /* String function definitions */
-#include <unistd.h>  /* UNIX standard function definitions */
-#include <fcntl.h>   /* File control definitions */
-#include <errno.h>   /* Error number definitions */
-#include <termios.h> /* POSIX terminal control definitions */
+#include "flarb_inclination/Axis.h"
 #include "flarb_inclination/cController.h"
 #include "flarb_inclination/cSerial.h"
+
+#include <stdio.h>   					// Standard input/output definitions
+#include <string.h>  					// String function definitions 
+#include <unistd.h>  					// UNIX standard function definitions 
+#include <fcntl.h>   					// File control definitions 
+#include <errno.h>   					//	Error number definitions 
+#include <termios.h> 					//	POSIX terminal control definitions 
 
 // Settings
 #define DEV_PORT		"/dev/ttyS1" 	//port 
 #define BAUD_RATE		B9600			//Baudrate port
-// Our great buffer
-#define BUF_SIZE     128
-char buf[ BUF_SIZE];
 
-int open_port(void);
 using namespace std;
 
 // Functions executed at the beginning and end of the Node
 int cController::Create()
 {
 	// Topic name / buffer
-	_rosTopic = _rosNode.advertise<std_msgs::String>( "inclino_updates", 100);
+	_rosTopic = _rosNode.advertise<std_msgs::String>( "Inclino_updates", 100);
+	_data = _rosNode.advertise<flarb_inclination::Axis>("Inclino_Axis", 100);
 	//open ttys1
-	open_port();
+	Openport();
 	return 0;
 }
 
 // Executed when the Node is exiting
 void cController::Destroy()
 {
+	//always close the port
 	_serial.PortClose();
+	//now shutdown ros
+	ros::shutdown();
 }
 
 // Updates the controller obj
 void cController::Update()
 {
-	// Increase count
-	//_count++;
-	// Assemble message
-	//std_msgs::String msg;
-	//std::stringstream ss;
-	//cout << "Hello World" << endl; 
-	//ss << "hello world " << _count;
-	//msg.data = ss.str();
-	// Publish
-	//_rosTopic.publish(msg);
+	//if axis updated
 	if(getChar() == 1){
-		flarb_inclination::inclination msg;
+		//create message
+		flarb_inclination::Axis msg;
+		//fill message
 		msg.x = xaxis;
-		msg.y = yaxis;	
+		msg.y = yaxis;
+		//Publish
+		_data.publish(msg);
 	}
 }
 
 	/*
-	* 'open_port()' - Open serial port 1.
+	* 'open_port()' - Open serial port.
 	*
-	* Returns the file descriptor on success or -1 on error.
+	* failed == -1, succes == 0;
 	*
 	* 9600 Baudrate, ASCII, 8 data bits, 1 stop bit, no parity
 	*/
-	int cController::open_port()
+	int cController::Openport()
 	{
 		// Opens the serial port
 		// The cSerial class outputs nice enough error messages, no need for doing it twice
 		fd = _serial.PortOpen(DEV_PORT, BAUD_RATE);
 		if( fd != 0){
-			return fd;
+			if(tries < 10){
+				sleep(1);
+				cout<< "Trying again || try: "<< tries <<endl;
+				tries++;	
+				Openport();
+			}
+			else{	Destroy();	}
 		}
 	}
 
