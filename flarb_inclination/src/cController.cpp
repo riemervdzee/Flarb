@@ -97,16 +97,25 @@ int cController::getChar() {
 	int  tries;        /* Number of tries so far 	*/
 		
 	int a = _serial.Read(buffer, sizeof(buffer));
-	cout<< a << endl;
+	//cout<< a << endl;
 	
 	for(int i = 0; i < 254; i++){
 		if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
 		{
-			cout<<"Found Y"<<endl;
+			
+			int cntx = 0;
+            char x[5];
+            for (int j = 2+i; j+i < 9+i; j++){
+                    x[cntx]=Str[j];
+                    cntx++;
+            }
+            xaxis = ::atof(x);
+			cout<<"Found X: "<< xaxis<< endl;
+			
 		}
 		if(buffer[i] == 'Y' && ( buffer[i + 9] == '\r'))
 		{
-			cout<<"Found X"<<endl;
+			cout<<"Found Y"<<endl;
 		}
 	}	
 	
