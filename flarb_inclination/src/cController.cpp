@@ -102,11 +102,10 @@ int cController::getChar() {
 	for(int i = 0; i < 254; i++){
 		if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
 		{
-			
 			int cntx = 0;
             char x[5];
-            for (int j = 2+i; j+i < 9+i; j++){
-                    x[cntx]=Str[j];
+            for (int j = 2+i; j < 9+i; j++){
+                    x[cntx]=buffer[j];
                     cntx++;
             }
             xaxis = ::atof(x);
@@ -115,7 +114,14 @@ int cController::getChar() {
 		}
 		if(buffer[i] == 'Y' && ( buffer[i + 9] == '\r'))
 		{
-			cout<<"Found Y"<<endl;
+			int cnty = 0;
+            charyx[5];
+            for (int j = 2+i; j < 9+i; j++){
+                    y[cnty]=buffer[j];
+                    cnty++;
+            }
+            yaxis = ::atof(y);
+			cout<<"Found Y: "<< xaxis<< endl;
 		}
 	}	
 	
