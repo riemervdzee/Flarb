@@ -103,7 +103,8 @@ int cController::getChar() {
 		while ((nbytes = read(fd, bufptr, buffer + sizeof(buffer) - bufptr - 1)) > 0)
 		{
 		bufptr += nbytes;
-		if (bufptr[-1] == '\n' && bufptr[-2] == '\r')
+		if (bufptr[-1] == '\n' || bufptr[-2] == '\r')
+			cout << "found one" <<  endl;
 			break;
 		}
 
