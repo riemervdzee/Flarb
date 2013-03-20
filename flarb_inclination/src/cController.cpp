@@ -4,6 +4,7 @@
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
+#include "flarb_inclination/inclination.h"
 
 #include <stdio.h>   /* Standard input/output definitions */
 #include <string.h>  /* String function definitions */
@@ -29,8 +30,7 @@ int cController::Create()
 {
 	// Topic name / buffer
 	_rosTopic = _rosNode.advertise<std_msgs::String>( "inclino_updates", 100);
-	char Str[1024];
-	int counter = 0;
+	//open ttys1
 	open_port();
 	return 0;
 }
@@ -38,7 +38,6 @@ int cController::Create()
 // Executed when the Node is exiting
 void cController::Destroy()
 {
-	//close(fd);
 	_serial.PortClose();
 }
 
@@ -46,18 +45,20 @@ void cController::Destroy()
 void cController::Update()
 {
 	// Increase count
-	_count++;
-
+	//_count++;
 	// Assemble message
-	std_msgs::String msg;
-	std::stringstream ss;
+	//std_msgs::String msg;
+	//std::stringstream ss;
 	//cout << "Hello World" << endl; 
-	ss << "hello world " << _count;
-	msg.data = ss.str();
-	cout << "i am alive"<< endl;
+	//ss << "hello world " << _count;
+	//msg.data = ss.str();
 	// Publish
-	_rosTopic.publish(msg);
-	getChar();
+	//_rosTopic.publish(msg);
+	if(getChar() == 1){
+		flarb_inclination::inclination msg;
+		msg.x = xaxis;
+		msg.y = yaxis;	
+	}
 }
 
 	/*
@@ -92,47 +93,49 @@ void cController::Update()
 	*/
 int cController::getChar() {
 	char buffer[255];  /* Input buffer 				*/
-	char *bufptr;      /* Current char in buffer 	*/
-	int  nbytes;       /* Number of bytes read 		*/
-	int  tries;        /* Number of tries so far 	*/
 	bool XX = false;
 	bool YY = false;	
 
 	
 	int a = _serial.Read(buffer, sizeof(buffer));
-		
-	for(int i = 0; i < 254; i++){
-		if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
-		{
-			int cntx = 0;
-            char x[5];
-            for (int j = 2+i; j < 9+i; j++){
-                    x[cntx]=buffer[j];
-                    cntx++;
-            }
-            xaxis = ::atof(x);
-			XX =true;
-			cout<<"Found X: "<< xaxis<< endl;
+	if(a =! 0){
+		for(int i = 0; i < 254; i++){
+			if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
+			{
+				int cntx = 0;
+		        char x[5];
+		        for (int j = 2+i; j < 9+i; j++){
+		                x[cntx]=buffer[j];
+		                cntx++;
+		        }
+		        xaxis = ::atof(x);
+				if(x[4] == '+' || x[4] == '-')
+					xaxis = +25;
+				XX =true;
+				//cout<<"Found X: "<< xaxis<< endl;
 			
+			}
+			if(buffer[i] == 'Y' && ( buffer[i + 9] == '\r'))
+			{
+				int cnty = 0;
+		        char y[5];
+		        for (int j = 2+i; j < 9+i; j++){
+		                y[cnty]=buffer[j];
+		                cnty++;
+		        }
+		        yaxis = ::atof(y);
+				if(y[4] == '+' || y[4] == '-')
+					yaxis = +25;
+				YY=true;
+				//cout<<"Found Y: "<< yaxis<< endl;
+			}
+			if(XX && YY){
+				return (1);
+				break;
+			}
 		}
-		if(buffer[i] == 'Y' && ( buffer[i + 9] == '\r'))
-		{
-			int cnty = 0;
-            char y[5];
-            for (int j = 2+i; j < 9+i; j++){
-                    y[cnty]=buffer[j];
-                    cnty++;
-            }
-            yaxis = ::atof(y);
-			YY=true;
-			cout<<"Found Y: "<< xaxis<< endl;
-		}
-		if(XX && YY)
-			break;
 	}	
-	
-	return (-1);	
-			
+	return (-1);			
 }
 
 

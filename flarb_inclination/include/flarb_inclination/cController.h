@@ -33,12 +33,11 @@ private:
 	int open_port();
 	//File descriptor for the port 
 	int fd;
-	//Getting package
 	int getChar(); 
 	int _count;
 	float xaxis;
 	float yaxis;
-	char datapackage[];
+	
 };
 
 #endif // CLASS_CONTROLLER_H
