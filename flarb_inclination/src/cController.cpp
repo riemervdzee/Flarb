@@ -57,7 +57,7 @@ void cController::Update()
 	cout << "i am alive"<< endl;
 	// Publish
 	_rosTopic.publish(msg);
-	//getChar();
+	getChar();
 }
 
 	/*
