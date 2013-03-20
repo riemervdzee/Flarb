@@ -12,28 +12,34 @@
 #include <errno.h>   /* Error number definitions */
 #include <termios.h> /* POSIX terminal control definitions */
 #include "flarb_inclination/cController.h"
+#include "flarb_inclination/cSerial.h"
 
 // Settings
 #define DEV_PORT		"/dev/ttyS1" 	//port 
-#define BAUD_RATE		9600			//Baudrate port
+#define BAUD_RATE		B9600			//Baudrate port
+// Our great buffer
+#define BUF_SIZE     128
+char buf[ BUF_SIZE];
+
 int open_port(void);
 using namespace std;
 
 // Functions executed at the beginning and end of the Node
-bool cController::Create()
+int cController::Create()
 {
 	// Topic name / buffer
 	_rosTopic = _rosNode.advertise<std_msgs::String>( "inclino_updates", 100);
-	datapackage[22];
+	char Str[1024];
+	int counter = 0;
 	open_port();
-
-	return true;
+	return 0;
 }
 
 // Executed when the Node is exiting
 void cController::Destroy()
 {
 	//close(fd);
+	_serial.PortClose();
 }
 
 // Updates the controller obj
@@ -51,7 +57,7 @@ void cController::Update()
 	cout << "i am alive"<< endl;
 	// Publish
 	_rosTopic.publish(msg);
-	getChar();
+	//getChar();
 }
 
 	/*
@@ -63,19 +69,12 @@ void cController::Update()
 	*/
 	int cController::open_port()
 	{
-		cout << "Try to open /dev/ttyS1"<< endl;
-		fd = open("/dev/ttyS1", O_RDWR | O_NOCTTY | O_NDELAY);
-		if (fd == -1)
-		{
-	   		//Could not open the port.
-			perror("open_port: Unable to open /dev/ttyS1 - ");
-			//Try again
-			sleep(1);
-			open_port();
+		// Opens the serial port
+		// The cSerial class outputs nice enough error messages, no need for doing it twice
+		fd = _serial.PortOpen(DEV_PORT, BAUD_RATE);
+		if( fd != 0){
+			return fd;
 		}
-		else
-			fcntl(fd, F_SETFL, 0);
-			return (fd);
 	}
 
 
@@ -88,55 +87,36 @@ void cController::Update()
 	* Layout: < D0 ... D21>
 	* 		D0 ... D10	= “X=±xx.xxx“, <CR>, <LF> with D2 = sign (+ or -), D5 = decimal point
 	* 		D11 ... D21 = “Y=±xx.xxx“, <CR>, <LF> with D13= sign (+ or -), D16 = decimal point
-	*		X=+01.123\r\nY=-12.123\r\n
-	*
+	*		Example: "X=+01.123\r\nY=-12.123\r\n"
+	*		Return: 0 = Serial ok, -1 = Serial bad 
 	*/
-bool cController::getChar() {
-			int counter = 0;
-						
-			char Temp[1024];
-			// If the port is actually open, grab a String
-			if (fd != -1) {
-				cout << "FD! -1"<< endl;
-				// Return the byte received if it's there
-				int n = read(fd, &Temp, 1);
-				
-				for (int i = counter; i < counter + n; i++){
-					datapackage[i] = Temp[i];
-					//package is 22Bytes
-					if(i == 21){
-						//Convert X Axis
-						int cntx = 0;
-						char x[5];
-						for (int j = 2; j < 9; j++){
-							x[cntx]=datapackage[j];
-							cntx++;						
-						}
-						xaxis = ::atof(x);
-						//Convert Y Axis
-						int cnty = 0;
-						char y[5];
-						for (int j = 13; j < 20; j++){
-							y[cnty]=datapackage[j];
-							cnty++;						
-						}						
-						yaxis = ::atof(y);
-//						perror(yaxis , xaxis);
-						cout << "test of het werkt"<< endl;
-						cout << yaxis;
-						cout << xaxis;					   					
-					}					
-				}
-				counter += n;
-				
-			}
-return true;
+int cController::getChar() {
+	char buffer[255];  /* Input buffer 				*/
+	char *bufptr;      /* Current char in buffer 	*/
+	int  nbytes;       /* Number of bytes read 		*/
+	int  tries;        /* Number of tries so far 	*/
+
+	for (tries = 0; tries < 3; tries ++)
+	{
+		/* read characters into our string buffer until we get a CR or NL */
+		bufptr = buffer;
+		while ((nbytes = read(fd, bufptr, buffer + sizeof(buffer) - bufptr - 1)) > 0)
+		{
+		bufptr += nbytes;
+		if (bufptr[-1] == '\n' && bufptr[-2] == '\r')
+			break;
+		}
+
+		/* nul terminate the string and see if we got an OK response */
+		*bufptr = '\0';
+		printf(bufptr);
+		cout << bufptr << endl;
+		//if (strncmp(buffer, "X=", 2) == 0)
+			
+		//if (strncmp(buffer, "Y=", 2) == 0)
+	}
+	return (-1);	
 			
 }
 
-void reverseWord(char word [], char reverse [], int howMany)
-{
-	for (int i = howMany -1,j=0; i>=0; i--,j++)
-	reverse[j] = word[i];
-	return;
-}
+
