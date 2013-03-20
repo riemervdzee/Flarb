@@ -96,9 +96,14 @@ int cController::getChar() {
 	int  nbytes;       /* Number of bytes read 		*/
 	int  tries;        /* Number of tries so far 	*/
 		
-		int a = _serial.Read(buffer, sizeof(buffer));
-		cout<< a << endl;
-	}
+	int a = _serial.Read(buffer, sizeof(buffer));
+	cout<< a << endl;
+	
+	for(int i = 0; i < 254; i++){
+		if(buffer[i] == '\n')
+		{cout<<"Found uno"<<endl;}
+	}	
+	
 	return (-1);	
 			
 }
