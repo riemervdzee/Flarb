@@ -92,39 +92,29 @@ int cSerial::PortClose()
 
 /*
  * Reads the incomming data from the port to the buffer
- * returns amount of bytes read. returns 0 if no data available
+ * returns amount of bytes read. returns 0 if no data available.
+ * returns -1 if there is an error, error is stored in errno
  */
 int cSerial::Read( char* buffer, int maxlength)
 {
-	// Check if we got a file handle anyway
-	if( _fileDescriptor == -1)
-		return EBADF;
-
 	//
 	int n = read( _fileDescriptor, buffer, maxlength);
 	
 	// If there was no data available, just cheat and say there are 0 bytes
-	if( n == -1)
+	if( n == -1 && errno & (EAGAIN | EWOULDBLOCK ))
 		n = 0;
 
-	// Return amount of bytes written to 'buffer'
+	// Return amount of bytes written to 'buffer', or any other error value
 	return n;
 }
 
 /*
  * Writes 'buffer' with 'length' to the serial port.
- * Returns amount of bytes written, errno if failed
+ * Returns amount of bytes written, -1 if failed (error is in errno)
  */
 int cSerial::Write( const char* buffer, int length)
 {
-	// Check if we got a file handle anyway
-	if( _fileDescriptor == -1)
-		return EBADF;
-
 	// Writes data to the file
-	if( write( _fileDescriptor, buffer, length ) == length)
-		return length;
-	else
-		return errno;
+	return write( _fileDescriptor, buffer, length);
 }
 

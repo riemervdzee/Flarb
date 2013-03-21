@@ -3,15 +3,19 @@
 
 #include "flarb_canbus/cSerial.h"
 
+
+#define CANBUS_READBUFFER_SIZE    128
+
+
 /*
  * Canbus message struct
- * TODO padding faults?
  */
 struct CanMessage {
-	unsigned int  identifier; /* In the range of 000-7FF */
-	unsigned char length;	 /* In the range of 0-8 */
-	unsigned char data[8];	/* Per byte 0-255 */
+	unsigned short identifier; /* In the range of 000-7FF hex */
+	unsigned short length;	   /* In the range of 0-8 hex */
+	unsigned char data[8];	   /* Per byte 0-255 */
 };
+
 
 /*
  * Canbus class
@@ -19,14 +23,14 @@ struct CanMessage {
 class cCanbus
 {
 public:
-	// Constructor
-	cCanbus() {}
+	// Constructor and deconstructor
+	cCanbus();
+	~cCanbus();
 
 	// Functions executed at the beginning and end of the Application
 	int PortOpen( const char* device, int baudrate, int canSpeed);
 	int PortClose();
 
-	// Check for packages TODO determine arguments (vector?)
 	// 1  = package read
 	// 0  = no packages available
 	// <0 = error
@@ -35,13 +39,17 @@ public:
 	int PortRead( CanMessage* msg);
 
 	// Sends the message mentioned
-	int PortSend( CanMessage* msg);
+	int PortSend( const CanMessage* msg);
 
-	// Util functions
-	int ClearBuff();
+	// Clears the Lawicel modem buffers
+	int ClearModemCache();
+
+	// Check for canbus errors
 	int CheckErrors();
-	int GetVersion();
-	int GetSerial();
+
+	// Get Lawicel version/serial number
+	inline const char* GetVersion() { return _devVersion;}
+	inline const char* GetSerial()  { return _devSerial;}
 
 //private:
 	// Helper function
@@ -50,6 +58,13 @@ public:
 private:
 	// Serial object
 	cSerial _serial;
+
+	// Read buffer
+	char *_canbus_readbuffer;
+
+	// Serial and version number of the Lawicel usb2can device
+	char _devSerial [6];
+	char _devVersion[6];
 };
 
 #endif // CLASS_CANBUS_H

@@ -20,7 +20,7 @@ bool cController::Create()
 	//_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 100);
 	
 	//
-	cout << "canbus result " << _canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6) << endl;
+	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6);
 
 	return true;
 }
@@ -31,14 +31,13 @@ void cController::Destroy()
 	_canbus.PortClose();
 }
 
+static int _count = 0;
+
 // Updates the controller obj
 void cController::Update()
 {
-	// Increase count
-	/*_count++;
-
 	// Assemble message
-	std_msgs::String msg;
+	/*std_msgs::String msg;
 	std::stringstream ss;
 	ss << "hello world " << _count;
 	msg.data = ss.str();
@@ -47,7 +46,23 @@ void cController::Update()
 	_rosTopic.publish( msg);*/
 	
 	//_canbus.SendCommand( "N\r", 2);
-	
+
+	// Check for canbus errors
+	_canbus.CheckErrors();
+
+	// Check for messages
 	_canbus.PortRead( NULL);
+
+	if( _count < 5)
+	{
+		_count++;
+		CanMessage msg;
+		msg.identifier = 2;
+		msg.length     = 2;
+		msg.data[0]    = '8';
+		msg.data[1]    = '0';
+	
+		_canbus.PortSend( &msg);
+	}
 }
 
