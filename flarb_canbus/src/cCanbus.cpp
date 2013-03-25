@@ -313,7 +313,7 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 		databuffer[0] = _canbus_readbuffer[ i * 2];
 		databuffer[1] = _canbus_readbuffer[ i * 2 + 1];
 
-		msg.data = strtoul( databuffer, NULL, 16);
+		msg.data[i] = (char)strtoul( databuffer, NULL, 16);
 	}
 
 	// TODO process the msg
@@ -321,7 +321,7 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 	// DEBUG
 	printf( "Received package. ID=%03X, length=%i \ndata: 0x", msg.identifier, msg.length);
 	for(int i = 0; i < msg.length; i++)
-		printf( "%02X", msg.data[i];
+		printf( "%02X", msg.data[i]);
 
 	printf( "\n");
 
@@ -334,7 +334,8 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 int cCanbus::SendCommand( const char* string, int length, int charPositionRight, int charPositionFalse)
 {
 	// Vars
-	int ret, pos;
+	int ret, pos, nBytes;
+	const int retries = 10;
 
 	// Get max
 	pos = std::max( charPositionRight, charPositionFalse);
@@ -349,19 +350,6 @@ int cCanbus::SendCommand( const char* string, int length, int charPositionRight,
 	ret = _serial.Write( string, length);
 	if( ret != length)
 		return ret;
-
-	// Check the result
-	return ReadCommand( charPositionRight, charPositionFalse, 10);
-}
-
-/*
- * Helper function for reads
- * TODO put this back in SendCommand
- */
-int cCanbus::ReadCommand( int charPositionRight, int charPositionFalse, int retries)
-{
-	// Vars
-	int ret, nBytes;
 
 	// Get the amount of bytes we need to read
 	// normally we would add +1, but since we are already reading one byte in advance..
@@ -425,3 +413,4 @@ int cCanbus::ReadCommand( int charPositionRight, int charPositionFalse, int retr
 
 	return 0;
 }
+
