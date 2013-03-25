@@ -31,7 +31,7 @@ void cController::Destroy()
 	_canbus.PortClose();
 }
 
-static int _count = 0;
+//static int _count = 0;
 
 // Updates the controller obj
 void cController::Update()
@@ -53,7 +53,7 @@ void cController::Update()
 	// Check for messages
 	_canbus.PortRead( NULL);
 
-	if( _count < 5)
+	if( _count < 4)
 	{
 		_count++;
 		CanMessage msg;

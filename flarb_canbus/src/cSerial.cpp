@@ -118,3 +118,42 @@ int cSerial::Write( const char* buffer, int length)
 	return write( _fileDescriptor, buffer, length);
 }
 
+
+/*
+ * Reads a fixed amount of incoming data from the port to the buffer,
+ * with a certain amount of retries
+ *
+ * returns 0 for success, errno if error(s) occured
+ */
+int cSerial::ReadBytes( char* buffer, int amount, int retries)
+{
+	// Vars
+	int tries = 0, bytes_read = 0, end = amount;
+
+	// Retries
+	for( ; end > 0; tries++)
+	{
+		// Are we above the retries?
+		if( tries == retries)
+			return EIO;
+
+		// Attempt to read bytes
+		int ret = Read( buffer + bytes_read, end);
+
+		// If we actually read some bytes, add it to bytes_read
+		if(ret > 0)
+		{
+			bytes_read += ret;
+			end        -= ret;
+		}
+		// If error condition
+		else if( ret == -1)
+		{
+			return errno;
+		}
+	}
+
+	// We survived the unslaught above, we succeeded yay!
+	return 0;
+}
+

@@ -51,11 +51,15 @@ public:
 	inline const char* GetVersion() { return _devVersion;}
 	inline const char* GetSerial()  { return _devSerial;}
 
-//private:
-	// Helper function
-	int SendCommand( const char* string, int length, int pos = 0);
-
 private:
+	// Helper functions
+	int SendCommand( const char* string, int length, int charPositionRight = 0, int charPositionFalse = 0);
+	int ReadCommand( int charPositionRight, int charPositionFalse, int retries);
+	int ReadPackage( int retries, bool skipFirst = false);
+
+	// Forbit copy constructor
+	cCanbus( const cCanbus&);
+
 	// Serial object
 	cSerial _serial;
 

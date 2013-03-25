@@ -33,10 +33,18 @@ public:
 	int PortClose();
 
 	/*
-	 * Reads the incomming data from the port to the buffer
+	 * Reads the incoming data from the port to the buffer
 	 * returns amount of bytes read. returns 0 if no data available
 	 */
 	int Read( char* buffer, int maxlength);
+
+	/*
+	 * Reads a fixed amount of incoming data from the port to the buffer,
+	 * with a certain amount of retries
+	 *
+	 * returns 0 for success, errno if error(s) occured
+	 */
+	int ReadBytes( char* buffer, int amount, int retries);
 
 	/*
 	 * Writes 'buffer' with 'length' to the serial port.
