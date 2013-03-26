@@ -13,6 +13,7 @@
 
 # build and binfolders
 build/
+*/build/
 */bin/
 
 # Exclude generated messages
@@ -20,5 +21,12 @@ build/
 */__init__.py
 */_*.py
 
+# Exclude srv generated files
+*/srv_gen/
+
 # Ignore backup files from gEdit
 *~
+
+# Ignore specific folders (TODO fix this)
+flarb_canbus/src/flarb_canbus/
+flarb_mobile/src/flarb_mobile/
