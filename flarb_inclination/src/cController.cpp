@@ -110,8 +110,10 @@ int cController::getChar() {
 		                cntx++;
 		        }
 		        xaxis = ::atof(x);
-				if(x[4] == '+' || x[4] == '-')
+				if(x[4] == '+')
 					xaxis = +25;
+				if(x[4] == '-')
+					xaxis = -25;
 				XX =true;
 				//cout<<"Found X: "<< xaxis<< endl;
 			
@@ -125,8 +127,10 @@ int cController::getChar() {
 		                cnty++;
 		        }
 		        yaxis = ::atof(y);
-				if(y[4] == '+' || y[4] == '-')
+				if(y[4] == '+') 
 					yaxis = +25;
+				if(y[4] == '-')
+					yaxis = -25;
 				YY=true;
 				//cout<<"Found Y: "<< yaxis<< endl;
 			}
