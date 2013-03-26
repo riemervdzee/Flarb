@@ -205,13 +205,13 @@ int cCanbus::PortSend( const CanMessage* msg)
 	// Fill the data
 	for(int i = 0; i < msg->length; i++, buff+=2)
 		sprintf( buff, "%02X", msg->data[i] );
+
+	// Debug
+	printf( "Sending %s + \\r, length %i \n", buffer, int(buff - buffer+1));
 	
 	// Add delim byte
 	sprintf( buff, "\r" );
 	buff++;
-
-	// Debug
-	//printf( "Sending %s, length %i \n", buffer, buff - buffer);
 
 	// Send message
 	return SendCommand( buffer, (int)(buff - buffer), 1, 1);

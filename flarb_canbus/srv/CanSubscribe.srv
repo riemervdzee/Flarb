@@ -1,0 +1,10 @@
+####INPUT####
+##Identifier
+int32 identifier
+
+## 
+string topicname
+
+####OUTPUT####
+---
+bool result

@@ -9,7 +9,7 @@ using namespace std;
 
 // Node defines
 #define NODE_NAME       "canbus"   // Name of the module
-#define NODE_FREQUENCY  5          // Amount of loops per second
+#define NODE_FREQUENCY  10         // Amount of loops per second
 #define NODE_CALLBACKS  1          // 0 = false, 1 = true. use when the node has services to offer
 
 /*
@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
 	// Create a cController object
 	cController controller;
-	controller.Create();
+	controller.Create( argc); // TODO remove argument
 	
 	// Update timer
 	ros::Rate loop_rate( NODE_FREQUENCY);

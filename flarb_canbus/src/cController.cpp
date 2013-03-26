@@ -14,13 +14,19 @@ using namespace std;
 
 
 // Functions executed at the beginning and end of the Node
-bool cController::Create()
+bool cController::Create( int count) /*TODO remove argument*/
 {
 	// Topic name / buffer
 	//_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 100);
-	
-	//
+
+	// TODO remove
+	_count = (count -1 ) *4;
+
+	// Init Canbus object
 	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6);
+
+	// Init RosCom object
+	_roscom.Create( _rosNode, _canbus);
 
 	return true;
 }
@@ -30,8 +36,6 @@ void cController::Destroy()
 {
 	_canbus.PortClose();
 }
-
-//static int _count = 0;
 
 // Updates the controller obj
 void cController::Update()
