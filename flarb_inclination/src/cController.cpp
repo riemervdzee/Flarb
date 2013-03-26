@@ -21,7 +21,9 @@
 
 using namespace std;
 
-// Functions executed at the beginning and end of the Node
+/*
+ *	Functions executed at the beginning and end of the Node
+ */
 int cController::Create()
 {
 	// Topic name / buffer
@@ -32,7 +34,9 @@ int cController::Create()
 	return 0;
 }
 
-// Executed when the Node is exiting
+/* 
+ *	Executed when the Node is exiting
+ */
 void cController::Destroy()
 {
 	//always close the port
@@ -41,7 +45,9 @@ void cController::Destroy()
 	ros::shutdown();
 }
 
-// Updates the controller obj
+/*
+ *	Updates the controller obj
+ */
 void cController::Update()
 {
 	//if axis updated
