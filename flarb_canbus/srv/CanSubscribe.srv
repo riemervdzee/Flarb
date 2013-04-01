@@ -2,7 +2,7 @@
 ##Identifier
 int32 identifier
 
-## 
+## the requested topicname
 string topicname
 
 ####OUTPUT####

@@ -26,7 +26,7 @@ bool cController::Create( int count) /*TODO remove argument*/
 	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6);
 
 	// Init RosCom object
-	_roscom.Create( _rosNode, _canbus);
+	_roscom.Create( &_rosNode, &_canbus);
 
 	return true;
 }
