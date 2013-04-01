@@ -2,6 +2,7 @@
 #define CLASS_CONTROLLER_H
 
 #include "ros/ros.h"
+#include "flarb_mobile/cServer.h"
 #include "flarb_inclination/Axis.h"
 
 /*
@@ -23,20 +24,19 @@ public:
     void Update();
 
 private:
-	
+	//Server object
+	cServer _server;
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
-
 	// We are publishing shizzle
 	ros::Publisher _rosTopic;
-	//ros::Publisher _data;
-
 	//Subscriber Message
 	flarb_inclination::Axis message_axis;
 	//Actual Subscriber
 	ros::Subscriber _ax;
 	//Callback method
-	void axismsg(const flarb_inclination::AxisConstPtr &msgr);	
+	void axismsg(const flarb_inclination::AxisConstPtr &msgr);
+	void packageReadout();	
 	int _count;
 };
 

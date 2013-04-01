@@ -21,7 +21,9 @@
 
 using namespace std;
 
-// Functions executed at the beginning and end of the Node
+/*
+ *	Functions executed at the beginning and end of the Node
+ */
 int cController::Create()
 {
 	// Topic name / buffer
@@ -32,7 +34,9 @@ int cController::Create()
 	return 0;
 }
 
-// Executed when the Node is exiting
+/* 
+ *	Executed when the Node is exiting
+ */
 void cController::Destroy()
 {
 	//always close the port
@@ -41,7 +45,9 @@ void cController::Destroy()
 	ros::shutdown();
 }
 
-// Updates the controller obj
+/*
+ *	Updates the controller obj
+ */
 void cController::Update()
 {
 	//if axis updated
@@ -110,8 +116,10 @@ int cController::getChar() {
 		                cntx++;
 		        }
 		        xaxis = ::atof(x);
-				if(x[4] == '+' || x[4] == '-')
+				if(x[4] == '+')
 					xaxis = +25;
+				if(x[4] == '-')
+					xaxis = -25;
 				XX =true;
 				//cout<<"Found X: "<< xaxis<< endl;
 			
@@ -125,8 +133,10 @@ int cController::getChar() {
 		                cnty++;
 		        }
 		        yaxis = ::atof(y);
-				if(y[4] == '+' || y[4] == '-')
+				if(y[4] == '+') 
 					yaxis = +25;
+				if(y[4] == '-')
+					yaxis = -25;
 				YY=true;
 				//cout<<"Found Y: "<< yaxis<< endl;
 			}
