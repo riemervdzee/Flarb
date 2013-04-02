@@ -55,7 +55,7 @@ private:
 	int SendCommand( const char* string, int length, int charPositionRight = 0, int charPositionFalse = 0);
 	int ReadPackage( int retries, bool skipFirst = false);
 
-	// Forbit copy constructor
+	// Forbid copy constructor
 	cCanbus( const cCanbus&);
 
 	// Serial object
