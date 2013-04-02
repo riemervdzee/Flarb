@@ -31,11 +31,14 @@ cCanbus::~cCanbus() { delete _canbus_readbuffer;}
 /*
  * Opens a canbus connection
  */
-int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed) 
+int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom)
 {
 	// Vars
 	int ret;
 	char buff[3];
+
+	// set RosCom object
+	_roscom = roscom;
 
 	// Opens the serial port
 	// The cSerial class outputs nice enough error messages, no need for doing it twice
@@ -161,26 +164,17 @@ int cCanbus::ClearModemCache()
 	return ret;
 }
 
-// 1  = package read
-// 0  = no packages available
-// <0 = error
-// msg* is a pointer where the PortRead function can put the package in
-// Keep calling this func till it returns 0
-// TODO implement
-int cCanbus::PortRead( CanMessage* msg)
+/*
+ * Process all packages on the bus
+ */
+int cCanbus::PortRead()
 {
-	int n = _serial.Read( _canbus_readbuffer, CANBUS_READBUFFER_SIZE);
+	int ret;
 
-	// If no bytes are read, return
-	if( n == 0)
-		return 0;
+	// Keep on reading packages, till it fails
+	while ( (ret = ReadPackage( 10, false)) == 0) {}
 
-	printf( "Read bytes, error, %s %i, value= 0x", strerror(n), n);
-
-	for(int i = 0; i < n; i++)
-		printf( "%02X", *(_canbus_readbuffer + i) );
-
-	printf( "\n");
+	// TODO look if it is a valid 'error'
 
 	return 0;
 }
@@ -188,23 +182,19 @@ int cCanbus::PortRead( CanMessage* msg)
 /*
  * Sends the message given
  */
-int cCanbus::PortSend( const CanMessage* msg)
+int cCanbus::PortSend( const CanMessage &msg)
 {
-	// Filter for null messages
-	if ( msg == NULL)
-		return EINVAL;
-
 	// Our message buffer + pointer
 	char buffer[14];
 	char* buff = buffer;
 
 	// Fill first part
-	sprintf( buffer, "t%03X%X", msg->identifier, msg->length);
+	sprintf( buffer, "t%03X%X", msg.identifier, msg.length);
 	buff += 5;
 
 	// Fill the data
-	for(int i = 0; i < msg->length; i++, buff+=2)
-		sprintf( buff, "%02X", msg->data[i] );
+	for(int i = 0; i < msg.length; i++, buff+=2)
+		sprintf( buff, "%02X", msg.data[i] );
 
 	// Debug
 	printf( "Sending %s + \\r, length %i \n", buffer, int(buff - buffer+1));
@@ -252,6 +242,12 @@ int cCanbus::CheckErrors()
 /*
  * Helper function for reads
  * 't' is already in the buffer if skipFirst is true
+ *
+ * Returns     0  Success, we read a package! (only one!)
+ *            -1  If there are no packages
+ *           EIO  Unknown package
+ *         errno  other
+ * 
  */
 int cCanbus::ReadPackage( int retries, bool skipFirst)
 {
@@ -316,7 +312,8 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 		msg.data[i] = (char)strtoul( databuffer, NULL, 16);
 	}
 
-	// TODO process the msg
+	// TODO enable, Process the msg
+	//_roscom->PublishMessage( msg);
 
 	// DEBUG
 	printf( "Received package. ID=%03X, length=%i \ndata: 0x", msg.identifier, msg.length);

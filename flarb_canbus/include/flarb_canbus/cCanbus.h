@@ -3,6 +3,8 @@
 
 #include "flarb_canbus/cSerial.h"
 
+// Class prototypes
+class cRosCom;
 
 #define CANBUS_READBUFFER_SIZE    128
 
@@ -28,18 +30,14 @@ public:
 	~cCanbus();
 
 	// Functions executed at the beginning and end of the Application
-	int PortOpen( const char* device, int baudrate, int canSpeed);
+	int PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom);
 	int PortClose();
 
-	// 1  = package read
-	// 0  = no packages available
-	// <0 = error
-	// msg* is a pointer where the PortRead function can put the package in
-	// Keep calling this func till it returns 0
-	int PortRead( CanMessage* msg);
+	// Reads the port for messages, sends them to RosCom object
+	int PortRead();
 
 	// Sends the message mentioned
-	int PortSend( const CanMessage* msg);
+	int PortSend( const CanMessage &msg);
 
 	// Clears the Lawicel modem buffers
 	int ClearModemCache();
@@ -62,8 +60,11 @@ private:
 	// Serial object
 	cSerial _serial;
 
+	// RosCom object __CANBUS IS NOT THE OWNER OF THIS OBJ__
+	cRosCom* _roscom;
+
 	// Read buffer
-	char *_canbus_readbuffer;
+	char* _canbus_readbuffer;
 
 	// Serial and version number of the Lawicel usb2can device
 	char _devSerial [6];

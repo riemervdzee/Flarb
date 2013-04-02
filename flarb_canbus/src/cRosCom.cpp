@@ -49,7 +49,7 @@ void cRosCom::SendCallback( const flarb_canbus::CanMessageConstPtr &msg)
 		canmessage.data[i] = msg->data.at( i);
 
 	// Forward message to canbus
-	_canbus->PortSend( &canmessage);
+	_canbus->PortSend( canmessage);
 }
 
 /**

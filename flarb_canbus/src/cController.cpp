@@ -9,8 +9,9 @@
 #include "flarb_canbus/cController.h"
 using namespace std;
 
-#define SERIAL_PORT  "/dev/ttyUSB0"
-#define SERIAL_BAUD  B9600
+#define SERIAL_PORT   "/dev/ttyUSB0"
+#define SERIAL_PORT2  "/dev/ttyUSB1"
+#define SERIAL_BAUD   B9600
 
 
 // Functions executed at the beginning and end of the Node
@@ -22,11 +23,16 @@ bool cController::Create( int count) /*TODO remove argument*/
 	// TODO remove
 	_count = (count -1 ) *4;
 
-	// Init Canbus object
-	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6);
-
-	// Init RosCom object
+	// Init RosCom object first, then the canbus
 	_roscom.Create( &_rosNode, &_canbus);
+
+	// Init Canbus object TODO remove etc..
+	if( count == 0)
+		_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6, &_roscom);
+	else
+		_canbus.PortOpen( SERIAL_PORT2, SERIAL_BAUD, 6, &_roscom);
+
+	
 
 	return true;
 }
@@ -55,7 +61,7 @@ void cController::Update()
 	_canbus.CheckErrors();
 
 	// Check for messages
-	_canbus.PortRead( NULL);
+	_canbus.PortRead();
 
 	if( _count < 4)
 	{
@@ -66,7 +72,7 @@ void cController::Update()
 		msg.data[0]    = '8';
 		msg.data[1]    = '0';
 	
-		_canbus.PortSend( &msg);
+		_canbus.PortSend( msg);
 	}
 }
 
