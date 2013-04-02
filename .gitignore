@@ -30,3 +30,5 @@ build/
 # Ignore specific folders (TODO fix this)
 flarb_canbus/src/flarb_canbus/
 flarb_mobile/src/flarb_mobile/
+flarb_inclination/src/flarb_inclination/
+
