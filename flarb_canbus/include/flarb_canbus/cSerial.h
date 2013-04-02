@@ -33,8 +33,9 @@ public:
 	int PortClose();
 
 	/*
-	 * Reads the incoming data from the port to the buffer
-	 * returns amount of bytes read. returns 0 if no data available
+	 * Reads the incomming data from the port to the buffer
+	 * returns amount of bytes read. returns 0 if no data available.
+	 * returns -1 if there is an error, error is stored in errno
 	 */
 	int Read( char* buffer, int maxlength);
 

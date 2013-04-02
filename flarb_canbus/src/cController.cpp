@@ -9,70 +9,42 @@
 #include "flarb_canbus/cController.h"
 using namespace std;
 
+
 #define SERIAL_PORT   "/dev/ttyUSB0"
-#define SERIAL_PORT2  "/dev/ttyUSB1"
 #define SERIAL_BAUD   B9600
 
 
-// Functions executed at the beginning and end of the Node
-bool cController::Create( int count) /*TODO remove argument*/
+/*
+ * Functions executed at the beginning and end of the Node
+ */
+bool cController::Create()
 {
-	// Topic name / buffer
-	//_rosTopic = _rosNode.advertise<std_msgs::String>( "images", 100);
-
-	// TODO remove
-	_count = (count -1 ) *4;
-
 	// Init RosCom object first, then the canbus
 	_roscom.Create( &_rosNode, &_canbus);
 
-	// Init Canbus object TODO remove etc..
-	if( count == 0)
-		_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6, &_roscom);
-	else
-		_canbus.PortOpen( SERIAL_PORT2, SERIAL_BAUD, 6, &_roscom);
-
-	
+	// Init Canbus object
+	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6, &_roscom);
 
 	return true;
 }
 
-// Executed when the Node is exiting
+/*
+ * Executed when the Node is exiting
+ */
 void cController::Destroy()
 {
 	_canbus.PortClose();
 }
 
-// Updates the controller obj
+/*
+ * Updates the controller obj
+ */
 void cController::Update()
 {
-	// Assemble message
-	/*std_msgs::String msg;
-	std::stringstream ss;
-	ss << "hello world " << _count;
-	msg.data = ss.str();
-
-	// Publish
-	_rosTopic.publish( msg);*/
-	
-	//_canbus.SendCommand( "N\r", 2);
-
 	// Check for canbus errors
 	_canbus.CheckErrors();
 
 	// Check for messages
 	_canbus.PortRead();
-
-	if( _count < 4)
-	{
-		_count++;
-		CanMessage msg;
-		msg.identifier = 2;
-		msg.length     = 2;
-		msg.data[0]    = '8';
-		msg.data[1]    = '0';
-	
-		_canbus.PortSend( msg);
-	}
 }
 

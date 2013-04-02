@@ -20,7 +20,7 @@ struct CanMessage {
 
 
 /*
- * Canbus class
+ * cCanbus.h - Send packages on a Lawicel canusb
  */
 class cCanbus
 {
@@ -51,6 +51,7 @@ public:
 
 private:
 	// Helper functions
+	int ClearReadCache();
 	int SendCommand( const char* string, int length, int charPositionRight = 0, int charPositionFalse = 0);
 	int ReadPackage( int retries, bool skipFirst = false);
 

@@ -4,6 +4,7 @@
 #include "std_msgs/String.h"
 
 #include "flarb_canbus/cRosCom.h"
+#include "flarb_canbus/cCanbus.h"
 using namespace std;
 
 /*
@@ -22,7 +23,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 	_srvSubscribe = _rosNode->advertiseService
 					( "canbus/subscribe", &cRosCom::SubscribeCallback, this);
 
-	// TODO add error paths
+	// return success
 	return 0;
 }
 
@@ -66,7 +67,18 @@ static bool vectorSort( const sRosComPublishEntry i, const sRosComPublishEntry j
 bool cRosCom::SubscribeCallback( flarb_canbus::CanSubscribe::Request  &req,
                                  flarb_canbus::CanSubscribe::Response &res)
 {
-	//TODO Check for uniqueness
+	// Check for uniqueness
+	vector< sRosComPublishEntry>::iterator itr;
+	for ( itr = _PublishEntries.begin(); itr != _PublishEntries.end(); itr++)
+	{
+		// If it is the same, return false
+		if( itr->id == req.identifier)
+		{
+			printf( "cRosCom: id %d trying to subscribe twice\n", req.identifier);
+			return false;
+		}
+	}
+
 	// Set first stuff
 	sRosComPublishEntry entr;
 	entr.id = req.identifier;
@@ -81,7 +93,7 @@ bool cRosCom::SubscribeCallback( flarb_canbus::CanSubscribe::Request  &req,
 	// TODO check if this going alrighty
 	std::sort( _PublishEntries.begin(), _PublishEntries.end(), vectorSort );
 
-	// TODO add error paths
+	// Return true
 	return true;
 }
 
@@ -104,11 +116,12 @@ void cRosCom::PublishMessage( const struct CanMessage &canmessage)
 	// Check if we haven't found anything at all
 	if( itr == _PublishEntries.end())
 	{
-		// TODO return big ass error message
+		// Print error, return
+		printf( "cRosCom: Received unknown canbus-message, with id=%d. Dropping it \n", canmessage.identifier);
 		return;
 	}
 
-	// Construct the msg
+	// Construct the ROS-msg
 	msg.identifier = canmessage.identifier;
 	for( int i = 0; i < canmessage.length; i++)
 		msg.data.push_back( canmessage.data[i]);

@@ -1,5 +1,5 @@
 /*
- * cCanbus.cpp - Send stuff to canusb
+ * cCanbus.cpp - Send packages on a Lawicel canusb
  *
  *  Created on: 19-March-2013
  *      Author: Riemer van der Zee
@@ -16,10 +16,16 @@
 #include <algorithm>   // std::max
 
 #include "flarb_canbus/cCanbus.h"
+#include "flarb_canbus/cRosCom.h"
 
 // Modem delimitor
 #define CAN_DELIM '\r' // Carriage return  0xB
 #define CAN_ERROR '\a' // Bell character   0x7
+
+// The driver doesn't support packages with timestamps.
+// Setting this 1, tells the canusb to put it off when opening the canbus connection
+// This should be done atleast once (it is stored in the eeprom)
+#define TURN_OFF_TIMESTAMP 1
 
 
 /*
@@ -40,6 +46,12 @@ int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* 
 	// set RosCom object
 	_roscom = roscom;
 
+	// Check if 'canSpeed' is in the range of 0-8
+	if( canSpeed < 0 || canSpeed > 8) {
+		ret = EINVAL;
+		goto portopen_ret;
+	}
+
 	// Opens the serial port
 	// The cSerial class outputs nice enough error messages, no need for doing it twice
 	ret = _serial.PortOpen( device, baudrate);
@@ -52,6 +64,19 @@ int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* 
 		printf( "Failed to clear modem buffer. device %s, error %i: %s\n", device, ret, strerror(ret));
 		goto portopen_close;
 	}
+
+#if TURN_OFF_TIMESTAMP
+	// Turn off the timestamps for incomming packages
+	buff[0] = 'Z';
+	buff[1] = '0';
+	buff[2] = CAN_DELIM;
+
+	ret = SendCommand( buff, 3 );
+	if(ret != 0) {
+		printf( "Failed to set timestamp-input. device %s, error %i: %s\n", device, ret, strerror(ret) );
+		goto portopen_close;
+	}
+#endif
 
 	// Set canbus speed
 	buff[0] = 'S';
@@ -158,10 +183,25 @@ int cCanbus::ClearModemCache()
 	int ret = 0;
 
 	// Send /r 3 times. Note we can receive both CAN_DELIM and CAN_ERROR
-	for(int i = 0; (ret == 0 || ret == ENOEXEC) && i < 3; i++)
+	for( int i = 0; (ret == 0 || ret == ENOEXEC) && i < 3; i++)
 		ret = SendCommand( buff, 1, 0, 0);
 
 	return ret;
+}
+
+/*
+ * Clears the serial read buffer
+ */
+int cCanbus::ClearReadCache()
+{
+	// Print that we are doing something stupid
+	printf( "ClearReadCache is called! \n");
+
+	// Just keep reading from the serial, in the hope we can recover from this grieve error
+	while( _serial.Read( _canbus_readbuffer, CANBUS_READBUFFER_SIZE) != 0) {}
+
+	// Return 0, cause well yea...
+	return 0;
 }
 
 /*
@@ -174,9 +214,14 @@ int cCanbus::PortRead()
 	// Keep on reading packages, till it fails
 	while ( (ret = ReadPackage( 10, false)) == 0) {}
 
-	// TODO look if it is a valid 'error'
+	// ReadPackage returns -1 if there are no packages left.
+	// If the value is anything else, complain
+	if( ret == -1)
+		ret = 0;
+	else
+		printf( "Failed to read package(s). Error: %i: %s\n", ret, strerror(ret));
 
-	return 0;
+	return ret;
 }
 
 /*
@@ -209,6 +254,8 @@ int cCanbus::PortSend( const CanMessage &msg)
 
 /*
  * Check the canbus errors
+ *
+ * returns 0 if no error, otherwise the correct flag(s) are set
  */
 int cCanbus::CheckErrors()
 {
@@ -235,8 +282,8 @@ int cCanbus::CheckErrors()
 	if( flags & (1 << 6)) printf( "Canbus error: Arbitration Lost (ALI), see SJA1000 datasheet\n");
 	if( flags & (1 << 7)) printf( "Canbus error: Bus Error (BEI), see SJA1000 datasheet\n");
 
-	// TODO maybe return an error code as well.. not important
-	return 0;
+	// Returns flags
+	return flags;
 }
 
 /*
@@ -273,8 +320,13 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 		// Check if it is a Package, then handle it
 		if( _canbus_readbuffer[0] != 't')
 		{
-			// Unknown package, abbandon ship! TODO clear buffers, everywhere
-			printf( "ReadPackage: Unknown package! fu fu fu\n");
+			// Unknown package, abbandon ship!
+			printf( "ReadPackage: Unknown package! value=%d\n", _canbus_readbuffer[0]);
+
+			// Clear buffers
+			ClearReadCache();
+			ClearModemCache();
+
 			return EIO;
 		}
 	}
@@ -295,7 +347,7 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 	msg.identifier = strtoul( _canbus_readbuffer, NULL, 16);
 
 	// Get data
-	ret = _serial.ReadBytes( _canbus_readbuffer, msg.length * 2 , retries);
+	ret = _serial.ReadBytes( _canbus_readbuffer, (msg.length * 2) + 1, retries);
 	if( ret != 0)
 	{
 		printf( "ReadPackage: Could not read\n");
@@ -312,13 +364,15 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 		msg.data[i] = (char)strtoul( databuffer, NULL, 16);
 	}
 
-	// TODO enable, Process the msg
-	//_roscom->PublishMessage( msg);
+	// Process the msg
+	_roscom->PublishMessage( msg);
 
 	// DEBUG
+#if 0
 	printf( "Received package. ID=%03X, length=%i \ndata: 0x", msg.identifier, msg.length);
 	for(int i = 0; i < msg.length; i++)
 		printf( "%02X", msg.data[i]);
+#endif
 
 	printf( "\n");
 
@@ -399,9 +453,11 @@ int cCanbus::SendCommand( const char* string, int length, int charPositionRight,
 	else
 	{
 		// DEBUG
-		//for( int i = 0; i < nBytes; i++)
-		//	printf( "%02X", _canbus_readbuffer[i] );
-		//printf( " = data. charFalse %i, charRight %i\n", charPositionFalse, charPositionRight);
+#if 0
+		for( int i = 0; i < nBytes; i++)
+			printf( "%02X", _canbus_readbuffer[i] );
+		printf( " = data. charFalse %i, charRight %i\n", charPositionFalse, charPositionRight);
+#endif
 
 		// Print error
 		printf( "ReadCommand: wrong position, oh noes\n");

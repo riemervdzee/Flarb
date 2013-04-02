@@ -5,9 +5,11 @@
 
 #include "ros/ros.h"
 
-#include "flarb_canbus/cCanbus.h"
 #include "flarb_canbus/CanMessage.h"
 #include "flarb_canbus/CanSubscribe.h"
+
+// Prototype class
+struct cCanbus;
 
 /*
  * Helper struct for topics we should publish
@@ -28,6 +30,9 @@ public:
 	int Create( ros::NodeHandle *rosNode, cCanbus *canbus);
 	int Destroy();
 
+	// Publish a message from the canbus to ROS-topics
+	void PublishMessage( const struct CanMessage &msg);
+
 private:
 	// Puts a message on the Canbus
 	void SendCallback( const flarb_canbus::CanMessageConstPtr &msg);
@@ -35,9 +40,6 @@ private:
 	// We have a new Subscriber!
 	bool SubscribeCallback( flarb_canbus::CanSubscribe::Request  &req,
 							flarb_canbus::CanSubscribe::Response &res);
-
-	// Publish a message from the canbus to ROS-topics
-	void PublishMessage( const struct CanMessage &msg);
 
 
 	// Handle to the rosnode __ROSCOM IS NOT THE OWNER OF THIS OBJ__
@@ -51,7 +53,7 @@ private:
 
 	// Provides service so other Ros-Nodes can subscribe to certain Canbus id messages
 	ros::ServiceServer _srvSubscribe;
-	
+
 	// Big sorted array of: id => ros::Subscriber ;
 	std::vector< sRosComPublishEntry> _PublishEntries;
 };
