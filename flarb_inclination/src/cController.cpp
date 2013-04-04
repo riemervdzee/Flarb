@@ -27,10 +27,11 @@ using namespace std;
 int cController::Create()
 {
 	// Topic name / buffer
-	_rosTopic = _rosNode.advertise<std_msgs::String>( "Inclino_updates", 100);
 	_data = _rosNode.advertise<flarb_inclination::Axis>("Inclino_Axis", 100);
+
 	//open ttys1
 	Openport();
+
 	return 0;
 }
 
@@ -51,7 +52,7 @@ void cController::Destroy()
 void cController::Update()
 {
 	//if axis updated
-	if(getChar() == 1){
+	if( getPackage() == 1){
 		//create message
 		flarb_inclination::Axis msg;
 		//fill message
@@ -62,50 +63,52 @@ void cController::Update()
 	}
 }
 
-	/*
-	* 'open_port()' - Open serial port.
-	*
-	* failed == -1, succes == 0;
-	*
-	* 9600 Baudrate, ASCII, 8 data bits, 1 stop bit, no parity
-	*/
-	int cController::Openport()
+/*
+ * 'open_port()' - Open serial port.
+ *
+ * failed == -1, succes == 0;
+ *
+ * 9600 Baudrate, ASCII, 8 data bits, 1 stop bit, no parity
+ */
+int cController::Openport()
+{
+	int ret = -1;
+
+	while( ret != 0)
 	{
-		// Opens the serial port
-		// The cSerial class outputs nice enough error messages, no need for doing it twice
-		fd = _serial.PortOpen(DEV_PORT, BAUD_RATE);
-		if( fd != 0){
-			if(tries < 10){
-				sleep(1);
-				cout<< "Trying again || try: "<< tries <<endl;
-				tries++;	
-				Openport();
-			}
-			else{	Destroy();	}
-		}
+		ret = _serial.PortOpen(DEV_PORT, BAUD_RATE);
+
+		if( ret != 0)
+			sleep(1);
 	}
 
+	cout<< "Opened serial " <<endl;
 
-	/*
-	* This method will check if there is an packagage available.
-	* if so it will return two floats X and Y 
-	* 
-	* layout of the package that's send over the RS232 Port
-	* 22 Byte 
-	* Layout: < D0 ... D21>
-	* 		D0 ... D10	= “X=±xx.xxx“, <CR>, <LF> with D2 = sign (+ or -), D5 = decimal point
-	* 		D11 ... D21 = “Y=±xx.xxx“, <CR>, <LF> with D13= sign (+ or -), D16 = decimal point
-	*		Example: "X=+01.123\r\nY=-12.123\r\n"
-	*		Return: 0 = Serial ok, -1 = Serial bad 
-	*/
-int cController::getChar() {
+	return 0;
+}
+
+
+/*
+ * This method will check if there is an packagage available.
+ * if so it will return two floats X and Y 
+ * 
+ * layout of the package that's send over the RS232 Port
+ * 22 Byte 
+ * Layout: < D0 ... D21>
+ * 		D0 ... D10	= “X=±xx.xxx“, <CR>, <LF> with D2 = sign (+ or -), D5 = decimal point
+ * 		D11 ... D21 = “Y=±xx.xxx“, <CR>, <LF> with D13= sign (+ or -), D16 = decimal point
+ *		Example: "X=+01.123\r\nY=-12.123\r\n"
+ *		Return: 0 = Serial ok, -1 = Serial bad 
+ */
+int cController::getPackage()
+{
 	char buffer[255];  /* Input buffer 				*/
 	bool XX = false;
-	bool YY = false;	
+	bool YY = false;
 
-	
+
 	int a = _serial.Read(buffer, sizeof(buffer));
-	if(a =! 0){
+	if(a != 0){
 		for(int i = 0; i < 254; i++){
 			if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
 			{
@@ -142,10 +145,9 @@ int cController::getChar() {
 			}
 			if(XX && YY){
 				return (1);
-				break;
 			}
 		}
-	}	
+	}
 	return (-1);			
 }
 

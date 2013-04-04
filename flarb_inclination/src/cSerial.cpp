@@ -13,7 +13,7 @@
 #include <termios.h>   // POSIX terminal control definitions
 #include <time.h>      // time calls
 
-#include "flarb_canbus/cSerial.h"
+#include "flarb_inclination/cSerial.h"
 
 /*
  * Opens a serial non-modem 'device' with the given baudrate

@@ -10,9 +10,6 @@
 class cController
 {
 public:
-    // Constructor
-    //cController() : _count( 0) {}
-	cController() : tries( 0) {}
     // Functions executed at the beginning and end of the Application
     int Create();
     void Destroy();
@@ -28,15 +25,13 @@ private:
 	ros::NodeHandle _rosNode;
 
 	// We are publishing shizzle
-	ros::Publisher  _rosTopic;
 	ros::Publisher _data;
+
 	//Opening FileDescriptor
 	int Openport();
-	//File descriptor for the port 
-	int fd;
 	
-	int getChar(); 
-	int tries;
+	// Get package from the serial port
+	int getPackage();
 	
 	//Temporary strorage for export data	
 	float xaxis;
