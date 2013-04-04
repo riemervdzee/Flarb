@@ -81,7 +81,7 @@ Controller - Navigation
 	- Avoid Obstacle
 		Kijkt altijd -ongeacht staat- of er iets in de weg staat
 publish  : steering/velocity
-
+subscribe : Map
 
 Controller - Plant quality
 Kijkt op de map of er onbekende objecten zijn
