@@ -1,0 +1,98 @@
+Compass
+- afwijking ten opzichte van het noorden
+publish: sensor/compass
+
+accelerator (tbd)
+- Richting-versnelling
+publish: sensor/accelerator
+
+gyro (tbd)
+- assen-versnelling
+publish: sensor/gyro
+
+inclination
+- Hoekmeter
+publish: sensor/inclination
+
+phase control
+- Gewenste snelheid van de wielen
+publish: sensor/phasecontrol
+
+
+
+Sound/light signal
+- airhorn + direction lamp
+subscribe: signal (direction)
+
+
+
+VD mixer
+- Velocity/direction mixer
+publish  : vdmixer/state               ( float northangle, float angularvelocity, vector position, vector velocity)
+subscribe: (alle sensors)
+
+
+
+
+SICK Laser driver
+- Uitbreiden, ondersteuning voor velocity input (naar sick hardware)
+publish  : sick/scan            (msg LaserScan)
+subscribe: vdmixer/state
+
+
+
+
+Plant quality checker
+- Gebruikt vision als service
+- Bied topic aan om planten te controleren
+
+subscribe: plantquality/request    ( int reference,  bool direction)
+publish  : plantquality/result     ( int reference,  int result (enum))
+
+
+
+Smartphone
+to be decided
+publish  : smartphone/inputpath
+subscribe: smartphone/inputpath
+
+
+
+
+Map builder
+- Builds worldstate, Simultaneous localization and mapping (SLAM)
+- Maakt afbeelding van scan, om daarna te bewerken met vision naar output
+- output is, eerst een plaatje van de posities van obstakels
+  2 = maze/tunnelvisie van de eerste
+subscribe: sick/scan            (msg LaserScan)
+subscribe: vdmixer/state
+
+publish  : map                  (2 images: 1 position, 2 maze; vdmixer/state message) Meta data?
+(TODO: opsplitsen?)
+
+
+Controller - Navigation
+- Volgt de opgegeven smartphone pad. Elk pad stukje wordt gezien als een segment
+- Opgebroken in 3 sub-controllers
+	- Follow segment
+		Volgt een rij bloemen tot het eind (switchable met de sub-controller hier beneden)
+	- Find next segment
+		Zoek volgende rij, rijd hier naar toe
+	- Avoid Obstacle
+		Kijkt altijd -ongeacht staat- of er iets in de weg staat
+publish  : steering/velocity
+
+
+Controller - Plant quality
+Kijkt op de map of er onbekende objecten zijn
+	publish  : plantquality/request
+	subscribe: plantquality/result
+	publish  : signal
+
+
+
+steering control
+- Sends data to the motors via canbus
+subscribe: steering/velocity
+
+
