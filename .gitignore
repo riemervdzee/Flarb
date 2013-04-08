@@ -15,6 +15,7 @@
 build/
 */build/
 */bin/
+*/*/bin/
 
 # Exclude generated messages
 */msg_gen/
