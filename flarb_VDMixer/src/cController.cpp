@@ -18,7 +18,6 @@
 void cController::axismsg(const flarb_inclination::Axis msgr)
 {
 	message_axis = msgr;
-	 
 }
 
 void cController::compassmsg(const flarb_compass::Compass msgr)
@@ -26,19 +25,23 @@ void cController::compassmsg(const flarb_compass::Compass msgr)
 	message_north_angle = msgr;
 }
 
+void cController::phasemsg(const flarb_VDMixer::Phase msgr)
+{
+	message_phase = msgr;
+}
 
 bool cController::Create()
 {
-	//TODO: Modify Compass to standard
+	//Subscriber for data 
 	Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compassmsg, this);
 	//TODO: Modify Accelerator to standard
-	//Accelerator = _rosNode.subscribe<flarb_inclination::Axis>("sensor/accelerator", 1, &cController::axismsg, this);
+	//Accelerator = _rosNode.subscribe<flarb_inclination::Axis>("sensor/accelerator", 1, &cController::acceleratormsg, this);
 	//TODO: Modify Gyro to standard
-	//Gyro = _rosNode.subscribe<flarb_gyro::Axis>("sensor/gyro", 1, &cController::axismsg, this);
+	//Gyro = _rosNode.subscribe<flarb_gyro::Axis>("sensor/gyro", 1, &cController::gyromsg, this);
 	//TODO: Modify inclination to standard
 	Inclination = _rosNode.subscribe<flarb_inclination::Axis>("sensor/inclination", 1, &cController::axismsg, this);
 	//TODO: Modify PhaseControl to standard
-	//PhaseControl = _rosNode.subscribe<flarb_inclination::Axis>("sensor/phasecontrol", 1, &cController::axismsg, this);
+	PhaseControl = _rosNode.subscribe<flarb_VDMixer::Phase>("sensor/phasecontrol", 1, &cController::phasemsg, this);
 	ros::spin();
 	return true;
 }

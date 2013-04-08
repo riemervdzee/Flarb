@@ -5,6 +5,7 @@
 #include "flarb_VDMixer/cController.h"
 #include "flarb_inclination/Axis.h"
 #include "flarb_compass/Compass.h"
+#include "flarb_VDMixer/Phase.h"
 
 using namespace std;
 
@@ -33,14 +34,16 @@ private:
 	//ros::Subscriber Accelerator;
 	//ros::Subscriber Gyro;
 	ros::Subscriber Inclination;
-	//ros::Subscriber PhaseControl;
+	ros::Subscriber PhaseControl;
 
 	flarb_inclination::Axis message_axis;
 	flarb_compass::Compass message_north_angle;
+	flarb_VDMixer::Phase message_phase;
 
 
 	void axismsg(const flarb_inclination::Axis msgr);
 	void compassmsg(const flarb_compass::Compass msgr);
+	void phasemsg(const flarb_VDMixer::Phase msgr);
 	int _count;
 	
 };
