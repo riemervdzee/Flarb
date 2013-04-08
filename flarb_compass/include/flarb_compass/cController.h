@@ -2,7 +2,7 @@
 #define CLASS_CONTROLLER_H
 
 #include "ros/ros.h"
-
+#include "flarb_inclination/Axis.h"
 
 /*
 * Main controller class of the example node

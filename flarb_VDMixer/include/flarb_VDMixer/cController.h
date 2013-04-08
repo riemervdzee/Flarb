@@ -3,6 +3,8 @@
 
 #include "ros/ros.h"
 #include "flarb_VDMixer/cController.h"
+#include "flarb_inclination/Axis.h"
+#include "flarb_compass/Compass.h"
 
 using namespace std;
 
@@ -27,15 +29,18 @@ private:
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
 	//Actual Subscriber
-	//ros::Subscriber Compass;
+	ros::Subscriber Compass;
 	//ros::Subscriber Accelerator;
 	//ros::Subscriber Gyro;
 	ros::Subscriber Inclination;
 	//ros::Subscriber PhaseControl;
 
 	flarb_inclination::Axis message_axis;
+	flarb_compass::Compass message_north_angle;
 
 
+	void axismsg(const flarb_inclination::Axis msgr);
+	void compassmsg(const flarb_compass::Compass msgr);
 	int _count;
 	
 };

@@ -6,7 +6,8 @@
 #include "std_msgs/String.h"
 
 #include "flarb_VDMixer/cController.h"
-#include "flarb_inclination/Axis.h" 
+#include "flarb_inclination/Axis.h"
+#include "flarb_compass/Compass.h" 
 
 // Functions executed at the beginning and end of the Node
 
@@ -14,17 +15,22 @@
 /*
  *	Callback receiving message from MEAS Inclino
  */
-void cController::axismsg(const flarb_inclination::AxisConstPtr& msgr)
+void cController::axismsg(const flarb_inclination::Axis msgr)
 {
-	message_axis = *msgr;
+	message_axis = msgr;
 	 
+}
+
+void cController::compassmsg(const flarb_compass::Compass msgr)
+{
+	message_north_angle = msgr;
 }
 
 
 bool cController::Create()
 {
 	//TODO: Modify Compass to standard
-	//Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compass, this);
+	Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compassmsg, this);
 	//TODO: Modify Accelerator to standard
 	//Accelerator = _rosNode.subscribe<flarb_inclination::Axis>("sensor/accelerator", 1, &cController::axismsg, this);
 	//TODO: Modify Gyro to standard
