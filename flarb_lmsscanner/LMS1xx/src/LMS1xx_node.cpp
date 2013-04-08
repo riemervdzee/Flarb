@@ -6,6 +6,8 @@
 
 #define DEG2RAD M_PI/180.0
 
+#define SEND_INTENSITIES
+
 int main(int argc, char **argv)
 {
   // laser data
@@ -22,7 +24,7 @@ int main(int argc, char **argv)
   ros::init(argc, argv, "lms1xx");
   ros::NodeHandle nh;
   ros::NodeHandle n("~");
-  ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("scan", 1);
+  ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("/sick/scan", 1);
 
   n.param<std::string>("host", host, "192.168.1.2");
   n.param<std::string>("frame_id", frame_id, "laser");
@@ -110,10 +112,12 @@ int main(int argc, char **argv)
         scan_msg.ranges[i] = data.dist1[i] * 0.001;
       }
 
+#ifdef SEND_INTENSITIES
       for (int i = 0; i < data.rssi_len1; i++)
       {
         scan_msg.intensities[i] = data.rssi1[i];
       }
+#endif
 
       scan_pub.publish(scan_msg);
 
