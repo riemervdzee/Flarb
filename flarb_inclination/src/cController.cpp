@@ -27,7 +27,7 @@ using namespace std;
 int cController::Create()
 {
 	// Topic name / buffer
-	_data = _rosNode.advertise<flarb_inclination::Axis>("Inclino_Axis", 100);
+	_data = _rosNode.advertise<flarb_inclination::Axis>("sensor/inclination", 100);
 
 	//open ttys1
 	Openport();
