@@ -4,6 +4,8 @@
 #include "ros/ros.h"
 #include "flarb_mobile/cServer.h"
 #include "flarb_inclination/Axis.h"
+#include "sensor_msgs/LaserScan.h"
+#include <tf/transform_listener.h>
 
 /*
 * Main controller class of the example node
@@ -32,10 +34,13 @@ private:
 	ros::Publisher _rosTopic;
 	//Subscriber Message
 	flarb_inclination::Axis message_axis;
+	sensor_msgs::LaserScan lms;
 	//Actual Subscriber
 	ros::Subscriber _ax;
+	ros::Subscriber _LMS;
 	//Callback method
 	void axismsg(const flarb_inclination::AxisConstPtr &msgr);
+	void LMSmsg(const sensor_msgs::LaserScan::ConstPtr& scan);
 	void packageReadout();	
 	int _count;
 };

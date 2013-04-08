@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <iostream>
 #include <sys/types.h> 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -52,6 +53,7 @@ int cServer::createSocket(int port)
         perror("ERROR on accept");
         return -1;        	
     }
+	std::cout << "Leon has connection" << std::endl;
 	return 0;
 }
 
