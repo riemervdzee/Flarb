@@ -73,7 +73,7 @@ void cController::DrawPixel2( int x, int y, bool value)
 	else
 		r = g = b = 255;
 		
-	DrawPixel(512 - x, 512 - y, r, g, b);
+	DrawPixel( x, y, r, g, b);
 }
 
 void cController::DrawPixel( int x, int y, Uint8 R, Uint8 G, Uint8 B)

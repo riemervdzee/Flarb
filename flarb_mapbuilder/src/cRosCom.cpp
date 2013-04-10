@@ -15,7 +15,6 @@ int cRosCom::Create( ros::NodeHandle *rosNode)
 	// Init Subscriber obj.
 	_subSicklaser = rosNode->subscribe<sensor_msgs::LaserScan>( "/sick/scan", 1, &cRosCom::ScanCallback, this);
 
-
 	return 0;
 }
 
@@ -30,10 +29,15 @@ void cRosCom::ScanCallback( const sensor_msgs::LaserScan msg)
 	_map.ProcessMessage( msg);
 	_map.RegenerateImage();
 
-	// TODO send the image
+	// Construct the message, and send it
 	flarb_mapbuilder::MapImage mesg;
-	
-	mesg.data = vector<uint8_t>( _map._image._data, _map._image._data + IMAGE_SIZE);
-	
+	mesg.imageX      = IMAGE_WIDTH;
+	mesg.imageY      = IMAGE_HEIGHT;
+	mesg.sizeWidth   = IMAGE_METER;
+	mesg.sizeHeight  = IMAGE_METER;
+	mesg.cameraX     = IMAGE_OFFSET_X;
+	mesg.cameraY     = IMAGE_OFFSET_Y;
+	mesg.data        = vector<uint8_t>( _map._image._data, _map._image._data + IMAGE_SIZE);
+
 	_pubMap.publish( mesg);
 }

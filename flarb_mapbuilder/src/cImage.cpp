@@ -23,37 +23,29 @@ void cImage::ClearImage()
 
 void cImage::AddFramePoints( const cFrame &frame)
 {
-	// Vars
-	vector<sObject>::const_iterator itr;
-
-	// Go through all objects
-	for( itr = frame._dataObjects.begin(); itr != frame._dataObjects.end(); itr++)
+	// Go through all points
+	for( unsigned int i = 0; i < frame._dataPoints.size(); i++)
 	{
-		// FILTERING If size is 1, ignore the object
-		//if( itr->size == 1)
-		//	continue;
+		// Convert coordinates from world-state to image-state
+		int x = (int)(frame._dataPoints.at( i).x * ((float)IMAGE_WIDTH  / IMAGE_METER));
+		int y = (int)(frame._dataPoints.at( i).y * ((float)IMAGE_HEIGHT / IMAGE_METER));
 
-		// Go through all points
-		for( int i = itr->index, end = itr->size + i - 1; i < end; i++)
+		// Add offset
+		x += IMAGE_OFFSET_X;
+		y += IMAGE_OFFSET_Y;
+
+		// Invert Y, as we are going from Y-up to Y-down (for images)
+		y = IMAGE_HEIGHT - y;
+
+		// Check if in range
+		if( x >= 0 && x < IMAGE_WIDTH && y >= 0 && y < IMAGE_HEIGHT)
 		{
-			// Convert coordinates from world-state to image-state
-			int x = (int)(frame._dataPoints.at( i).x * (IMAGE_WIDTH  / IMAGE_METER));
-			int y = (int)(frame._dataPoints.at( i).y * (IMAGE_HEIGHT / IMAGE_METER));
-			
-			// Add offset
-			x += IMAGE_OFFSET_X;
-			y += IMAGE_OFFSET_Y;
-			
-			// Check if in range
-			if( x >= 0 && x < IMAGE_WIDTH && y >= 0 && y < IMAGE_HEIGHT)
-			{
-				// Get byte and bit offset
-				int  bit = x % 8;
-				int byte = (x + y * IMAGE_WIDTH) / 8;
-			
-				// Set bit
-				_data[ byte] |= 1 << bit;
-			}
+			// Get byte and bit offset
+			int  bit = x % 8;
+			int byte = x / 8 + y * IMAGE_WIDTH / 8;
+
+			// Set bit
+			_data[ byte] |= 1 << bit;
 		}
 	}
 }
