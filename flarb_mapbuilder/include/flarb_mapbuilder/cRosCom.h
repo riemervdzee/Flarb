@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 
-#include "flarb_mapbuilder/cFrame.h"
+#include "flarb_mapbuilder/cMapbuilder.h"
 
 /*
  * 
@@ -29,7 +29,7 @@ private:
 	ros::Publisher _pubMap;
 	
 	//
-	cFrame _frame;
+	cMapbuilder _map;
 };
 
 #endif // CLASS_FRAME_H

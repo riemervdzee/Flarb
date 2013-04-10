@@ -1,5 +1,4 @@
 // Include order: cppstd, ROS, Boost, own-module includes
-#include <cstring>
 #include <cmath>
 #include <iostream>
 
@@ -9,18 +8,17 @@
 using namespace std;
 
 /*
- * Const return-by-reference functions to get both vectors
- * Note, if you use these vectors, make sure you call it with referencing!
- * For speed isues etc. eg: const std::vector<sPoint> &a = frame.getPoints();
+ * Standard info
+ * min -2.35619
+ * max 2.35619
+ * angl. incr 0.00436332
+ * time_increment 3.70028e-05
+ * scan_time 0.04
+ * n 1081
+ * amount of points 721
+ * amount of obj    336
+ *
  */
-const vector<sPoint> &cFrame::getPoints() const
-{
-	return _dataPoints;
-}
-const vector<sObject> &cFrame::getObjects() const
-{
-	return _dataObjects;
-}
 
 /*
  *
@@ -29,10 +27,7 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 {
 	// Vars
 	vector<float>::const_iterator itr;
-	float angle = msg.angle_min;
-
-	// Performance counters
-	int branch_min = 0, branch_max = 0;
+	float angle = msg.angle_max + M_PI / 4;
 
 	// Resize if it is the first time, clear when it is being reused
 	if( _dataPoints.size() == 0)
@@ -46,25 +41,16 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 		_dataObjects.clear();
 	}
 
-
 	// Go through all range points
-	for( itr = msg.ranges.begin(); itr != msg.ranges.end(); itr++, angle += msg.angle_increment)
+	for( itr = msg.ranges.begin(); itr != msg.ranges.end(); itr++, angle -= msg.angle_increment)
 	{
 		// Temps
-		float range = *(itr);
+		const float range = *(itr);
 		sPoint p;
 
-		// Is the value out of range? continue TODO check which one occurs the most
-		if( range < msg.range_min)
-		{
-			branch_min++;
-			continue;
-		}
-		else if( range > msg.range_max)
-		{
-			branch_max++;
-			continue;
-		}
+		// Is the value out of range? continue
+		//if( range < msg.range_min || range > msg.range_max)
+		//	continue;
 
 		// Convert polar coordinates to cartisian
 		// TODO, get these cos/sin into a lookup table? performance
@@ -92,10 +78,5 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 		// Push the new point
 		_dataPoints.push_back( p);
 	}
-	
-	// Output some debugging
-	cout << "Perf counters " << branch_min << " " << branch_max << endl;
-	cout << "amount of points " << _dataPoints.size()  << endl;
-	cout << "amount of obj    " << _dataObjects.size() << endl << endl << endl;
 }
 

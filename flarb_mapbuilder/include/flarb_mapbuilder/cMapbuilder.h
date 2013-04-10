@@ -3,6 +3,9 @@
 
 #include "ros/ros.h"
 
+#include "flarb_mapbuilder/cImage.h"
+#include "flarb_mapbuilder/cFrame.h"
+
 
 /*
  * 
@@ -10,8 +13,14 @@
 class cMapbuilder
 {
 public:
+	void ProcessMessage( const sensor_msgs::LaserScan &msg);
+	void RegenerateImage();
+
+	cImage _image;
 
 private:
+
+	cFrame _frame;
 };
 
 #endif // CLASS_MAPBUILDER_H

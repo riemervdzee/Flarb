@@ -22,7 +22,6 @@
 struct sPoint {
 	float x;
 	float y;
-	/*TODO add intensity? */
 };
 
 struct sObject {
@@ -40,12 +39,7 @@ public:
 	// Generates a frame from a LaserScan message
 	void GenerateFrame( const sensor_msgs::LaserScan &msg);
 
-	// Const return-by-reference functions to get both vectors
-	const std::vector<sPoint>  &getPoints()  const;
-	const std::vector<sObject> &getObjects() const;
-
-private:
-	// Our result
+	// Our result, in public domain for easy access
 	std::vector<sPoint>  _dataPoints;
 	std::vector<sObject> _dataObjects;
 };
