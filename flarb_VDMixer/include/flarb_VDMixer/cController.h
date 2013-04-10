@@ -15,8 +15,6 @@ using namespace std;
 class cController
 {
 public:
-    // Constructor
-    cController() : _count( 0) {}
 
     // Functions executed at the beginning and end of the Application
     bool Create();
@@ -40,12 +38,9 @@ private:
 	flarb_compass::Compass message_north_angle;
 	flarb_VDMixer::Phase message_phase;
 
-
 	void axismsg(const flarb_inclination::Axis msgr);
 	void compassmsg(const flarb_compass::Compass msgr);
 	void phasemsg(const flarb_VDMixer::Phase msgr);
-	int _count;
-	
 };
 
 #endif // CLASS_CONTROLLER_H
