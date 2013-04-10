@@ -12,6 +12,7 @@
   <depend package="roscpp"/>
   <depend package="flarb_inclination"/>
   <depend package="flarb_compass"/>
+  <depend package="flarb_accelerometer"/>
 </package>
 
 

@@ -8,6 +8,7 @@
 #include "flarb_VDMixer/cController.h"
 #include "flarb_inclination/Axis.h"
 #include "flarb_compass/Compass.h" 
+#include "flarb_accelerometer/Accelerometer.h"
 
 // Functions executed at the beginning and end of the Node
 
@@ -20,22 +21,38 @@ void cController::axismsg(const flarb_inclination::Axis msgr)
 	message_axis = msgr;
 }
 
+/*
+ * 	Callback message Compass
+ *	
+ */
 void cController::compassmsg(const flarb_compass::Compass msgr)
 {
 	message_north_angle = msgr;
 }
 
+/*
+ *	Callback message PhaseControl (Must be encoder or some kind...)
+ */
 void cController::phasemsg(const flarb_VDMixer::Phase msgr)
 {
 	message_phase = msgr;
 }
+
+/*
+ *	Callback message Accellero (change in speed...)
+ */
+void cController::acceleratormsg(const flarb_accelerometer::Accelerometer msgr)
+{
+	message_accelerator = msgr;
+}
+
 
 bool cController::Create()
 {
 	//Subscriber for data 
 	Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compassmsg, this);
 	//TODO: Modify Accelerator to standard
-	//Accelerator = _rosNode.subscribe<flarb_inclination::Axis>("sensor/accelerator", 1, &cController::acceleratormsg, this);
+	Accelerator = _rosNode.subscribe<flarb_accelerometer::Accelerometer>("sensor/accelerator", 1, &cController::acceleratormsg, this);
 	//TODO: Modify Gyro to standard
 	//Gyro = _rosNode.subscribe<flarb_gyro::Axis>("sensor/gyro", 1, &cController::gyromsg, this);
 	//TODO: Modify inclination to standard
