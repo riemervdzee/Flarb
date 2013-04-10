@@ -32,4 +32,8 @@ build/
 flarb_canbus/src/flarb_canbus/
 flarb_mobile/src/flarb_mobile/
 flarb_inclination/src/flarb_inclination/
+flarb_VDMixer/src/flarb_VDMixer/
+flarb_accelerometer/src/flarb_accelerometer/
+flarb_compass/src/flarb_compass/
+flarb_mapbuilder/src/flarb_mapbuilder/
 
