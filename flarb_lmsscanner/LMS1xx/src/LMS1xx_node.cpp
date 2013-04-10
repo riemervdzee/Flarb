@@ -48,8 +48,8 @@ int main(int argc, char **argv)
     scan_msg.scan_time = 100.0/cfg.scaningFrequency;
 
     scan_msg.angle_increment = (double)cfg.angleResolution/10000.0 * DEG2RAD;
-    scan_msg.angle_min = (double)cfg.startAngle/10000.0 * DEG2RAD - M_PI/2;
-    scan_msg.angle_max = (double)cfg.stopAngle/10000.0 * DEG2RAD - M_PI/2;
+    scan_msg.angle_min = (double)cfg.startAngle/10000.0 * DEG2RAD;
+    scan_msg.angle_max = (double)cfg.stopAngle/10000.0 * DEG2RAD;
 
     std::cout << "resolution : " << (double)cfg.angleResolution/10000.0 << " deg " << std::endl;
     std::cout << "frequency : " << (double)cfg.scaningFrequency/100.0 << " Hz " << std::endl;
