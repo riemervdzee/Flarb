@@ -10,6 +10,4 @@ public:
 	int getPixel(int x , int y, flarb_mapbuilder::MapImage msg);
 private:
 	flarb_mapbuilder::MapImage msgr;
-	
-	
 };

@@ -12,6 +12,7 @@
 bool cController::Create()
 {
 	cMovement Move;
+	
 	return true;
 }
 
