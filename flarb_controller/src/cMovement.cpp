@@ -13,6 +13,7 @@
 
 int cMovement::Create()
 {
+	
 	return 0;
 }
 
@@ -24,16 +25,10 @@ int cMovement::update(flarb_mapbuilder::MapImage msg)
 }
 
 
-
-int cMovement::trendLine(flarb_mapbuilder::MapImage msg)
-{
-		
-}
-
-
 /*
  *	a save zone around the sick scanner given in meters
  * 	returns the count of detected points in this square
+ *	demands that zero points being filterd out before this method
  */ 
 int cMovement::saveZone(float meterX, float meterY, flarb_mapbuilder::MapImage msg)
 {
@@ -79,3 +74,10 @@ int cMovement::getPixel(int x , int y, flarb_mapbuilder::MapImage msg)
 	//value
 	return (msg.data[posX + posY] & ( 1 << byteX ));
 }
+
+
+
+
+
+
+
