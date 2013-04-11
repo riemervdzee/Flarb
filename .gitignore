@@ -28,12 +28,21 @@ build/
 # Ignore backup files from gEdit
 *~
 
-# Ignore specific folders (TODO fix this)
-flarb_canbus/src/flarb_canbus/
-flarb_mobile/src/flarb_mobile/
-flarb_inclination/src/flarb_inclination/
-flarb_VDMixer/src/flarb_VDMixer/
+# Ignore specific src folders (TODO fix this)
 flarb_accelerometer/src/flarb_accelerometer/
+flarb_canbus/src/flarb_canbus/
 flarb_compass/src/flarb_compass/
+flarb_controller/src/flarb_controller/
+flarb_encoder/src/flarb_encoder/
+flarb_example/src/flarb_example/
+flarb_gps/src/flarb_gps/
+flarb_inclination/src/flarb_inclination/
+flarb_lmsscanner/src/flarb_lmsscanner/
 flarb_mapbuilder/src/flarb_mapbuilder/
-
+flarb_mapshow/src/flarb_mapshow/
+flarb_mobile/src/flarb_mobile/
+flarb_motor/src/flarb_motor/
+flarb_plantquality/src/flarb_plantquality/
+flarb_signaler/src/flarb_signaler/
+flarb_steeringcontrol/src/flarb_steeringcontrol/
+flarb_VDMixer/src/flarb_VDMixer/
