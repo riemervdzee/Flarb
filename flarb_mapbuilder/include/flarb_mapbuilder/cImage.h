@@ -46,7 +46,12 @@ public:
 private:
 	// Forbid copy constructor
 	cImage( const cImage&);
-	
+
+	//
+	bool PixelInRange( int x, int y);
+	void DrawPixel( int x, int y);
+	void DrawLine( int x0, int y0, int x1, int y1);
+
 	// Transformation
 	float _x, _y;
 };
