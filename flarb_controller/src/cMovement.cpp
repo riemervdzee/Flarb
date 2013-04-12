@@ -99,6 +99,8 @@ static unsigned int CountBitsSet ( const uint8_t val)
  * If you are about to check a rectangle, this version is most likely faster
  * than the Y version (not benchmarked!)
  *
+ * This is quite a mess, I know I know..
+ *
  * Arguments:
  *    int  x, y    Is the start position
  *    int  width   The width of the line to check (note, it advances to the _right_)
@@ -120,19 +122,22 @@ int cMovement::CheckBlockedLineX( const flarb_mapbuilder::MapImage &msg, int x, 
 	int pos_end   = posY + (x + width - 1) / 8;
 
 	// Bits we are interested in for the special cases
+	// Basically we shift the amount of bits we don't want
 	int bit_start = x % 8;
-	int bit_end   = (x + width - 1) % 8;
+
+	// Invert the bit (8 - bit_end), but add 1 again.
+	int bit_end   =  7 - ((x + width - 1) % 8);
 
 	// Get the special cases
 	uint8_t temp;
-	temp = msg.data[pos_start] << bit_start;
+	temp = msg.data[pos_start] >> bit_start;
 	blocked += CountBitsSet( temp);
-	temp = msg.data[pos_end] >> bit_end; // TODO check if this is right?
-	blocked += CountBitsSet( temp);
+
 
 	// Increase start-position and get the pos_width
 	pos_start++;
 	int pos_width = pos_end - pos_start - 2;
+	// -2 = -1 normally, and -1 as we already parse pos_end at the end
 
 	// Go through all remaining bytes
 	for(int i = 0; i < pos_width; i++, pos_start++)
@@ -141,6 +146,11 @@ int cMovement::CheckBlockedLineX( const flarb_mapbuilder::MapImage &msg, int x, 
 		blocked += CountBitsSet( temp);
 	}
 
+	// Get the last, pos_end for caching
+	temp = msg.data[pos_end] << bit_end;
+	blocked += CountBitsSet( temp);
+
+	// TODO pos_start == pos_end by now, test it!
 	// Return blocked
 	return blocked;
 }
