@@ -48,7 +48,7 @@ int cMovement::saveZone(float meterX, float meterY, const flarb_mapbuilder::MapI
 	{
 		for( int y = (msg.cameraY - (int) safeY); y < (msg.cameraY + (int) safeY); y++)
 		{
-			countParticles += getPixel(x,y, &msg);
+			countParticles += CheckFreePixel(x,y, &msg);
 		}
 	}
 	return countParticles;
@@ -59,7 +59,7 @@ int cMovement::saveZone(float meterX, float meterY, const flarb_mapbuilder::MapI
  *	1 == available
  *	0 == none
  */
-int cMovement::getPixel(int x , int y, const flarb_mapbuilder::MapImage &msg)
+int cMovement::CheckBlockedPixel( const flarb_mapbuilder::MapImage &msg, int x, int y)
 {	
 	//count row length
 	int bytesRow = msg.imageX / 8;
@@ -75,9 +75,90 @@ int cMovement::getPixel(int x , int y, const flarb_mapbuilder::MapImage &msg)
 	return (msg.data[posX + posY] & ( 1 << byteX ));
 }
 
+/*
+ * Static helper function to count the amount of bits set in a uint
+ * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
+ */
+static unsigned int CountBitsSet ( uint8_t val)
+{
+	// c accumulates the total bits set in v
+	unsigned int count;
 
+	// The nice part of this method is, it only itterates for each bit set
+	for (count = 0; val; count++)
+	{
+		val &= val - 1; // clear the least significant bit set
+	}
 
+	return count;
+}
 
+/*
+ * Optimized version to check whole lines on the X axis.
+ * NOT FINNISHED!
+ *
+ * Arguments:
+ *    int  x, y    Is the start position
+ *    int  width   The width of the line to check (note, it advances to the _right_)
+ *
+ * Returns:
+ *    int  amount of blocking pixels
+ */
+/*int cMovement::CheckBlockedLineX( const flarb_mapbuilder::MapImage &msg, int x, int y, int width)
+{
+	// Amount of blocked pixels
+	int blocked = 0;
 
+	// Get the basic y-offset
+	int posY = y * msg.imageX / 8;
 
+	// Get the index of the first and last byte we need to check
+	// Check these special cases first, as we don't check the whole byte
+	int pos_start = posY + x / 8;
+	int pos_end   = posY + (x + width - 1) / 8;
+
+	//
+	uint8_t byte_start = msg.data[pos_start]
+
+	// TODO finish it properly
+	return width;
+}*/
+
+/*
+ * Optimized version to check whole lines on the Y axis.
+ *
+ * Arguments:
+ *    int  x, y    Is the start position
+ *    int  height  The height of the line to check (note, it advances to the _bottom_)
+ *
+ * Returns:
+ *    int  amount of blocking pixels
+ */
+int cMovement::CheckBlockedLineY( const flarb_mapbuilder::MapImage &msg, int x, int y, int height)
+{
+	// Amount of blocked pixels
+	int blocked = 0;
+
+	// count row length
+	int bytesRow = msg.imageX / 8;
+	// multiply it to the right row
+	int posY = y * bytesRow;
+
+	// how far in the x array
+	int posX = x / 8;
+	// how far in the byte
+	int byteX = x % 8;
+
+	// Get the first offset, and get the mask we are trying to test
+	int offset = posX + posY;
+	int mask   = ( 1 << byteX );
+
+	// Go through the whole line
+	for(int i = 0; i < height; i++, offset += bytesRow)
+		if( msg.data[offset] & mask)
+			blocked++;
+
+	// Return result
+	return blocked;
+}
 
