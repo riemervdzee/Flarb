@@ -79,7 +79,7 @@ int cMovement::CheckBlockedPixel( const flarb_mapbuilder::MapImage &msg, int x, 
  * Static helper function to count the amount of bits set in a uint
  * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
  */
-static unsigned int CountBitsSet ( uint8_t val)
+static unsigned int CountBitsSet ( const uint8_t val)
 {
 	// c accumulates the total bits set in v
 	unsigned int count;
@@ -95,7 +95,9 @@ static unsigned int CountBitsSet ( uint8_t val)
 
 /*
  * Optimized version to check whole lines on the X axis.
- * NOT FINNISHED!
+ * TODO check whether this is actually correct...
+ * If you are about to check a rectangle, this version is most likely faster
+ * than the Y version (not benchmarked!)
  *
  * Arguments:
  *    int  x, y    Is the start position
@@ -104,7 +106,7 @@ static unsigned int CountBitsSet ( uint8_t val)
  * Returns:
  *    int  amount of blocking pixels
  */
-/*int cMovement::CheckBlockedLineX( const flarb_mapbuilder::MapImage &msg, int x, int y, int width)
+int cMovement::CheckBlockedLineX( const flarb_mapbuilder::MapImage &msg, int x, int y, int width)
 {
 	// Amount of blocked pixels
 	int blocked = 0;
@@ -117,12 +119,31 @@ static unsigned int CountBitsSet ( uint8_t val)
 	int pos_start = posY + x / 8;
 	int pos_end   = posY + (x + width - 1) / 8;
 
-	//
-	uint8_t byte_start = msg.data[pos_start]
+	// Bits we are interested in for the special cases
+	int bit_start = x % 8;
+	int bit_end   = (x + width - 1) % 8;
 
-	// TODO finish it properly
-	return width;
-}*/
+	// Get the special cases
+	uint8_t temp;
+	temp = msg.data[pos_start] << bit_start;
+	blocked += CountBitsSet( temp);
+	temp = msg.data[pos_end] >> bit_end; // TODO check if this is right?
+	blocked += CountBitsSet( temp);
+
+	// Increase start-position and get the pos_width
+	pos_start++;
+	int pos_width = pos_end - pos_start - 2;
+
+	// Go through all remaining bytes
+	for(int i = 0; i < pos_width; i++, pos_start++)
+	{
+		temp = msg.data[pos_start];
+		blocked += CountBitsSet( temp);
+	}
+
+	// Return blocked
+	return blocked;
+}
 
 /*
  * Optimized version to check whole lines on the Y axis.
