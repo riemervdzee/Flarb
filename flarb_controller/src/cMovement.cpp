@@ -30,7 +30,7 @@ int cMovement::update(flarb_mapbuilder::MapImage msg)
  * 	returns the count of detected points in this square
  *	demands that zero points being filterd out before this method
  */ 
-int cMovement::saveZone(float meterX, float meterY, flarb_mapbuilder::MapImage msg)
+int cMovement::saveZone(float meterX, float meterY, const flarb_mapbuilder::MapImage &msg)
 {
 	//calculate points per meter
 	float x = msg.imageX / msg.sizeWidth;
@@ -59,7 +59,7 @@ int cMovement::saveZone(float meterX, float meterY, flarb_mapbuilder::MapImage m
  *	1 == available
  *	0 == none
  */
-int cMovement::getPixel(int x , int y, flarb_mapbuilder::MapImage msg)
+int cMovement::getPixel(int x , int y, const flarb_mapbuilder::MapImage &msg)
 {	
 	//count row length
 	int bytesRow = msg.imageX / 8;
