@@ -4,10 +4,12 @@
 class cTrendLine
 {
 public:
+	int Create(flarb_mapbuilder::MapImage &msg, int x, int y);
+
 	int Slope;
     int Intercept;
     int Start;
-    int End	
+    int End;
 private:
 	int count;
     int xAxisValuesSum;

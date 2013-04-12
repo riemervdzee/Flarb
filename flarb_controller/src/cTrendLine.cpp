@@ -12,7 +12,9 @@
 #include <string.h>
 #include "flarb_mapbuilder/MapImage.h"
 
-int cTrendLine::Create(int x, int y, flarb_mapbuilder::MapImage msg)
+#include "flarb_controller/cTrendLine.h"
+
+int cTrendLine::Create(flarb_mapbuilder::MapImage &msg, int x, int y)
 {
 	yAxisValuesSum = 0;
 	xAxisValuesSum = 0;

@@ -11,6 +11,8 @@
 #include <string.h>
 #include "flarb_mapbuilder/MapImage.h"
 
+#include "flarb_controller/cMovement.h"
+
 int cMovement::Create()
 {
 	
@@ -19,10 +21,10 @@ int cMovement::Create()
 
 
 //TODO Angle North would be ideal for heading?!
-int cMovement::update(flarb_mapbuilder::MapImage msg)
+/*int cMovement::update(flarb_mapbuilder::MapImage msg)
 {
 	
-}
+}*/
 
 
 /*
@@ -48,7 +50,7 @@ int cMovement::saveZone(float meterX, float meterY, const flarb_mapbuilder::MapI
 	{
 		for( int y = (msg.cameraY - (int) safeY); y < (msg.cameraY + (int) safeY); y++)
 		{
-			countParticles += CheckFreePixel(x,y, &msg);
+			countParticles += CheckBlockedPixel( msg, x,y);
 		}
 	}
 	return countParticles;
@@ -79,7 +81,7 @@ int cMovement::CheckBlockedPixel( const flarb_mapbuilder::MapImage &msg, int x, 
  * Static helper function to count the amount of bits set in a uint
  * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
  */
-static unsigned int CountBitsSet ( const uint8_t val)
+static unsigned int CountBitsSet ( uint8_t val)
 {
 	// c accumulates the total bits set in v
 	unsigned int count;
