@@ -16,8 +16,10 @@ public:
 	int CountBlockedRectangle ( int x, int y, int width, int height);
 
 private:
+	// Pointer to the msg _NOTE cImage IS NOT THE OWNER OF THIS OBJ_
 	const flarb_mapbuilder::MapImage *_msg;
-	
+
+	// Cached values
 	int _bytesRow;
 };
 
