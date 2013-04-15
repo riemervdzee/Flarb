@@ -1,7 +1,5 @@
 #include <iostream>
-#include <sstream>
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 #include "flarb_mapbuilder/MapImage.h"
 
 #include "flarb_controller/cImage.h"
@@ -162,6 +160,27 @@ int cImage::CountBlockedRectangle ( int x, int y, int width, int height)
 	}
 
 	return amount;
+}
+
+
+/*
+ * Advances from the position given to the left/right, till the first bit is found
+ */
+int GetXLeft( int x, int y)
+{
+	// Use ffs (find first set) and fls (find last set)
+	// Otherwise: https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/bitops.h
+	return x;
+}
+
+
+/*
+ * Advances from the position given to the left/right, till the first bit is found
+ */
+int GetXRight( int x, int y)
+{
+	// Use ffs (find first set) and fls (find last set)
+	return x;
 }
 
 
