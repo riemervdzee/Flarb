@@ -12,7 +12,7 @@ using namespace std;
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
-	// Subscribe to /canbus/send
+	// Subscribe to map
 	_subImg = _rosNode.subscribe<flarb_mapbuilder::MapImage>( "map", 1, &cController::ImgCallback, this);
 	//_pubMap = rosNode->advertise<>( "map", 1);
 
