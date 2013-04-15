@@ -31,6 +31,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_executable(controller  src/main.cpp
 									src/cController.cpp
+									src/cImage.cpp
 									src/cMovement.cpp
+									src/cRosCom.cpp
 									#src/cTrendLine.cpp
 									)

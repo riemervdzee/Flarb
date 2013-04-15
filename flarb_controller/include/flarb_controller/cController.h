@@ -3,6 +3,10 @@
 
 #include "ros/ros.h"
 
+#include "flarb_controller/cRosCom.h"
+#include "flarb_controller/cMovement.h"
+
+
 /*
 * Main controller class of the example node
 */
@@ -23,8 +27,11 @@ private:
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
 
+	// RosCom obj, deals with the communication towards other ROS nodes
+	cRosCom _roscom;
 
-	
+	//
+	cMovement _move;
 };
 
 #endif // CLASS_CONTROLLER_H

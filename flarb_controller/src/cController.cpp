@@ -6,12 +6,12 @@
 #include "std_msgs/String.h"
 
 #include "flarb_controller/cController.h"
-#include "flarb_controller/cMovement.h"
 
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
-	cMovement Move;
+	// Init RosCom object
+	_roscom.Create( &_rosNode);
 	
 	return true;
 }
@@ -19,7 +19,7 @@ bool cController::Create()
 // Executed when the Node is exiting
 void cController::Destroy()
 {
-
+	_roscom.Destroy();
 }
 
 // Updates the controller obj

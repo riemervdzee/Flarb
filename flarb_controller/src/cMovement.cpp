@@ -35,7 +35,7 @@ int cMovement::Create()
 int cMovement::saveZone(float meterX, float meterY, const flarb_mapbuilder::MapImage &msg)
 {
 	//calculate points per meter
-	float x = msg.imageX / msg.sizeWidth;
+	/*float x = msg.imageX / msg.sizeWidth;
 	float y = msg.imageY / msg.sizeHeight;
 	
 	//calculate points around sick scanner
@@ -53,145 +53,7 @@ int cMovement::saveZone(float meterX, float meterY, const flarb_mapbuilder::MapI
 			countParticles += CheckBlockedPixel( msg, x,y);
 		}
 	}
-	return countParticles;
-}
-
-/*
- *	give x, y, msg the Pixel and returns
- *	1 == available
- *	0 == none
- */
-int cMovement::CheckBlockedPixel( const flarb_mapbuilder::MapImage &msg, int x, int y)
-{	
-	//count row length
-	int bytesRow = msg.imageX / 8;
-	//multiply it to the right row
-	int posY = y * bytesRow; 
-	
-	//how far in the x array
-	int posX = x / 8;
-	//how far in the byte
-	int byteX = x % 8;
-	
-	//value
-	return (msg.data[posX + posY] & ( 1 << byteX ));
-}
-
-/*
- * Static helper function to count the amount of bits set in a uint
- * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
- */
-static unsigned int CountBitsSet ( uint8_t val)
-{
-	// c accumulates the total bits set in v
-	unsigned int count;
-
-	// The nice part of this method is, it only itterates for each bit set
-	for (count = 0; val; count++)
-	{
-		val &= val - 1; // clear the least significant bit set
-	}
-
-	return count;
-}
-
-/*
- * Optimized version to check whole lines on the X axis.
- * TODO check whether this is actually correct...
- * If you are about to check a rectangle, this version is most likely faster
- * than the Y version (not benchmarked!)
- *
- * This is quite a mess, I know I know..
- *
- * Arguments:
- *    int  x, y    Is the start position
- *    int  width   The width of the line to check (note, it advances to the _right_)
- *
- * Returns:
- *    int  amount of blocking pixels
- */
-int cMovement::CheckBlockedLineX( const flarb_mapbuilder::MapImage &msg, int x, int y, int width)
-{
-	// Amount of blocked pixels
-	int blocked = 0;
-
-	// Get the basic y-offset
-	int posY = y * msg.imageX / 8;
-
-	// Get the index of the first and last byte we need to check
-	// Check these special cases first, as we don't check the whole byte
-	int pos_start = posY + x / 8;
-	int pos_end   = posY + (x + width - 1) / 8;
-
-	// Bits we are interested in for the special cases
-	// Basically we shift the amount of bits we don't want
-	int bit_start = x % 8;
-
-	// Invert the bit (8 - bit_end), but add 1 again.
-	int bit_end   =  7 - ((x + width - 1) % 8);
-
-	// Get the special cases
-	uint8_t temp;
-	temp = msg.data[pos_start] >> bit_start;
-	blocked += CountBitsSet( temp);
-
-
-	// Increase start-position and get the pos_width
-	pos_start++;
-	int pos_width = pos_end - pos_start - 2;
-	// -2 = -1 normally, and -1 as we already parse pos_end at the end
-
-	// Go through all remaining bytes
-	for(int i = 0; i < pos_width; i++, pos_start++)
-	{
-		temp = msg.data[pos_start];
-		blocked += CountBitsSet( temp);
-	}
-
-	// Get the last, pos_end for caching
-	temp = msg.data[pos_end] << bit_end;
-	blocked += CountBitsSet( temp);
-
-	// TODO pos_start == pos_end by now, test it!
-	// Return blocked
-	return blocked;
-}
-
-/*
- * Optimized version to check whole lines on the Y axis.
- *
- * Arguments:
- *    int  x, y    Is the start position
- *    int  height  The height of the line to check (note, it advances to the _bottom_)
- *
- * Returns:
- *    int  amount of blocking pixels
- */
-int cMovement::CheckBlockedLineY( const flarb_mapbuilder::MapImage &msg, int x, int y, int height)
-{
-	// Amount of blocked pixels
-	int blocked = 0;
-
-	// count row length
-	int bytesRow = msg.imageX / 8;
-	// multiply it to the right row
-	int posY = y * bytesRow;
-
-	// how far in the x array
-	int posX = x / 8;
-	// how far in the byte
-	int byteX = x % 8;
-
-	// Get the first offset, and get the mask we are trying to test
-	int offset = posX + posY;
-	int mask   = ( 1 << byteX );
-
-	// Go through the whole line
-	for(int i = 0; i < height; i++, offset += bytesRow)
-		if( msg.data[offset] & mask)
-			blocked++;
-
-	// Return result
-	return blocked;
+	return countParticles;*/
+	return 0;
 }
 
