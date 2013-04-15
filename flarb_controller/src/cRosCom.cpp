@@ -25,4 +25,6 @@ void cRosCom::ImgCallback( const flarb_mapbuilder::MapImage msg)
 {
 	// Pass the message to cImage,
 	cImage image( &msg);
+	
+	image.CountBlockedRectangle( 50, 50, 300, 300);
 }

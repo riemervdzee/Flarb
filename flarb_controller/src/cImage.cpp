@@ -5,15 +5,25 @@
 #include "flarb_mapbuilder/MapImage.h"
 
 #include "flarb_controller/cImage.h"
+using namespace std;
 
-static unsigned int CountBitsSet ( uint8_t val);
+// Prototypes
+static unsigned int CountBitsSet( unsigned int v);
 
-cImage::cImage(const flarb_mapbuilder::MapImage *msg) : _msg(msg)
+/*
+ *  Constructor
+ */
+cImage::cImage( const flarb_mapbuilder::MapImage *msg) : _msg(msg)
 {
 	_bytesRow = _msg->imageX / 8;
 }
 
 
+/*
+ *  give x, y, msg the Pixel and returns
+ *  1 == available
+ *  0 == none
+ */
 int cImage::CountBlockedPixel( int x, int y)
 {
 	//multiply it to the right row
@@ -26,9 +36,26 @@ int cImage::CountBlockedPixel( int x, int y)
 	int byteX = x % 8;
 	
 	//value
-	return (_msg->data[posX + posY] & ( 1 << byteX ));
+	if(_msg->data[posX + posY] & ( 1 << byteX ))
+		return 1;
+	else
+		return 0;
 }
 
+
+/*
+ * Optimized version to check whole lines on the X axis.
+ * If you are about to check a rectangle, this version is faster than the Y version
+ *
+ * This is quite a mess, I know I know..
+ *
+ * Arguments:
+ *    int  x, y    Is the start position
+ *    int  width   The width of the line to check (note, it advances to the _right_)
+ *
+ * Returns:
+ *    int  amount of blocking pixels
+ */
 int cImage::CountBlockedLineX( int x, int y, int width)
 {
 // Amount of blocked pixels
@@ -57,8 +84,7 @@ int cImage::CountBlockedLineX( int x, int y, int width)
 
 	// Increase start-position and get the pos_width
 	pos_start++;
-	int pos_width = pos_end - pos_start - 2;
-	// -2 = -1 normally, and -1 as we already parse pos_end at the end
+	int pos_width = pos_end - pos_start;
 
 	// Go through all remaining bytes
 	for(int i = 0; i < pos_width; i++, pos_start++)
@@ -71,11 +97,22 @@ int cImage::CountBlockedLineX( int x, int y, int width)
 	temp = _msg->data[pos_end] << bit_end;
 	blocked += CountBitsSet( temp);
 
-	// TODO pos_start == pos_end by now, test it!
 	// Return blocked
 	return blocked;
 }
 
+
+/*
+ * Optimized version to check whole lines on the Y axis.
+ * Note this is quite slow, due we have to jump through the whole array
+ *
+ * Arguments:
+ *    int  x, y    Is the start position
+ *    int  height  The height of the line to check (note, it advances to the _bottom_)
+ *
+ * Returns:
+ *    int  amount of blocking pixels
+ */
 int cImage::CountBlockedLineY( int x, int y, int height)
 {
 	// Amount of blocked pixels
@@ -102,20 +139,43 @@ int cImage::CountBlockedLineY( int x, int y, int height)
 	return blocked;
 }
 
+
+/*
+ * Helper func to count a whole Rectangle. Uses CountBlockedLineX
+ *
+ * Arguments:
+ *    int  x, y    Is the start position
+ *    int  width   The width of the line to check (note, it advances to the _right_)
+ *    int  height  The height of the line to check (note, it advances to the _bottom_)
+ *
+ * Returns:
+ *    int  amount of blocking pixels
+ */
+int cImage::CountBlockedRectangle ( int x, int y, int width, int height)
+{
+	int amount = 0;
+
+	// All line X
+	for(int _y = 0; _y < height; _y++)
+	{
+		amount += CountBlockedLineX( x, y + _y, width);
+	}
+
+	return amount;
+}
+
+
 /*
  * Static helper function to count the amount of bits set in a uint
  * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
  */
-static unsigned int CountBitsSet ( uint8_t val)
+static unsigned int CountBitsSet( unsigned int v)
 {
-	// c accumulates the total bits set in v
-	unsigned int count;
+	unsigned int c;
+	v = v - ((v >> 1) & 0x55555555);                    // reuse input as temporary
+	v = (v & 0x33333333) + ((v >> 2) & 0x33333333);     // temp
+	c = (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24; // count
 
-	// The nice part of this method is, it only itterates for each bit set
-	for (count = 0; val; count++)
-	{
-		val &= val - 1; // clear the least significant bit set
-	}
-
-	return count;
+	return c;
 }
+
