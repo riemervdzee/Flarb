@@ -29,6 +29,8 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(mapshow src/main.cpp src/cController.cpp)
+rosbuild_add_executable(mapshow src/main.cpp 
+                                src/cController.cpp
+                                src/cVideo.cpp)
 target_link_libraries(mapshow SDL)
 

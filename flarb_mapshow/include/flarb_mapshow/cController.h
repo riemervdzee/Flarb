@@ -1,15 +1,14 @@
 #ifndef CLASS_CONTROLLER_H
 #define CLASS_CONTROLLER_H
 
-#include <SDL/SDL.h>
-
 #include "ros/ros.h"
 #include "flarb_mapbuilder/MapImage.h"
+#include "flarb_mapshow/cVideo.h"
 
 
 /*
-* Main controller class of the example node
-*/
+ * Main controller class of the example node
+ */
 class cController
 {
 public:
@@ -18,19 +17,17 @@ public:
 	void Destroy();
 
 private:
-	//
+	// Callback
 	void ImgCallback( const flarb_mapbuilder::MapImage msg);
-	void DrawPixel2( int x, int y, int value);
-	void DrawPixel( int x, int y, Uint8 R, Uint8 G, Uint8 B);
 
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
 
-	// We are publishing shizzle
+	// We are subscribed to topic "/map"
 	ros::Subscriber _subImg;
-
-	// Our SDL surface
-	SDL_Surface *_display;
+	
+	// Video object
+	cVideo _video;
 };
 
 #endif // CLASS_CONTROLLER_H
