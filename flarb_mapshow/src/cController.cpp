@@ -20,7 +20,7 @@ bool cController::Create()
 	if( SDL_Init( SDL_INIT_VIDEO ) != 0 )
 		return false;
 
-	if( (_display = SDL_SetVideoMode( 800, 600, 0, /*SDL_SWSURFACE*/ SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL)
+	if( (_display = SDL_SetVideoMode( 800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL)
 		return false;
 
 	return true;
@@ -35,45 +35,49 @@ void cController::Destroy()
 
 void cController::ImgCallback( const flarb_mapbuilder::MapImage msg)
 {
-	// Itterator
+	// Fill the image with white, so we only have to write the black dots
+	uint32_t color = SDL_MapRGB( _display->format, 255, 255, 255);
+	SDL_Rect rect = { 0, 0, (uint16_t)msg.imageX, (uint16_t)msg.imageY};
+	SDL_FillRect( _display, &rect, color);
+
+	// Iterator
 	vector<uint8_t>::const_iterator itr = msg.data.begin();
 
 	// Write the image to the buffer the hard way
-	for( int y = 0; y < 512; y++)
+	for( int y = 0, offset = 0; y < 512; y++)
 	{
-		for( int x = 0; x < (512 / 8); x++)
+		for( int x = 0; x < (512 / 8); x++, offset++)
 		{
 			// Get value and advance the iterator
-			int val = *(itr);
-			itr++;
+			int val = msg.data.at( offset);
 
-			// Draw the pixels
-			DrawPixel2( x * 8 + 0, y, val & ( 1 << 0 ));
-			DrawPixel2( x * 8 + 1, y, val & ( 1 << 1 ));
-			DrawPixel2( x * 8 + 2, y, val & ( 1 << 2 ));
-			DrawPixel2( x * 8 + 3, y, val & ( 1 << 3 ));
-			DrawPixel2( x * 8 + 4, y, val & ( 1 << 4 ));
-			DrawPixel2( x * 8 + 5, y, val & ( 1 << 5 ));
-			DrawPixel2( x * 8 + 6, y, val & ( 1 << 6 ));
-			DrawPixel2( x * 8 + 7, y, val & ( 1 << 7 ));
+			// Only execute if the byte ain't zero
+			if( val != 0)
+			{
+				// Draw the pixels
+				DrawPixel2( x * 8 + 0, y, (bool)(val & ( 1 << 0 )));
+				DrawPixel2( x * 8 + 1, y, (bool)(val & ( 1 << 1 )));
+				DrawPixel2( x * 8 + 2, y, (bool)(val & ( 1 << 2 )));
+				DrawPixel2( x * 8 + 3, y, (bool)(val & ( 1 << 3 )));
+				DrawPixel2( x * 8 + 4, y, (bool)(val & ( 1 << 4 )));
+				DrawPixel2( x * 8 + 5, y, (bool)(val & ( 1 << 5 )));
+				DrawPixel2( x * 8 + 6, y, (bool)(val & ( 1 << 6 )));
+				DrawPixel2( x * 8 + 7, y, (bool)(val & ( 1 << 7 )));
+			}
 		}
 	}
 
 	// Flip the buffer
-	/*SDL_UpdateRect( _display, 0, 0, 512, 512);*/
 	SDL_Flip( _display);
 }
 
-void cController::DrawPixel2( int x, int y, bool value)
+void cController::DrawPixel2( int x, int y, int value)
 {
-	Uint8 r, g, b;
+	uint8_t r, g, b;
+	r = g = b = 0;
 	
-	if( value)
-		r = g = b = 0;
-	else
-		r = g = b = 255;
-		
-	DrawPixel( x, y, r, g, b);
+	if( value == 1)
+		DrawPixel( x, y, r, g, b);
 }
 
 void cController::DrawPixel( int x, int y, Uint8 R, Uint8 G, Uint8 B)
@@ -85,7 +89,7 @@ void cController::DrawPixel( int x, int y, Uint8 R, Uint8 G, Uint8 B)
 			return;
 		}
 	}
-	
+
 	switch ( _display->format->BytesPerPixel) 
 	{
 		case 1: {  /* Assuming 8-bpp */

@@ -20,7 +20,7 @@ public:
 private:
 	//
 	void ImgCallback( const flarb_mapbuilder::MapImage msg);
-	void DrawPixel2( int x, int y, bool value);
+	void DrawPixel2( int x, int y, int value);
 	void DrawPixel( int x, int y, Uint8 R, Uint8 G, Uint8 B);
 
 	// Reference to the ros node handle
