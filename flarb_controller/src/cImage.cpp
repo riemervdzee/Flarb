@@ -5,8 +5,12 @@
 #include "flarb_controller/cImage.h"
 using namespace std;
 
-// Prototypes
+// TODO add error for non x86-64 arches
+
+// Prototypes of helper functions
 static unsigned int CountBitsSet( unsigned int v);
+static inline int asm_ffs( int x);
+static inline int asm_fls( int x);
 
 /*
  *  Constructor
@@ -164,29 +168,94 @@ int cImage::CountBlockedRectangle ( int x, int y, int width, int height)
 
 
 /*
- * Advances from the position given to the left/right, till the first bit is found
+ * Advances from the position given to the left, till the first bit is found
+ *
+ * X, Y   the position where to start (note, the current position is also checked)
+ *
+ * Returns, position of first bit encountered. -1 if no bit is found (highly unlikely)
  */
-int GetXLeft( int x, int y)
+int cImage::GetXLeft( int x, int y)
 {
-	// Use ffs (find first set) and fls (find last set)
-	// Otherwise: https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/bitops.h
-	return x;
+	// multiply bytesrow with y, to get the y-offset
+	int posY = y * _bytesRow;
+
+	// how far in the x array
+	int posX = x / 8;
+
+	// The special case is the byte where X already belongs in
+	int bitPosX = 7 - ((x - 1) % 8);
+
+	// Generic offset
+	int offset = posX + posY;
+
+	// Mask the bits we don't want to 0.
+	uint8_t temp = ( _msg->data[offset] << bitPosX) >> bitPosX;
+
+	// Check if we got a result
+	int ret = asm_ffs( temp);
+	if(ret != 0)
+		return ret + (posX * 8);
+
+	// We handled the first byte, so increase
+	posX++;
+	offset++;
+
+	// Go through all remaining bytes
+	for( ; (unsigned int)posX < _msg->imageX; posX++, offset++)
+	{
+		int ret = asm_ffs( _msg->data[offset]);
+		if(ret != 0)
+			return ret + (posX * 8);
+	}
+
+	return -1;
 }
 
 
 /*
- * Advances from the position given to the left/right, till the first bit is found
+ * Advances from the position given to the right, till the first bit is found
  */
-int GetXRight( int x, int y)
+int cImage::GetXRight( int x, int y)
 {
-	// Use ffs (find first set) and fls (find last set)
-	return x;
+	// multiply bytesrow with y, to get the y-offset
+	int posY = y * _bytesRow;
+
+	// how far in the x array
+	int posX = x / 8;
+
+	// The special case is the byte where X already belongs in
+	int bitPosX = x % 8;
+
+	// Generic offset
+	int offset = posX + posY;
+
+	// Mask the bits we don't want to 0.
+	uint8_t temp = ( _msg->data[offset] >> bitPosX) << bitPosX;
+
+	// Check if we got a result
+	int ret = asm_ffs( temp);
+	if(ret != 0)
+		return ret + (posX * 8);
+
+	// We handled the first byte, so decrease
+	posX--;
+	offset--;
+
+	// Go through all remaining bytes
+	for( ; posX >= 0; posX--, offset--)
+	{
+		int ret = asm_ffs( _msg->data[offset]);
+		if(ret != 0)
+			return ret + (posX * 8);
+	}
+
+	return -1;
 }
 
 
 /*
  * Static helper function to count the amount of bits set in a uint
- * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetKernighan
+ * From: http://graphics.stanford.edu/~seander/bithacks.html#CountBitsSetParallel
  */
 static unsigned int CountBitsSet( unsigned int v)
 {
@@ -196,5 +265,47 @@ static unsigned int CountBitsSet( unsigned int v)
 	c = (((v + (v >> 4)) & 0xF0F0F0F) * 0x1010101) >> 24; // count
 
 	return c;
+}
+
+/**
+ * ffs - find first set bit in word
+ * @x: the word to search
+ *
+ * This is defined the same way as the libc and compiler builtin ffs
+ * routines, therefore differs in spirit from the other bitops.
+ *
+ * ffs(value) returns 0 if value is 0 or the position of the first
+ * set bit if value is nonzero. The first (least significant) bit
+ * is at position 1.
+ * From: https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/bitops.h
+ */
+static inline int asm_ffs(int val)
+{
+	int ret;
+	asm("bsfl %1,%0"
+		: "=r" (ret)
+		: "rm" (val), "0" (-1));
+	return ret + 1;
+}
+
+/**
+ * fls - find last set bit in word
+ * @x: the word to search
+ *
+ * This is defined in a similar way as the libc and compiler builtin
+ * ffs, but returns the position of the most significant set bit.
+ *
+ * fls(value) returns 0 if value is 0 or the position of the last
+ * set bit if value is nonzero. The last (most significant) bit is
+ * at position 32.
+ * From: https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/bitops.h
+ */
+static inline int asm_fls(int val)
+{
+	int ret;
+	asm("bsrl %1,%0"
+		: "=r" (ret)
+		: "rm" (val), "0" (-1));
+	return ret + 1;
 }
 
