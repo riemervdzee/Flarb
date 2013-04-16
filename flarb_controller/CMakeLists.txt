@@ -17,7 +17,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 #uncomment if you have defined messages
-#rosbuild_genmsg()
+rosbuild_genmsg()
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
@@ -33,4 +33,7 @@ rosbuild_add_executable(controller  src/main.cpp
 									src/cController.cpp
 									src/cImage.cpp
 									src/cRosCom.cpp
+									src/controllers/cFollowSegment.cpp
+									src/controllers/cFindSegment.cpp
+									src/controllers/cAvoidObstacle.cpp
 									)
