@@ -59,57 +59,60 @@ void cController::Update()
  */
 void cController::CallbackMap( const cImage &image)
 {
-	// Delegate which sub-controller should get executed
+	// msg struct, which we'll be sending
 	flarb_controller::WaypointVector msg;
+
 
 	// Always execute AvoidObstacle sub-controller
 	bool ret = _avoidObstacle.Execute( msg, image);
 
-	// Are we currently in avoid_obstacle mode?
-	if( _state == STATE_AVOID_OBSTACLE)
-	{
-		// AvoidObstacle is succesful!
-		if( !ret)
-			_state = _statePrevious;
-	}
-	// We currently ain't in STATE_AVOID_OBSTACLE, but it returned true
-	// Save current state, set current to AvoidObstacle
-	else if( ret)
+	// Did AvoidObstacle return true, and we ain't in AvoidObstacle mode? Save state
+	if( ret == true && _state != STATE_AVOID_OBSTACLE)
 	{
 		_statePrevious = _state;
 		_state = STATE_AVOID_OBSTACLE;
 	}
+	// If we are in state AvoidObstacle but it failed, reset State to previous
+	else if( ret == false && _state == STATE_AVOID_OBSTACLE)
+		_state = _statePrevious;
 
-	// AvoidObstacle failed
-	if( !ret)
+
+	// If AvoidObstacle hasn't found anything, try Find/Follow-segment twice
+	int turns = 2;
+	for(; ret == false && turns > 0; turns--)
 	{
-		// TODO fix logic way better than this..
-		while( ret == false)
+		switch( _state)
 		{
-			//TODO if both controllers fail, we end up in an endless loop..
-			switch( _state)
-			{
-				case STATE_FOLLOW_SEGMENT:
-					ret = _followSegment.Execute( msg, image);
-					if( ret == false)
-						_state = STATE_FIND_SEGMENT;
-					break;
+			case STATE_FOLLOW_SEGMENT:
+				ret = _followSegment.Execute( msg, image);
+				if( ret == false)
+					_state = STATE_FIND_SEGMENT;
+				break;
 
-				case STATE_FIND_SEGMENT:
-					ret = _findSegment.Execute( msg, image);
-					if( ret == false)
-						_state = STATE_FOLLOW_SEGMENT;
-					break;
+			case STATE_FIND_SEGMENT:
+				ret = _findSegment.Execute( msg, image);
+				if( ret == false)
+					_state = STATE_FOLLOW_SEGMENT;
+				break;
 
-				default:
-					cout << "cController: This should never happen!! arg" << endl;
-					ret = true;
-					break;
-			};
+			default:
+				cout << "cController: This should never happen!!" << endl;
+				ret = true;
+				break;
 		}
 	}
-	
-	// We have a filled message by now
+
+	// Find/Follow-segment controllers couldn't come up with a solution. We are stuck now!
+	if( turns == 0 && ret == false)
+	{
+		cout << "cController: We are bloody stuck :(" << endl;
+
+		// Failsafe, set the values to 0
+		msg.x = msg.y = 0;
+	}
+
+
+	// We have a filled message by now, publish it
 	_rosCom.PublishWaypoint( msg);
 }
 
