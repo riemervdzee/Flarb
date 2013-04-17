@@ -13,7 +13,7 @@ bool cVideo::Create()
 		return false;
 
 	// Init display
-	if( (_display = SDL_SetVideoMode( 800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL)
+	if( (_display = SDL_SetVideoMode( 1024, 768, 32, SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL)
 		return false;
 
 	// Init _sdl_colors
