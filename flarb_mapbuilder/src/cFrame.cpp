@@ -26,7 +26,6 @@ using namespace std;
 void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 {
 	// Vars
-	vector<float>::const_iterator itr;
 	float angle = msg.angle_min;
 
 	// Resize if it is the first time, clear when it is being reused
@@ -37,7 +36,7 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 
 
 	// Go through all range points
-	for( int i = 0; i < msg.ranges.size(); i++, angle += msg.angle_increment)
+	for( unsigned int i = 0; i < msg.ranges.size(); i++, angle += msg.angle_increment)
 	{
 		// Temps
 		const float range = msg.ranges.at( i);
