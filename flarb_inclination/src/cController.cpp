@@ -109,7 +109,7 @@ int cController::getPackage()
 
 	int a = _serial.Read(buffer, sizeof(buffer));
 	if(a != 0){
-		for(int i = 0; i < 254; i++){
+		for(int i = 0; i < a; i++){
 			if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
 			{
 				int cntx = 0;
