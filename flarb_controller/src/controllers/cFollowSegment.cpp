@@ -22,8 +22,8 @@ void cFollowSegment::Destroy()
 bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
 {
 	// TODO Do magic trick to get a way-point
-	msg.x = 0;
-	msg.y = -5;
+	msg.x =   0;
+	msg.y = -20;
 
 	return true;
 }

@@ -22,7 +22,7 @@ void cAvoidObstacle::Destroy()
 bool cAvoidObstacle::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
 {
 	// Check if we are free
-	int ret = image.CountBlockedRectangle( 176, 206, 50, 160);
+	int ret = image.CountBlockedRectangle( 186, 186, 140, 140);
 
 	// There are no pixels in the area
 	if( ret == 0)

@@ -5,6 +5,7 @@
 
 #include "flarb_controller/cController.h"
 #include "flarb_controller/WaypointVector.h"
+using namespace std;
 
 /*
  * Constructor / C-tor
@@ -60,18 +61,28 @@ void cController::CallbackMap( const cImage &image)
 {
 	// Delegate which sub-controller should get executed
 	flarb_controller::WaypointVector msg;
-	
-	// Always execute avoidObstacle
-	if( _avoidObstacle.Execute( msg, image))
+
+	// Always execute AvoidObstacle sub-controller
+	bool ret = _avoidObstacle.Execute( msg, image);
+
+	// Are we currently in avoid_obstacle mode?
+	if( _state == STATE_AVOID_OBSTACLE)
 	{
+		// AvoidObstacle is succesful!
+		if( !ret)
+			_state = _statePrevious;
+	}
+	// We currently ain't in STATE_AVOID_OBSTACLE, but it returned true
+	// Save current state, set current to AvoidObstacle
+	else if( ret)
+	{
+		_statePrevious = _state;
 		_state = STATE_AVOID_OBSTACLE;
 	}
-	// Our 
-	else
-	{
-		//
-		bool ret = false;
 
+	// AvoidObstacle failed
+	if( !ret)
+	{
 		// TODO fix logic way better than this..
 		while( ret == false)
 		{
@@ -80,14 +91,19 @@ void cController::CallbackMap( const cImage &image)
 			{
 				case STATE_FOLLOW_SEGMENT:
 					ret = _followSegment.Execute( msg, image);
-					if( !ret)
+					if( ret == false)
 						_state = STATE_FIND_SEGMENT;
 					break;
 
 				case STATE_FIND_SEGMENT:
 					ret = _findSegment.Execute( msg, image);
-					if( !ret)
+					if( ret == false)
 						_state = STATE_FOLLOW_SEGMENT;
+					break;
+
+				default:
+					cout << "cController: This should never happen!! arg" << endl;
+					ret = true;
 					break;
 			};
 		}
