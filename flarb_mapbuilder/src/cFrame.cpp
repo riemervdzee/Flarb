@@ -27,7 +27,7 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 {
 	// Vars
 	vector<float>::const_iterator itr;
-	float angle = msg.angle_min /*+ M_PI / 4*/; /* TODO adding 1/4th PI?? */
+	float angle = msg.angle_min;
 
 	// Resize if it is the first time, clear when it is being reused
 	if( _dataPoints.size() == 0)
@@ -35,11 +35,12 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 	else
 		_dataPoints.clear();
 
+
 	// Go through all range points
-	for( itr = msg.ranges.begin(); itr != msg.ranges.end(); itr++, angle += msg.angle_increment)
+	for( int i = 0; i < msg.ranges.size(); i++, angle += msg.angle_increment)
 	{
 		// Temps
-		const float range = *(itr);
+		const float range = msg.ranges.at( i);
 		sPoint p;
 
 		// Is the value out of range? continue
