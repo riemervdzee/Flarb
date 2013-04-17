@@ -4,8 +4,18 @@
 #include "ros/ros.h"
 
 #include "flarb_controller/cController.h"
+#include "flarb_controller/WaypointVector.h"
 
-// Functions executed at the beginning and end of the Node
+/*
+ * Constructor / C-tor
+ */
+// TODO we should start in STATE_INIT
+cController::cController() : _state( STATE_FOLLOW_SEGMENT) {}
+
+
+/*
+ *Functions executed at the beginning and end of the Node
+ */
 bool cController::Create()
 {
 	// Init RosCom object
@@ -19,7 +29,10 @@ bool cController::Create()
 	return true;
 }
 
-// Executed when the Node is exiting
+
+/*
+ * Executed when the Node is exiting
+ */
 void cController::Destroy()
 {
 	// Deinit RosCom and subcontrollers
@@ -29,14 +42,58 @@ void cController::Destroy()
 	_avoidObstacle.Destroy();
 }
 
-// Updates the controller obj
+
+/*
+ * Updates the controller obj
+ * Here we can add extra code, which gets executed every X seconds (defined in main.cpp)
+ */
 void cController::Update()
 {
-	// TODO remove?
+	
 }
 
-// Gets called by cRosCom when we received a /map message
+
+/*
+ * Gets called by cRosCom when we received a /map message
+ */
 void cController::CallbackMap( const cImage &image)
 {
 	// Delegate which sub-controller should get executed
+	flarb_controller::WaypointVector msg;
+	
+	// Always execute avoidObstacle
+	if( _avoidObstacle.Execute( msg, image))
+	{
+		_state = STATE_AVOID_OBSTACLE;
+	}
+	// Our 
+	else
+	{
+		//
+		bool ret = false;
+
+		// TODO fix logic way better than this..
+		while( ret == false)
+		{
+			//TODO if both controllers fail, we end up in an endless loop..
+			switch( _state)
+			{
+				case STATE_FOLLOW_SEGMENT:
+					ret = _followSegment.Execute( msg, image);
+					if( !ret)
+						_state = STATE_FIND_SEGMENT;
+					break;
+
+				case STATE_FIND_SEGMENT:
+					ret = _findSegment.Execute( msg, image);
+					if( !ret)
+						_state = STATE_FOLLOW_SEGMENT;
+					break;
+			};
+		}
+	}
+	
+	// We have a filled message by now
+	_rosCom.PublishWaypoint( msg);
 }
+

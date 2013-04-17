@@ -16,3 +16,24 @@ void cAvoidObstacle::Destroy()
 
 }
 
+// Passes reference of "msg", is used as output
+// Executes the AvoidObstacle sub-controller based on the rest of the arguments
+// TODO maybe more parameters?
+bool cAvoidObstacle::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
+{
+	// Check if we are free
+	int ret = image.CountBlockedRectangle( 176, 206, 50, 160);
+
+	// There are no pixels in the area
+	if( ret == 0)
+	{
+		return false;
+	}
+	else
+	{
+		// Set wanted-velocity to 0
+		msg.x = msg.y = 0;
+		return true;
+	}
+}
+

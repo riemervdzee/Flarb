@@ -26,7 +26,7 @@ cImage::cImage( const flarb_mapbuilder::MapImage *msg) : _msg(msg)
  *  1 == available
  *  0 == none
  */
-int cImage::CountBlockedPixel( int x, int y)
+int cImage::CountBlockedPixel( int x, int y) const
 {
 	//multiply it to the right row
 	int posY = y * _bytesRow;
@@ -58,7 +58,7 @@ int cImage::CountBlockedPixel( int x, int y)
  * Returns:
  *    int  amount of blocking pixels
  */
-int cImage::CountBlockedLineX( int x, int y, int width)
+int cImage::CountBlockedLineX( int x, int y, int width) const
 {
 // Amount of blocked pixels
 	int blocked = 0;
@@ -115,7 +115,7 @@ int cImage::CountBlockedLineX( int x, int y, int width)
  * Returns:
  *    int  amount of blocking pixels
  */
-int cImage::CountBlockedLineY( int x, int y, int height)
+int cImage::CountBlockedLineY( int x, int y, int height) const
 {
 	// Amount of blocked pixels
 	int blocked = 0;
@@ -153,7 +153,7 @@ int cImage::CountBlockedLineY( int x, int y, int height)
  * Returns:
  *    int  amount of blocking pixels
  */
-int cImage::CountBlockedRectangle ( int x, int y, int width, int height)
+int cImage::CountBlockedRectangle ( int x, int y, int width, int height) const
 {
 	int amount = 0;
 
@@ -174,7 +174,7 @@ int cImage::CountBlockedRectangle ( int x, int y, int width, int height)
  *
  * Returns, position of first bit encountered. -1 if no bit is found (highly unlikely)
  */
-int cImage::GetXLeft( int x, int y)
+int cImage::GetXLeft( int x, int y) const
 {
 	// multiply bytesrow with y, to get the y-offset
 	int posY = y * _bytesRow;
@@ -215,7 +215,7 @@ int cImage::GetXLeft( int x, int y)
 /*
  * Advances from the position given to the right, till the first bit is found
  */
-int cImage::GetXRight( int x, int y)
+int cImage::GetXRight( int x, int y) const
 {
 	// multiply bytesrow with y, to get the y-offset
 	int posY = y * _bytesRow;

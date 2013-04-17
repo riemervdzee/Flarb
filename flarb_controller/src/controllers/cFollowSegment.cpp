@@ -16,3 +16,14 @@ void cFollowSegment::Destroy()
 
 }
 
+// Passes reference of "msg", is used as output
+// Executes the FollowSegment sub-controller based on the rest of the arguments
+// TODO maybe more parameters?
+bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
+{
+	// TODO Do magic trick to get a way-point
+	msg.x = 0;
+	msg.y = -5;
+
+	return true;
+}

@@ -15,6 +15,8 @@
  * Enumerates the possible states the segmentsolver can be in
  */
 enum STATES {
+	STATE_INIT,            // Init-state, we should check if everything is online
+	STATE_STOPPED,         // We stopped doing anything
 	STATE_FOLLOW_SEGMENT,  // We should execute: cFollowSegment
 	STATE_FIND_SEGMENT,    // cFindSegment
 	STATE_AVOID_OBSTACLE,  // cAvoidObstacle
@@ -26,6 +28,9 @@ enum STATES {
 class cController
 {
 public:
+	// Constructor
+	cController();
+
 	// Functions executed at the beginning and end of the Application
 	bool Create();
 	void Destroy();
@@ -49,6 +54,9 @@ private:
 
 	// Our current state
 	enum STATES _state;
+
+	//
+	enum STATES _statePrevious;
 
 	// Our sub-controllers
 	cFollowSegment  _followSegment;
