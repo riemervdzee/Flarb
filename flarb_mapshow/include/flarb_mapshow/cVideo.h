@@ -12,6 +12,7 @@ enum VIDEO_COLOR {
 	COLOR_WHITE,
 	COLOR_BLACK,
 	COLOR_RED,
+	COLOR_BLUE,
 	VIDEO_COLOR_NUM  // Amount of elements
 };
 
@@ -20,6 +21,7 @@ const uint8_t VIDEO_COLOR_VALUE[] = {
 	/*  White  */   255, 255, 255,
 	/*  Black  */     0,   0,   0,
 	/*  Red    */   255,   0,   0,
+	/*  Blue   */     0,   0, 255,
 };
 
 /*
@@ -32,14 +34,19 @@ public:
 	bool Create();
 	void Destroy();
 
+	// Clears and flips the screen
 	void Clear( uint32_t imageX, uint32_t imageY);
 	void Update();
 
+	// Primitive drawings
 	void DrawPixel( int x, int y, enum VIDEO_COLOR color);
+	void DrawLine( int x0, int y0, int x1, int y1, enum VIDEO_COLOR color);
+
+	// Helper function for DrawPixel
 	void __DrawPixel( int x, int y, uint32_t color);
 
 private:
-	// VIDEO_COLOR_VALUE translated to SDL values
+	// Array VIDEO_COLOR_VALUE translated to SDL values
 	uint32_t _sdl_colors[VIDEO_COLOR_NUM];
 
 	// Our SDL surface

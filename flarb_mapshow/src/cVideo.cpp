@@ -36,6 +36,10 @@ void cVideo::Destroy()
 	SDL_Quit();
 }
 
+
+/*
+ * Clears a certain area
+ */
 void cVideo::Clear( uint32_t imageX, uint32_t imageY)
 {
 	// Fill the image with white, so we only have to write the black dots
@@ -44,6 +48,9 @@ void cVideo::Clear( uint32_t imageX, uint32_t imageY)
 }
 
 
+/*
+ * Flip the SDL buffer
+ */
 void cVideo::Update()
 {
 	// Flip the buffer
@@ -51,12 +58,18 @@ void cVideo::Update()
 }
 
 
+/*
+ * Draws a pixel at x/y with the color
+ */
 void cVideo::DrawPixel( int x, int y, enum VIDEO_COLOR color)
 {
 	__DrawPixel( x, y, _sdl_colors[color]);
 }
 
 
+/*
+ * Actually draws the pixel
+ */
 void cVideo::__DrawPixel( int x, int y, uint32_t color)
 {
 	if ( SDL_MUSTLOCK( _display) ) {
@@ -104,6 +117,56 @@ void cVideo::__DrawPixel( int x, int y, uint32_t color)
 
 	if ( SDL_MUSTLOCK( _display) ) {
 		SDL_UnlockSurface( _display);
+	}
+}
+
+
+/*
+ * Draws a line at (x,y)0 to (x,y)1 with color
+ */
+void cVideo::DrawLine( int x0, int y0, int x1, int y1, enum VIDEO_COLOR color)
+{
+	// Check if in range
+	// TODO maybe we need this as well?
+	//if( !PixelInRange( x0, y0 ) && !PixelInRange( x1, y1 ))
+	//	return;
+
+	bool steep = abs(y1 - y0) > abs(x1 - x0);
+
+	if ( steep) {
+		std::swap( x0, y0);
+		std::swap( x1, y1);
+	}
+
+	if ( x0 > x1) {
+		std::swap( x0, x1);
+		std::swap( y0, y1);
+	}
+
+	int deltax = x1 - x0;
+	int deltay = abs(y1 - y0);
+	int error = deltax / 2;
+	int ystep;
+	int y = y0;
+
+	if (y0 < y1)
+		ystep = +1;
+	else
+		ystep = -1;
+
+	for ( int x = x0; x < x1; x++)
+	{
+		if ( steep)
+			DrawPixel( y, x, color);
+		else
+			DrawPixel( x, y, color);
+
+		error = error - deltay;
+
+		if (error < 0) {
+			y = y + ystep;
+			error = error + deltax;
+		}
 	}
 }
 

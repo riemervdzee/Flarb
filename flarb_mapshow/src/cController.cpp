@@ -7,11 +7,16 @@
 #include "flarb_mapshow/cController.h"
 using namespace std;
 
+
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
-	// Subscribe to map
-	_subImg = _rosNode.subscribe<flarb_mapbuilder::MapImage>( "map", 1, &cController::ImgCallback, this);
+	// Subscribe to "/map"
+	_subImg = _rosNode.subscribe<flarb_mapbuilder::MapImage>( "/map", 1, &cController::ImgCallback, this);
+
+	// Subscribe "steering/waypoint"
+	_subWaypoint = _rosNode.subscribe<flarb_controller::WaypointVector>
+					( "steering/waypoint", 1, &cController::WaypointCallback, this);
 
 	// Init video object
 	_video.Create();
@@ -55,7 +60,18 @@ void cController::ImgCallback( const flarb_mapbuilder::MapImage msg)
 		}
 	}
 
+	// Draw last vector
+	_video.DrawLine( msg.cameraX, msg.cameraY, msg.cameraX + _lastVector.x, msg.cameraY + _lastVector.y, COLOR_RED);
+	_video.DrawPixel( msg.cameraX, msg.cameraY, COLOR_BLUE);
+
 	// Flip it
 	_video.Update();
+}
+
+
+void cController::WaypointCallback( const flarb_controller::WaypointVector msg)
+{
+	// Copy the waypoint
+	_lastVector = msg;
 }
 
