@@ -8,20 +8,35 @@
 #include "flarb_mapbuilder/cImage.h"
 using namespace std;
 
-// Constructor and deconstructor, to allocate data for _frame
-cImage::cImage() : _data( new char[ IMAGE_SIZE]), _x( 0), _y( 0) {}
+
+/*
+ * Constructor and deconstructor, to allocate data for _frame
+ */
+cImage::cImage() : _data( new char[ IMAGE_SIZE]) {}
 cImage::~cImage() { delete _data;};
 
+
+/*
+ * Get the data pointer
+ */
+const char* cImage::getData() const
+{
+	return _data;
+}
+
+
+/*
+ * "Clears" the image (fill it with 0)
+ */
 void cImage::ClearImage()
 {
 	memset( _data, 0, IMAGE_SIZE);
 }
 
-/*void cImage::SetTransformation( float x, float y TODO rotation)
-{
-	
-}*/
 
+/*
+ * Adds the framepoints to the image
+ */
 void cImage::AddFramePoints( const cFrame &frame)
 {
 	// Define x/y_old coordinates and set first run to true
@@ -36,16 +51,19 @@ void cImage::AddFramePoints( const cFrame &frame)
 		int x = (int)(frame._dataPoints.at( i).x * (IMAGE_WIDTH  / IMAGE_METER));
 		int y = (int)(frame._dataPoints.at( i).y * (IMAGE_HEIGHT / IMAGE_METER));
 
-		// Add offset
+		// Add offset and invert y (we are going from world-state to image-state)
 		x += IMAGE_OFFSET_X;
-		y += IMAGE_OFFSET_Y;
-
-		// Invert Y, as we are going from Y-up to Y-down (for images)
-		y = IMAGE_HEIGHT - y;
+		y  = IMAGE_HEIGHT - (y + IMAGE_OFFSET_Y);
 
 		// If this ain't the first pixel, draw it. otherwise skip
 		if( !first)
-			DrawLine( x, y, x_old, y_old);
+		{
+			// If the distance between points ain't too much, draw a line otherwise a dot
+			if( ((x-x_old)*(x-x_old) + (y-y_old)*(y-y_old)) < IMAGE_LINE_MAX)
+				DrawLine( x, y, x_old, y_old);
+			else
+				DrawPixel( x, y);
+		}
 		else
 			first = false;
 
@@ -55,11 +73,19 @@ void cImage::AddFramePoints( const cFrame &frame)
 	}
 }
 
+
+/*
+ * Checks if a given pixel-value is in range
+ */
 inline bool cImage::PixelInRange( int x, int y)
 {
 	return x >= 0 && x < IMAGE_WIDTH && y >= 0 && y < IMAGE_HEIGHT;
 }
 
+
+/*
+ * Draws a pixel
+ */
 void cImage::DrawPixel( int x, int y)
 {
 	// Check if in range
@@ -74,12 +100,13 @@ void cImage::DrawPixel( int x, int y)
 	_data[ byte] |= 1 << bit;
 }
 
+
 /*
- * TODO performance, integrate DrawPixel into this func. to avoid recalculation
+ * Draws a line between the two points
  */
 void cImage::DrawLine( int x0, int y0, int x1, int y1)
 {
-	// Check if in range
+	// If both points ain't in range, quit
 	if( !PixelInRange( x0, y0 ) && !PixelInRange( x1, y1 ))
 		return;
 
@@ -116,8 +143,8 @@ void cImage::DrawLine( int x0, int y0, int x1, int y1)
 		error = error - deltay;
 
 		if (error < 0) {
-			y = y + ystep;
-			error = error + deltax;
+			y += ystep;
+			error += deltax;
 		}
 	}
 }
