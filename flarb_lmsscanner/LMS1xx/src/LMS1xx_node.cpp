@@ -6,7 +6,7 @@
 
 #define DEG2RAD M_PI/180.0
 
-#define SEND_INTENSITIES
+//#define SEND_INTENSITIES
 
 int main(int argc, char **argv)
 {
@@ -72,7 +72,9 @@ int main(int argc, char **argv)
     scan_msg.time_increment = scan_msg.scan_time/num_values;
 
     scan_msg.ranges.resize(num_values);
+#ifdef SEND_INTENSITIES
     scan_msg.intensities.resize(num_values);
+#endif
 
     dataCfg.outputChannel = 1;
     dataCfg.remission = true;
