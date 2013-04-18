@@ -43,7 +43,7 @@ void cVideo::Destroy()
 void cVideo::Clear( uint32_t imageX, uint32_t imageY)
 {
 	// Fill the image with white, so we only have to write the black dots
-	SDL_Rect rect = { 0, 0, (uint16_t)imageX, (uint16_t)imageY};
+	SDL_Rect rect = { 0, 0, (uint16_t)imageX / 2, (uint16_t)imageY / 2};
 	SDL_FillRect( _display, &rect, _sdl_colors[COLOR_WHITE]);
 }
 
@@ -63,7 +63,7 @@ void cVideo::Update()
  */
 void cVideo::DrawPixel( int x, int y, enum VIDEO_COLOR color)
 {
-	__DrawPixel( x, y, _sdl_colors[color]);
+	__DrawPixel( x / 2, y / 2, _sdl_colors[color]);
 }
 
 
