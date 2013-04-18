@@ -12,11 +12,11 @@
 
 #define IMAGE_METER     5.0f  // The amount meters the image represents on each axis
 #define IMAGE_OFFSET_X  (IMAGE_WIDTH / 2)      // Camera position X
-#define IMAGE_OFFSET_Y  (IMAGE_HEIGHT / 4 * 1) // Y
+#define IMAGE_OFFSET_Y  (IMAGE_HEIGHT / 10*3)  // Y
 
 // The maximum distance in pixels for each line to be drawn
 // Note this is squared distance
-#define IMAGE_LINE_MAX  (20 * 20)
+#define IMAGE_LINE_MAX  (25 * 25)
 
 
 // Check if FRAME_WIDTH is actually a multiple of 8..
