@@ -37,9 +37,9 @@ void cController::ImgCallback( const flarb_mapbuilder::MapImage msg)
 	_video.Clear( msg.imageX, msg.imageY);
 
 	// Write the image to the buffer the hard way
-	for( int y = 0, offset = 0; y < 512; y++)
+	for( int y = 0, offset = 0; y < msg.imageY; y++)
 	{
-		for( int x = 0; x < (512 / 8); x++, offset++)
+		for( int x = 0; x < (msg.imageX / 8); x++, offset++)
 		{
 			// Get value and advance the iterator
 			int val = msg.data.at( offset);
