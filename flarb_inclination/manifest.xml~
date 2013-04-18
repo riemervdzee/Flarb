@@ -1,7 +1,7 @@
 <package>
-  <description brief="flarb_accelerometer">
+  <description brief="flarb_gps">
 
-     flarb_inclination
+     flarb_gps
 
   </description>
   <author>Daniel de Valk / Riemer van der Zee</author>

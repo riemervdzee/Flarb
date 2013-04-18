@@ -1,5 +1,18 @@
-stty -F /dev/ttyUSB0 ispeed 4800 && cat < /dev/ttyUSB0
-
+/*
+ *	INFO
+ *
+ *	accuracy: 4 decimals: DDMM.MMMM == 0.186m
+ *
+ *	XXYY.YYYY = XX + (YYYYYY / 600000) graden.
+ *	5250.7544,N = N52,845906667
+ *	00501.9356,E = E005,03226
+ * 
+ * 	5250.7544 = 52 (507544/600000) = N52,845906667
+ *
+ *	speed over ground in knots(1.852km) knots * 1.852 = km/h
+ *	SOA = SOG x cos(COG - B). 
+ */
+	
 NMEA is a standard protocol, use by GPS receivers to transmit data. NMEA output is EIA-422A but for most purposes you can consider it RS-232 compatible. Use 4800 bps, 8 data bits, no parity and one stop bit ( 8N1 ). NMEA 0183 sentences are all ASCII. Each sentence begins with a dollarsign ($) and ends with a carriage return linefeed (<CR><LF>). Data is comma delimited. All commas must be included as they act as markers. Some GPS do not send some of the fields. A checksum is optionally added (in a few cases it is manatory). Following the $ is the address field aaccc. aa is the device id. GP is used to identify GPS data. Transmission of the device ID is usually optional. ccc is the sentence formatter, otherwise known as the sentence name.
 Here are the most important sentences ( for more infos read the text-file NMEA-FAQ ) : Eine sehr gute Seite zum Thema findet man auch hier : http://rpss28.uni-regensburg.de:8080/PiechullaWeb/NMEA0183/
 
@@ -44,9 +57,9 @@ RMC  = Recommended Minimum Specific GPS/TRANSIT Data
 12   = Checksum
 
     GGA
-
-$GPGGA,hhmmss.ss,llll.ll,a,yyyyy.yy,a,x,xx,x.x,x.x,M,x.x,M,x.x,xxxx*hh
-
+$GPGGA,153224.000,5250.7544,N,00501.9356,E,1,08,1.1,12.1,M,46.8,M,   ,0000*62
+$GPGGA,hhmmss.sss,llll.llll,a,yyyyy.yyyy,a,x,xx,x.x,xx.x,M,xx.x,M,x.x,xxxx*hh
+	   1		  2			3 4		 	 5 6 7  8   9    0 1	2 3   4	   5
 GGA  = Global Positioning System Fix Data
 
 1    = UTC of Position
@@ -135,3 +148,27 @@ GSV  = Number of SVs in view, PRN numbers, elevation, azimuth & SNR values.
 8-11 = Information about second SV, same as field 4-7
 12-15= Information about third SV, same as field 4-7
 16-19= Information about fourth SV, same as field 4-7 
+
+
+
+//Random DATA
+
+$GPGSV,3,3,12,10,08,268,,11,06,152,22,12,04,332,26,25,04,003,25*79
+$GPRMC,063133.000,A,5250.7504,N,00501.9354,E,0.58,4.55,180413,,,A*67
+$GPGGA,063134.000,5250.7505,N,00501.9354,E,1,08,1.0,-0.3,M,46.8,M,,0000*78
+$GPGSA,A,3,31,11,32,13,17,23,04,20,,,,,1.8,1.0,1.5*3E
+$GPRMC,063134.000,A,5250.7505,N,00501.9354,E,0.10,358.19,180413,,,A*6F
+$GPGGA,184802.000,5250.7530,N,00501.9356,E,1,08,1.0,0.8,M,46.8,M,,0000*5E
+$GPGSA,A,3,29,24,04,14,02,31,12,25,,,,,1.8,1.0,1.6*35
+$GPRMC,184802.000,A,5250.7530,N,00501.9356,E,0.21,157.89,170413,0,N,00501.9355,E,1,08,1.0,0.8,M,46.8,M,,0000*5C
+$GPGSA,A,3,29,24,04,14,02,31,12,25,,,,,1.8,1.0,1.6*35
+$GPGGA,184801.000,5250.7530,N,00501.9356,E,1,08,1.0,0.9,M,46.8,M,,0000*5C
+$GPGSA,A,3,29,24,04,14,02,31,12,25,,,,,1.8,1.0,1.6*35
+$GPRMC,184801.000,A,5250.7530,N,00501.9356,E,0.09,128.07,170413,0,N,00501.9355,E,1,08,1.0,0.8,M,46.8,M,,0000*5C
+$GPGSA,A,3,29,24,04,14,02,31,12,25,,,,,1.8,1.0,1.6*35
+$GPGGA,184800.000,5250.7530,N,00501.9355,E,1,08,1.0,0.9,M,46.8,M,,0000*5E
+$GPGSA,A,3,29,24,04,14,02,31,12,25,,,,,1.8,1.0,1.6*35
+$GPRMC,184800.000,A,5250.7530,N,00501.9355,E,0.09,142.81,170413,30,N,00501.9355,E,1,08,1.0,0.8,M,46.8,M,,0000*5C
+$GPGSA,A,3,29,24,04,14,02,31,12,25,,,,,1.8,1.0,1.6*35
+
+
