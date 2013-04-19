@@ -1,9 +1,8 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
-
 #include "ros/ros.h"
-
 #include "flarb_controller/controllers/cFollowSegment.h"
+using namespace std;
 
 // Functions executed at the beginning and end of the Application
 bool cFollowSegment::Create()
@@ -21,9 +20,47 @@ void cFollowSegment::Destroy()
 // TODO maybe more parameters?
 bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
 {
-	// TODO Do magic trick to get a way-point
-	msg.x =   0;
-	msg.y = -20;
+	// Basic test of the area we are scanning in
+	int offset_width  = 0.50f * (image.getMapImage()->imageX/image.getMapImage()->sizeWidth);
+	int height        = 0.50f * (image.getMapImage()->imageY/image.getMapImage()->sizeHeight);
+	int width = offset_width * 2;
+
+	int x0 = image.getMapImage()->cameraX - offset_width;
+	int y0 = image.getMapImage()->cameraY - height;
+
+	int ret = image.CountBlockedRectangle( x0, y0, width, height);
+
+	msg.x = 0;
+	msg.y = -0.5f;
+
+	//
+	if( ret == 0)
+		return true;
+
+	int sumLeft  = 0;
+	int sumRight = 0;
+
+	for(int i = 0; i < height; i++)
+	{
+		sumLeft  += image.GetXRight ( image.getMapImage()->cameraX, y0 + i);
+		sumRight += image.GetXLeft  ( image.getMapImage()->cameraX, y0 + i);
+	}
+
+	// Average
+	sumLeft  /= height;
+	sumRight /= height;
+
+	// Get average of these two again
+	// TODO this is probably funky
+	msg.x = (((sumLeft + sumRight) /2) - image.getMapImage()->cameraX) /
+		(image.getMapImage()->imageX/image.getMapImage()->sizeWidth);
+
+	/*float length = 0.5f / sqrt(msg.x*msg.x + msg.y*msg.y);
+
+	msg.x *= length;
+	msg.y *= length;*/
+
+	cout << msg.x << " "<< msg.y << endl;
 
 	return true;
 }
