@@ -6,9 +6,16 @@
 
 class cImage
 {
+private:
+	// Pointer to the msg _NOTE cImage IS NOT THE OWNER OF THIS OBJ_
+	const flarb_mapbuilder::MapImage *_msg;
+
+	// Cached values
+	int _bytesRow;
+
 public:
-	//ctor
-	cImage( const flarb_mapbuilder::MapImage *msg);
+	// C-tor
+	cImage( const flarb_mapbuilder::MapImage *msg) : _msg(msg), _bytesRow( _msg->imageX / 8) {}
 
 	// Count the amount of pixels, supporting a few basic geo functions
 	int CountBlockedPixel     ( int x, int y) const;
@@ -20,12 +27,9 @@ public:
 	int GetXLeft  (int x, int y) const;
 	int GetXRight (int x, int y) const;
 
-private:
-	// Pointer to the msg _NOTE cImage IS NOT THE OWNER OF THIS OBJ_
-	const flarb_mapbuilder::MapImage *_msg;
-
-	// Cached values
-	int _bytesRow;
+	// Getters
+	const flarb_mapbuilder::MapImage* getMapImage() const { return _msg;}
+	int getBytesRow() const { return _bytesRow;}
 };
 
 #endif // CLASS_IMAGE_H

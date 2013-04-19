@@ -12,14 +12,6 @@ static unsigned int CountBitsSet( unsigned int v);
 static inline int asm_ffs( int x);
 static inline int asm_fls( int x);
 
-/*
- *  Constructor
- */
-cImage::cImage( const flarb_mapbuilder::MapImage *msg) : _msg(msg)
-{
-	_bytesRow = _msg->imageX / 8;
-}
-
 
 /*
  *  give x, y, msg the Pixel and returns
