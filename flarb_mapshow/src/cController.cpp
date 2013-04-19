@@ -61,7 +61,9 @@ void cController::ImgCallback( const flarb_mapbuilder::MapImage msg)
 	}
 
 	// Draw last vector
-	_video.DrawLine( msg.cameraX, msg.cameraY, msg.cameraX + _lastVector.x, msg.cameraY + _lastVector.y, COLOR_RED);
+	_video.DrawLine( msg.cameraX, msg.cameraY,
+		msg.cameraX + (_lastVector.x * (msg.imageX/ msg.sizeWidth)),
+		msg.cameraY + (_lastVector.y * (msg.imageX/ msg.sizeWidth)), COLOR_RED);
 	_video.DrawPixel( msg.cameraX, msg.cameraY, COLOR_BLUE);
 
 	// Flip it
