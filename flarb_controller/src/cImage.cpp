@@ -193,14 +193,15 @@ int cImage::GetXLeft( int x, int y) const
 	offset++;
 
 	// Go through all remaining bytes
-	for( ; (unsigned int)posX < _msg->imageX; posX++, offset++)
+	int size = (_msg->imageX / 8);
+	for( ; posX < size; posX++, offset++)
 	{
 		int ret = asm_ffs( _msg->data[offset]);
 		if(ret != 0)
 			return ret + (posX * 8);
 	}
 
-	return -1;
+	return _msg->imageX - 1;
 }
 
 
@@ -241,7 +242,7 @@ int cImage::GetXRight( int x, int y) const
 			return ret + (posX * 8);
 	}
 
-	return -1;
+	return 0;
 }
 
 
