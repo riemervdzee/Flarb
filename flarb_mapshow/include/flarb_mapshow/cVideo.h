@@ -39,11 +39,11 @@ public:
 	void Update();
 
 	// Primitive drawings
-	void DrawPixel( int x, int y, enum VIDEO_COLOR color);
+	void DrawPixel( unsigned int x, unsigned int y, enum VIDEO_COLOR color);
 	void DrawLine( int x0, int y0, int x1, int y1, enum VIDEO_COLOR color);
 
 	// Helper function for DrawPixel
-	void __DrawPixel( int x, int y, uint32_t color);
+	void __DrawPixel( unsigned int x, unsigned int y, uint32_t color);
 
 private:
 	// Array VIDEO_COLOR_VALUE translated to SDL values

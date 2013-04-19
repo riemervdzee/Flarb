@@ -61,7 +61,7 @@ void cVideo::Update()
 /*
  * Draws a pixel at x/y with the color
  */
-void cVideo::DrawPixel( int x, int y, enum VIDEO_COLOR color)
+void cVideo::DrawPixel( unsigned int x, unsigned int y, enum VIDEO_COLOR color)
 {
 	__DrawPixel( x / 2, y / 2, _sdl_colors[color]);
 }
@@ -70,7 +70,7 @@ void cVideo::DrawPixel( int x, int y, enum VIDEO_COLOR color)
 /*
  * Actually draws the pixel
  */
-void cVideo::__DrawPixel( int x, int y, uint32_t color)
+void cVideo::__DrawPixel( unsigned int x, unsigned int y, uint32_t color)
 {
 	if ( SDL_MUSTLOCK( _display) ) {
 		if ( SDL_LockSurface( _display) < 0 ) {
@@ -125,6 +125,7 @@ void cVideo::__DrawPixel( int x, int y, uint32_t color)
  * Draws a line at (x,y)0 to (x,y)1 with color
  */
 void cVideo::DrawLine( int x0, int y0, int x1, int y1, enum VIDEO_COLOR color)
+
 {
 	// Check if in range
 	// TODO maybe we need this as well?
@@ -157,9 +158,9 @@ void cVideo::DrawLine( int x0, int y0, int x1, int y1, enum VIDEO_COLOR color)
 	for ( int x = x0; x < x1; x++)
 	{
 		if ( steep)
-			DrawPixel( y, x, color);
+			DrawPixel( (unsigned int) y, (unsigned int) x, color);
 		else
-			DrawPixel( x, y, color);
+			DrawPixel( (unsigned int) x, (unsigned int) y, color);
 
 		error = error - deltay;
 
