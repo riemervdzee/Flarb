@@ -175,6 +175,47 @@ int cImage::GetXLeft( int x, int y) const
 	int posX = x / 8;
 
 	// The special case is the byte where X already belongs in
+	int bitPosX = x % 8;
+
+	// Generic offset
+	int offset = posX + posY;
+
+	// Mask the bits we don't want to 0.
+	uint8_t temp = ( _msg->data[offset] >> bitPosX) << bitPosX;
+
+	// Check if we got a result
+	int ret = asm_ffs( temp);
+	if(ret != 0)
+		return ret + (posX * 8);
+
+	// We handled the first byte, so decrease
+	posX--;
+	offset--;
+
+	// Go through all remaining bytes
+	for( ; posX >= 0; posX--, offset--)
+	{
+		int ret = asm_ffs( _msg->data[offset]);
+		if(ret != 0)
+			return ret + (posX * 8);
+	}
+
+	return 0;
+}
+
+
+/*
+ * Advances from the position given to the right, till the first bit is found
+ */
+int cImage::GetXRight( int x, int y) const
+{
+	// multiply bytesrow with y, to get the y-offset
+	int posY = y * _bytesRow;
+
+	// how far in the x array
+	int posX = x / 8;
+
+	// The special case is the byte where X already belongs in
 	int bitPosX = 7 - ((x - 1) % 8);
 
 	// Generic offset
@@ -202,47 +243,6 @@ int cImage::GetXLeft( int x, int y) const
 	}
 
 	return _msg->imageX - 1;
-}
-
-
-/*
- * Advances from the position given to the right, till the first bit is found
- */
-int cImage::GetXRight( int x, int y) const
-{
-	// multiply bytesrow with y, to get the y-offset
-	int posY = y * _bytesRow;
-
-	// how far in the x array
-	int posX = x / 8;
-
-	// The special case is the byte where X already belongs in
-	int bitPosX = x % 8;
-
-	// Generic offset
-	int offset = posX + posY;
-
-	// Mask the bits we don't want to 0.
-	uint8_t temp = ( _msg->data[offset] >> bitPosX) << bitPosX;
-
-	// Check if we got a result
-	int ret = asm_ffs( temp);
-	if(ret != 0)
-		return ret + (posX * 8);
-
-	// We handled the first byte, so decrease
-	posX--;
-	offset--;
-
-	// Go through all remaining bytes
-	for( ; posX >= 0; posX--, offset--)
-	{
-		int ret = asm_ffs( _msg->data[offset]);
-		if(ret != 0)
-			return ret + (posX * 8);
-	}
-
-	return 0;
 }
 
 
