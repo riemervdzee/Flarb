@@ -52,8 +52,8 @@ private:
 	char *_data;
 
 	// Primitive drawing functions
-	bool PixelInRange( int x, int y);
-	void DrawPixel( int x, int y);
+	bool PixelInRange( unsigned int x, unsigned int y);
+	void DrawPixel( unsigned int x, unsigned int y);
 	void DrawLine( int x0, int y0, int x1, int y1);
 };
 

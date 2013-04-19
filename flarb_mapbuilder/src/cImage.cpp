@@ -60,7 +60,7 @@ void cImage::AddFramePoints( const cFrame &frame)
 		{
 			// If the distance between points ain't too much, draw a line otherwise a dot
 			if( ((x-x_old)*(x-x_old) + (y-y_old)*(y-y_old)) < IMAGE_LINE_MAX)
-				DrawLine( x, y, x_old, y_old);
+				DrawLine( x_old, y_old, x, y);
 			else
 				DrawPixel( x, y);
 		}
@@ -77,24 +77,24 @@ void cImage::AddFramePoints( const cFrame &frame)
 /*
  * Checks if a given pixel-value is in range
  */
-inline bool cImage::PixelInRange( int x, int y)
+inline bool cImage::PixelInRange( unsigned int x, unsigned int y)
 {
-	return x >= 0 && x < IMAGE_WIDTH && y >= 0 && y < IMAGE_HEIGHT;
+	return x < IMAGE_WIDTH && y < IMAGE_HEIGHT;
 }
 
 
 /*
  * Draws a pixel
  */
-void cImage::DrawPixel( int x, int y)
+void cImage::DrawPixel( unsigned int x, unsigned int y)
 {
 	// Check if in range
 	if( !PixelInRange( x, y))
 		return;
 
 	// Get byte and bit offset
-	int  bit = x % 8;
-	int byte = x / 8 + y * IMAGE_WIDTH / 8;
+	unsigned int  bit = x % 8;
+	unsigned int byte = x / 8 + y * IMAGE_WIDTH / 8;
 
 	// Set bit
 	_data[ byte] |= 1 << bit;
@@ -136,9 +136,9 @@ void cImage::DrawLine( int x0, int y0, int x1, int y1)
 	for ( int x = x0; x < x1; x++)
 	{
 		if ( steep)
-			DrawPixel( y, x);
+			DrawPixel( (unsigned int) y, (unsigned int) x);
 		else
-			DrawPixel( x, y);
+			DrawPixel( (unsigned int) x, (unsigned int) y);
 
 		error = error - deltay;
 
