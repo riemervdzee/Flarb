@@ -59,12 +59,12 @@ void cController::Update()
  */
 void cController::CallbackMap( const cImage &image)
 {
-	// msg struct, which we'll be sending
-	flarb_controller::WaypointVector msg;
+	// Vector
+	tVector vector;
 
 
 	// Always execute AvoidObstacle sub-controller
-	bool ret = _avoidObstacle.Execute( msg, image);
+	bool ret = _avoidObstacle.Execute( vector, image);
 
 	// Did AvoidObstacle return true, and we ain't in AvoidObstacle mode? Save state
 	if( ret == true && _state != STATE_AVOID_OBSTACLE)
@@ -84,13 +84,13 @@ void cController::CallbackMap( const cImage &image)
 		switch( _state)
 		{
 			case STATE_FOLLOW_SEGMENT:
-				ret = _followSegment.Execute( msg, image);
+				ret = _followSegment.Execute( vector, image);
 				if( ret == false)
 					_state = STATE_FIND_SEGMENT;
 				break;
 
 			case STATE_FIND_SEGMENT:
-				ret = _findSegment.Execute( msg, image);
+				ret = _findSegment.Execute( vector, image);
 				if( ret == false)
 					_state = STATE_FOLLOW_SEGMENT;
 				break;
@@ -108,11 +108,15 @@ void cController::CallbackMap( const cImage &image)
 		cout << "cController: We are bloody stuck :(" << endl;
 
 		// Failsafe, set the values to 0
-		msg.x = msg.y = 0;
+		vector = tVector( 0, 0);
 	}
 
 
 	// We have a filled message by now, publish it
+	// msg struct, which we'll be sending
+	flarb_controller::WaypointVector msg;
+	msg.x = vector.getX();
+	msg.y = vector.getY();
 	_rosCom.PublishWaypoint( msg);
 }
 

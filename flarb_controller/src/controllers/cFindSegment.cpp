@@ -19,7 +19,7 @@ void cFindSegment::Destroy()
 // Passes reference of "msg", is used as output
 // Executes the FindSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
-bool cFindSegment::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
+bool cFindSegment::Execute( tVector &vector, const cImage &image)
 {
 	return false;
 }

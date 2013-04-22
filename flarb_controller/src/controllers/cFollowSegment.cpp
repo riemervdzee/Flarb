@@ -15,10 +15,10 @@ void cFollowSegment::Destroy()
 
 }
 
-// Passes reference of "msg", is used as output
+// Passes reference of "vector", is used as output
 // Executes the FollowSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
-bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
+bool cFollowSegment::Execute( tVector &vector, const cImage &image)
 {
 	// Basic test of the area we are scanning in
 	int offset_width  = 0.50f * image.getMeters2Pixels();
@@ -30,36 +30,37 @@ bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImag
 
 	int ret = image.CountBlockedRectangle( x0, y0, width, height);
 
-	msg.x = 0;
-	msg.y = 0.5f;
+	vector = tVector( 0, 0.5f);
 
 	//
 	if( ret == 0)
 		return true;
 
-	int sumLeft  = 0;
-	int sumRight = 0;
+	int leftMax  = 0;
+	int rightMin = 9999;
 
 	for(int i = 0; i < height; i++)
 	{
-		sumLeft  += image.GetXRight ( image.getMapImage()->cameraX, y0 + i);
-		sumRight += image.GetXLeft  ( image.getMapImage()->cameraX, y0 + i);
+		int temp;
+		temp = image.GetXRight ( image.getMapImage()->cameraX, y0 + i);
+		if( temp < rightMin)
+			rightMin = temp;
+
+		temp = image.GetXLeft  ( image.getMapImage()->cameraX, y0 + i);
+		if( temp > leftMax)
+			leftMax = temp;
 	}
 
-	// Average
-	sumLeft  /= height;
-	sumRight /= height;
+	// Get average, substract the cam pos and conver it to WorldSpace units
+	float avg    = (leftMax + rightMin) /2;
+	float offset = avg - image.getMapImage()->cameraX;
+	vector.setX( offset * image.getPixels2Meters() );
 
-	// Get average of these two again
-	// TODO this is probably funky
-	msg.x = (((sumLeft + sumRight) /2) - image.getMapImage()->cameraX) * image.getPixels2Meters();
+	// Set the length to 0.5f
+	vector.setLength( 0.5f);
 
-	float length = 0.5f / sqrt(msg.x*msg.x + msg.y*msg.y);
-
-	msg.x *= length;
-	msg.y *= length;
-
-	cout << msg.x << " "<< msg.y << endl;
+	//cout << leftMax << " "<< rightMin << ", avg " << avg << " " << offset << endl;
+	//cout << vector.getX() << " "<< vector.getY() << endl << endl;
 
 	return true;
 }

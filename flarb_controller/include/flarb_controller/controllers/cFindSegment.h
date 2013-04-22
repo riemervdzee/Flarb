@@ -1,7 +1,9 @@
 #ifndef CLASS_FIND_SEGMENT_H
 #define CLASS_FIND_SEGMENT_H
 
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_controller/types/tVector.h"
+#include "flarb_controller/types/tMatrix.h"
+
 #include "flarb_controller/cImage.h"
 
 
@@ -15,10 +17,10 @@ public:
 	bool Create();
 	void Destroy();
 
-	// Passes reference of "msg", is used as output
+	// Passes reference of "vector", is used as output
 	// Executes the FindSegment sub-controller based on the rest of the arguments
 	// TODO maybe more parameters?
-	bool Execute( flarb_controller::WaypointVector &msg, const cImage &image);
+	bool Execute( tVector &vector, const cImage &image);
 
 private:
 };
