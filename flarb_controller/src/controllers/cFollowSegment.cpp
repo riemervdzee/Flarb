@@ -31,7 +31,7 @@ bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImag
 	int ret = image.CountBlockedRectangle( x0, y0, width, height);
 
 	msg.x = 0;
-	msg.y = -0.5f;
+	msg.y = 0.5f;
 
 	//
 	if( ret == 0)

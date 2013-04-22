@@ -4,6 +4,9 @@
 #include "flarb_mapshow/cVideo.h"
 using namespace std;
 
+#define WINDOW_X    800
+#define WINDOW_Y    600
+#define WINDOW_BITS  32
 
 // Functions executed at the beginning and end of the Application
 bool cVideo::Create()
@@ -13,7 +16,7 @@ bool cVideo::Create()
 		return false;
 
 	// Init display
-	if( (_display = SDL_SetVideoMode( 800, 600, 32, SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL)
+	if( (_display = SDL_SetVideoMode( WINDOW_X, WINDOW_Y, WINDOW_BITS, SDL_HWSURFACE | SDL_DOUBLEBUF )) == NULL)
 		return false;
 
 	// Init _sdl_colors
@@ -39,11 +42,18 @@ void cVideo::Destroy()
 
 /*
  * Clears a certain area
+ * Fill the image with white, so we only have to write the black dots
  */
 void cVideo::Clear( uint32_t imageX, uint32_t imageY)
 {
-	// Fill the image with white, so we only have to write the black dots
-	SDL_Rect rect = { 0, 0, (uint16_t)(imageX / 2), (uint16_t)(imageY / 2)};
+	// Get rect
+	SDL_Rect rect = {
+		0,
+		(int16_t) (WINDOW_Y - imageY / 2),
+		(uint16_t)(imageX / 2),
+		(uint16_t)(imageY / 2)};
+
+	// Fill
 	SDL_FillRect( _display, &rect, _sdl_colors[COLOR_WHITE]);
 }
 
@@ -77,6 +87,9 @@ void cVideo::__DrawPixel( unsigned int x, unsigned int y, uint32_t color)
 			return;
 		}
 	}
+
+	// Invert Y
+	y = WINDOW_Y - y;
 
 	switch ( _display->format->BytesPerPixel) 
 	{

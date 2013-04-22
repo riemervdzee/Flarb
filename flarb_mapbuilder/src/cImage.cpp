@@ -53,7 +53,7 @@ void cImage::AddFramePoints( const cFrame &frame)
 
 		// Add offset and invert y (we are going from world-state to image-state)
 		x += IMAGE_OFFSET_X;
-		y  = IMAGE_HEIGHT - (y + IMAGE_OFFSET_Y);
+		y += IMAGE_OFFSET_Y;
 
 		// If this ain't the first pixel, draw it. otherwise skip
 		if( !first)

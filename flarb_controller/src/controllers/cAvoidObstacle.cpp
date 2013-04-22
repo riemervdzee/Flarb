@@ -27,7 +27,7 @@ bool cAvoidObstacle::Execute( flarb_controller::WaypointVector &msg, const cImag
 	int width = offset_width * 2;
 
 	int x0 = image.getMapImage()->cameraX - offset_width;
-	int y0 = image.getMapImage()->cameraY - height;
+	int y0 = image.getMapImage()->cameraY;
 
 	int ret = image.CountBlockedRectangle( x0, y0, width, height);
 
