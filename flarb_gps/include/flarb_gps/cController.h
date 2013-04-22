@@ -22,7 +22,8 @@ public:
 private:
 	// Serial object
 	cSerial _serial;
-	char buff[255];
+	char buff[512];
+	int size;
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
 
