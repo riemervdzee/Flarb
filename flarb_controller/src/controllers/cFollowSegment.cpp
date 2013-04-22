@@ -21,12 +21,12 @@ void cFollowSegment::Destroy()
 bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImage &image)
 {
 	// Basic test of the area we are scanning in
-	int offset_width  = 0.50f * (image.getMapImage()->imageX/image.getMapImage()->sizeWidth);
-	int height        = 0.50f * (image.getMapImage()->imageY/image.getMapImage()->sizeHeight);
+	int offset_width  = 0.50f * image.getMeters2Pixels();
+	int height        = 0.50f * image.getMeters2Pixels();
 	int width = offset_width * 2;
 
 	int x0 = image.getMapImage()->cameraX - offset_width;
-	int y0 = image.getMapImage()->cameraY - height;
+	int y0 = image.getMapImage()->cameraY;
 
 	int ret = image.CountBlockedRectangle( x0, y0, width, height);
 
@@ -52,13 +52,12 @@ bool cFollowSegment::Execute( flarb_controller::WaypointVector &msg, const cImag
 
 	// Get average of these two again
 	// TODO this is probably funky
-	msg.x = (((sumLeft + sumRight) /2) - image.getMapImage()->cameraX) /
-		(image.getMapImage()->imageX/image.getMapImage()->sizeWidth);
+	msg.x = (((sumLeft + sumRight) /2) - image.getMapImage()->cameraX) * image.getPixels2Meters();
 
-	/*float length = 0.5f / sqrt(msg.x*msg.x + msg.y*msg.y);
+	float length = 0.5f / sqrt(msg.x*msg.x + msg.y*msg.y);
 
 	msg.x *= length;
-	msg.y *= length;*/
+	msg.y *= length;
 
 	cout << msg.x << " "<< msg.y << endl;
 

@@ -12,10 +12,17 @@ private:
 
 	// Cached values
 	int _bytesRow;
+	float _Meters2Pixels;
+	float _Pixels2Meters;
 
 public:
 	// C-tor
-	cImage( const flarb_mapbuilder::MapImage *msg) : _msg(msg), _bytesRow( _msg->imageX / 8) {}
+	cImage( const flarb_mapbuilder::MapImage *msg) :
+		_msg( msg),
+		_bytesRow( _msg->imageX / 8),
+		_Meters2Pixels( _msg->imageX / _msg->sizeWidth),
+		_Pixels2Meters( _msg->sizeWidth / _msg->imageX)
+	{}
 
 	// Count the amount of pixels, supporting a few basic geo functions
 	int CountBlockedPixel     ( int x, int y) const;
@@ -29,7 +36,9 @@ public:
 
 	// Getters
 	const flarb_mapbuilder::MapImage* getMapImage() const { return _msg;}
-	int getBytesRow() const { return _bytesRow;}
+	int   getBytesRow() const { return _bytesRow;}
+	float getMeters2Pixels() const {return _Meters2Pixels;}
+	float getPixels2Meters() const {return _Pixels2Meters;}
 };
 
 #endif // CLASS_IMAGE_H
