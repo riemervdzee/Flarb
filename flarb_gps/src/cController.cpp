@@ -31,7 +31,7 @@ int cController::Create()
 	_GGA = _rosNode.advertise<flarb_gps::GGA>("NMEA/GGA", 1);
 	_RMC = _rosNode.advertise<flarb_gps::RMC>("NMEA/RMC", 1);
 	Openport();
-	readDevice(0);
+	readDevice(1);
 	return 0;
 }
 
@@ -50,7 +50,7 @@ void cController::Destroy()
  */
 void cController::Update()
 {
-	readDevice(1);
+	readDevice(0);
 }
 
 /*
@@ -91,55 +91,49 @@ int cController::Openport()
 int cController::readDevice(int start){
 	char buffer[255];
 	char buffRaw[255];
-	memset (buffRaw,'-',255);
-	int a = _serial.Read(buffRaw, sizeof(buffRaw));
-	if(a > 0){
-		if(start){
-			//fill with '-'	
-			memset (buffer,'-',255);
-			//last time how much 
-			char * savePtr = strchr(buff, '-');
-			//copy backupped buffer
-			char * s = savePtr;			
-			s--;
-			//copy buff in working buffer
-			memcpy (buffer, buff, *s);
-			//length of our new buffer
-			char * t = strchr(buffRaw,'-');
-			//copy raw buffer afther working buffer
-			memcpy (buffer + *savePtr, buffRaw, *t );
+	int a = _serial.Read(buffRaw, sizeof(buffRaw));				
+if(a > 0){
+		if(size == 0)
+			start = 1;
+		if(start == 1){
+			memcpy(buffer,buffRaw, a);
+			cout<< "buffer start is: "<< buffer << endl;
+			size = a;	
 		}
 		else{
-			*buffer = *buffRaw;
+			cout<<"else"<<endl;
+			memcpy(buffer, buff, size);
+			memcpy(buffer + size, buffRaw, a);
+			size = a + size;
+			cout<< "buffer afther copy"<< buff << endl;	
 		}
-		
-		//*buffer = *buffRaw;
-		
+
 		char * pch;
-		char * pch_cr;
-		//char * pch_lf;
-	  	pch = strchr(buffer,'$');	
-		if(pch != NULL){
-			while(pch != NULL){	
-				pch_cr = strchr(pch + 1,'\r');
-				if(pch_cr != NULL){
-					char NMEA[pch_cr - pch];
-					memcpy( NMEA, pch, (pch_cr - pch));
-					//Checksum
-					cout<< NMEA <<endl;
-					if(checksum(buffer) > 0){
-						cout<<"checksum succes"<<endl;
-						getPackage(NMEA);
-					}
-				}
-				pch = strchr(pch + 1,'$');		
-			}
-			memset (buff, '-', 255);
-			memcpy(buff, pch, (strchr(buffer, '-') - pch));
-			cout<< buff << endl;
-			cout<<"white line" << endl;
-		}	
-	
+		char * pch_next;
+		cout<<"before strchr"<<endl;
+		pch = strchr(buffer,'$');
+		if(pch != NULL){	
+			pch_next = strchr(pch + 1,'$');		
+		}
+		cout<<"Size at start: "<<size<<endl;	
+		while((pch != NULL) && (pch_next != NULL) ){
+			cout<<"while loop"<<endl;
+			char NMEA[(pch_next - pch) - 1];
+			cout<<"Sizeof NMEA: "<< sizeof(NMEA) <<endl;
+			memcpy( NMEA, pch, ((pch_next - pch) - 1));
+			cout<<"NMEA: "<<NMEA<<endl;
+			pch = pch_next;
+			cout<<"Size in loop: "<< size << endl;
+			pch_next = strchr(pch + 1,'$');	
+			//pch_next--;
+			if(pch_next == NULL)
+				size = 255 - (buffer - pch);	
+		}
+		cout<<"or here size: "<< size<<endl;
+		memset(buff, '-', 255);	
+		memcpy(buff, buffer + pch, size);
+		cout<<"size: "<<size<< endl;
+		cout<<"buffer: "<<buffer << endl;
 	}
 	return 1;
 }
