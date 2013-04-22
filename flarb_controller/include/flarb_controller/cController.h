@@ -3,6 +3,9 @@
 
 #include "ros/ros.h"
 
+#include "flarb_controller/types/tVector.h"
+#include "flarb_controller/types/tMatrix.h"
+
 #include "flarb_controller/sInputString.h"
 #include "flarb_controller/cImage.h"
 #include "flarb_controller/cRosCom.h"
