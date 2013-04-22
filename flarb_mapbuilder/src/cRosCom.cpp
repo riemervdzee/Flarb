@@ -36,7 +36,7 @@ void cRosCom::ScanCallback( const sensor_msgs::LaserScan msg)
 	mesg.sizeWidth   = IMAGE_METER;
 	mesg.sizeHeight  = IMAGE_METER;
 	mesg.cameraX     = IMAGE_OFFSET_X;
-	mesg.cameraY     = IMAGE_HEIGHT - IMAGE_OFFSET_Y;
+	mesg.cameraY     = IMAGE_OFFSET_Y;
 	mesg.data        = vector<uint8_t>( _map._image.getData(), _map._image.getData() + IMAGE_SIZE);
 
 	_pubMap.publish( mesg);

@@ -89,7 +89,7 @@ void cVideo::__DrawPixel( unsigned int x, unsigned int y, uint32_t color)
 	}
 
 	// Invert Y
-	y = WINDOW_Y - y;
+	y = WINDOW_Y - y - 1;
 
 	switch ( _display->format->BytesPerPixel) 
 	{
