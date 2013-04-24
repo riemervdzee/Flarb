@@ -31,7 +31,7 @@ int cController::Create()
 	_GGA = _rosNode.advertise<flarb_gps::GGA>("NMEA/GGA", 1);
 	_RMC = _rosNode.advertise<flarb_gps::RMC>("NMEA/RMC", 1);
 	Openport();
-	readDevice(1);
+	
 	return 0;
 }
 
@@ -75,6 +75,7 @@ int cController::Openport()
 	//make contact
 	if(ret == 0 && ros::ok()){
 		cout<< "Port opened " <<endl;
+		readDevice(1);
 		return 0;	
 	}
 	//abort
@@ -129,11 +130,12 @@ if(a > 0){
 			if(pch_next == NULL)
 				size = 255 - (buffer - pch);	
 		}
-		cout<<"or here size: "<< size<<endl;
+		cout<<"or here size: "<< size <<endl;
 		memset(buff, '-', 255);	
 		memcpy(buff, buffer + pch, size);
 		cout<<"size: "<<size<< endl;
 		cout<<"buffer: "<<buffer << endl;
+		sleep(1);
 	}
 	return 1;
 }
