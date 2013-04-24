@@ -7,6 +7,8 @@
 #include "flarb_compass/Compass.h"
 #include "flarb_VDMixer/Phase.h"
 #include "flarb_accelerometer/Accelerometer.h"
+#include "flarb_gps/GGA.h"
+#include "flarb_gps/RMC.h"
 
 using namespace std;
 
@@ -30,21 +32,28 @@ private:
 	ros::NodeHandle _rosNode;
 	//Actual Subscriber
 	ros::Subscriber Compass;
-	ros::Subscriber Accelerator;
 	//ros::Subscriber Gyro;
 	ros::Subscriber Inclination;
 	ros::Subscriber PhaseControl;
+	ros::Subscriber GGA;
+	ros::Subscriber RMC;
 	
 	
 	flarb_inclination::Axis message_axis;
 	flarb_compass::Compass message_north_angle;
 	flarb_VDMixer::Phase message_phase;
-	flarb_accelerometer::Accelerometer message_accelerator;
+	flarb_gps::GGA message_gga;
+	flarb_gps::RMC message_rmc;
 
 	void axismsg(const flarb_inclination::Axis msgr);
 	void compassmsg(const flarb_compass::Compass msgr);
 	void phasemsg(const flarb_VDMixer::Phase msgr);
-	void acceleratormsg(const flarb_accelerometer::Accelerometer msgr);
+	void GGAmsg(const flarb_gps::GGA msgr);
+	void RMCmsg(const flarb_gps::RMC msgr);
+
+
+	float WGS_KML(float Coord);
+	int Log_KML(flarb_gps::GGA msg);
 };
 
 #endif // CLASS_CONTROLLER_H

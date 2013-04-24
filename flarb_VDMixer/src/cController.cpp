@@ -9,6 +9,8 @@
 #include "flarb_inclination/Axis.h"
 #include "flarb_compass/Compass.h" 
 #include "flarb_accelerometer/Accelerometer.h"
+#include "flarb_gps/GGA.h"
+#include "flarb_gps/RMC.h"
 
 // Functions executed at the beginning and end of the Node
 
@@ -39,28 +41,32 @@ void cController::phasemsg(const flarb_VDMixer::Phase msgr)
 }
 
 /*
- *	Callback message Accellero (change in speed...)
+ *	Callback message NMEA/GGA
  */
-void cController::acceleratormsg(const flarb_accelerometer::Accelerometer msgr)
+void cController::GGAmsg(const flarb_gps::GGA msgr)
 {
-	message_accelerator = msgr;
+	message_gga = msgr;
 }
 
+/*
+ *	Callback message NMEA/RMC
+ */
+void cController::RMCmsg(const flarb_gps::RMC msgr)
+{
+	message_rmc = msgr;
+}
 
 bool cController::Create()
 {
 	//Subscriber for data 
 	Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compassmsg, this);
-	//TODO: Modify Accelerator to standard
-	Accelerator = _rosNode.subscribe<flarb_accelerometer::Accelerometer>("sensor/accelerator", 1, &cController::acceleratormsg, this);
-	//TODO: Modify Gyro to standard
-	//Gyro = _rosNode.subscribe<flarb_gyro::Axis>("sensor/gyro", 1, &cController::gyromsg, this);
+	GGA = _rosNode.subscribe<flarb_gps::GGA>("NMEA/GGA",1, &cController::GGAmsg, this);
+	RMC = _rosNode.subscribe<flarb_gps::RMC>("NMEA/RMC",1, &cController::RMCmsg, this);
 	//TODO: Modify inclination to standard
 	Inclination = _rosNode.subscribe<flarb_inclination::Axis>("sensor/inclination", 1, &cController::axismsg, this);
 	//TODO: Modify PhaseControl to standard
 	PhaseControl = _rosNode.subscribe<flarb_VDMixer::Phase>("sensor/phasecontrol", 1, &cController::phasemsg, this);
-	ros::spin();
-	return true;
+	return 0;
 }
 
 // Executed when the Node is exiting
@@ -72,5 +78,57 @@ void cController::Destroy()
 // Updates the controller obj
 void cController::Update()
 {
+	float k = 5250.7544; 
+	WGS_KML(k);
 
+	float l = 00501.9356; 
+	WGS_KML(l);
 }
+
+int cController::Log_KML(flarb_gps::GGA msg){
+	return 0;
+}
+
+float cController::WGS_KML(float Coord){
+	setprecision(6);
+	char data[32];
+	char last[6];
+	float KML = 0; 
+	bool start = true;
+	float aftherFloat = 0;
+	memset(last, '-', 6);
+	memset(data, '-', 32);
+	//cout<< "data Coord original" << Coord << endl;
+	//Getting point at the right position
+	KML = Coord / 100.0;
+	//Convert to Char
+	sprintf(data,"%f",KML);
+	//cout<< "integer: " << (int) KML << endl;
+	//cout<< "KML: " << KML << endl;
+	//cout<< "Coord: "<< Coord << endl;
+	//cout<< "Data: "<< data << endl; 	
+	int Size = sizeof(data);
+	for (int i = 0; i < Size; i++){			
+		if(data[i] == '.'){
+			int counter = 0;
+			for(int j = i + 1; j < i + 7; j++){
+				last[counter] = data[j];			
+				counter++;	
+			}
+			i = sizeof(data);
+			aftherFloat = ::atof(last);
+			cout<< "Atof raw: " << aftherFloat << endl;
+			aftherFloat =  aftherFloat / 600000;
+			cout<< "Aftherfloat2: " << aftherFloat << endl;
+			int klm = 0; 
+			klm = Coord / 100;			
+			aftherFloat += (float) klm;
+			cout<< "Aftherfloat4: " << aftherFloat << endl;
+			
+		}						
+	}
+
+	
+	return Coord;
+}
+
