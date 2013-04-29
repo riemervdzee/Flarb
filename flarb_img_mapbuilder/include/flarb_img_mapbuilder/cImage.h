@@ -2,7 +2,7 @@
 #define CLASS_IMAGE_H
 
 #include "ros/ros.h"
-#include "flarb_mapbuilder/cFrame.h"
+#include "flarb_img_mapbuilder/cFrame.h"
 
 
 // Image properties

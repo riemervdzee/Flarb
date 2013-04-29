@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_mapbuilder/cRosCom.h"
+#include "flarb_img_mapbuilder/cRosCom.h"
 
 
 /*

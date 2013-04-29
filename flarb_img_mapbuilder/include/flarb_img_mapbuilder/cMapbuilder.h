@@ -3,8 +3,8 @@
 
 #include "ros/ros.h"
 
-#include "flarb_mapbuilder/cImage.h"
-#include "flarb_mapbuilder/cFrame.h"
+#include "flarb_img_mapbuilder/cImage.h"
+#include "flarb_img_mapbuilder/cFrame.h"
 
 
 /*

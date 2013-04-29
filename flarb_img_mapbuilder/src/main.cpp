@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_mapbuilder/cController.h"
+#include "flarb_img_mapbuilder/cController.h"
 using namespace std;
 
 // Node defines

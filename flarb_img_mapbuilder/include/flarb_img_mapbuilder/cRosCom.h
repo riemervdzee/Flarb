@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 
-#include "flarb_mapbuilder/cMapbuilder.h"
+#include "flarb_img_mapbuilder/cMapbuilder.h"
 
 /*
  * 

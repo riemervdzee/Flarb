@@ -2,15 +2,15 @@
 #include <iostream>
 
 #include "ros/ros.h"
-#include "flarb_mapbuilder/cRosCom.h"
-#include "flarb_mapbuilder/MapImage.h"
+#include "flarb_img_mapbuilder/cRosCom.h"
+#include "flarb_img_mapbuilder/MapImage.h"
 using namespace std;
 
 
 int cRosCom::Create( ros::NodeHandle *rosNode)
 {
 	// Init publisher obj
-	_pubMap = rosNode->advertise<flarb_mapbuilder::MapImage>( "map", 1);
+	_pubMap = rosNode->advertise<flarb_img_mapbuilder::MapImage>( "map", 1);
 
 	// Init Subscriber obj.
 	_subSicklaser = rosNode->subscribe<sensor_msgs::LaserScan>( "/sick/scan", 1, &cRosCom::ScanCallback, this);
@@ -30,7 +30,7 @@ void cRosCom::ScanCallback( const sensor_msgs::LaserScan msg)
 	_map.RegenerateImage();
 
 	// Construct the message, and send it
-	flarb_mapbuilder::MapImage mesg;
+	flarb_img_mapbuilder::MapImage mesg;
 	mesg.imageX      = IMAGE_WIDTH;
 	mesg.imageY      = IMAGE_HEIGHT;
 	mesg.sizeWidth   = IMAGE_METER;

@@ -5,7 +5,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_mapbuilder/cImage.h"
+#include "flarb_img_mapbuilder/cImage.h"
 using namespace std;
 
 
