@@ -36,6 +36,9 @@ flarb_controller/src/flarb_controller/
 flarb_encoder/src/flarb_encoder/
 flarb_example/src/flarb_example/
 flarb_gps/src/flarb_gps/
+flarb_img_controller/src/flarb_img_controller/
+flarb_img_mapbuilder/src/flarb_img_mapbuilder/
+flarb_img_mapshow/src/flarb_img_mapshow/
 flarb_inclination/src/flarb_inclination/
 flarb_lmsscanner/src/flarb_lmsscanner/
 flarb_mapbuilder/src/flarb_mapbuilder/
