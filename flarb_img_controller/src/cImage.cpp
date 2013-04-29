@@ -1,8 +1,8 @@
 #include <iostream>
 #include <cstring>
-#include "flarb_mapbuilder/MapImage.h"
+#include "flarb_img_mapbuilder/MapImage.h"
 
-#include "flarb_controller/cImage.h"
+#include "flarb_img_controller/cImage.h"
 using namespace std;
 
 // TODO add error for non x86-64 arches

@@ -7,7 +7,7 @@
 
 #include <cmath>
 #include <cstdio>
-#include "flarb_controller/types/tVector.h"
+#include "flarb_img_controller/types/tVector.h"
 
 
 class tMatrix

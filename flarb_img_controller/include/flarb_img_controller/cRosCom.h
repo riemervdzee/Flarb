@@ -3,8 +3,8 @@
 
 #include "ros/ros.h"
 
-#include "flarb_controller/WaypointVector.h"
-#include "flarb_mapbuilder/MapImage.h"
+#include "flarb_img_controller/WaypointVector.h"
+#include "flarb_img_mapbuilder/MapImage.h"
 
 // forward declaration of cController
 class cController;
@@ -21,11 +21,11 @@ public:
 	int Destroy();
 
 	// Publishes a WaypointVector
-	void PublishWaypoint( const flarb_controller::WaypointVector &msg);
+	void PublishWaypoint( const flarb_img_controller::WaypointVector &msg);
 
 private:
 	// We received a laserscan frame
-	void ImgCallback( const flarb_mapbuilder::MapImage msg);
+	void ImgCallback( const flarb_img_mapbuilder::MapImage msg);
 
 
 	// Pointer to the cController class _NOTE: WE ARE NOT THE OWNER_

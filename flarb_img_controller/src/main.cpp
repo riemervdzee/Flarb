@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
-#include "flarb_controller/cController.h"
+#include "flarb_img_controller/cController.h"
 using namespace std;
 
 // Node defines

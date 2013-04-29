@@ -3,8 +3,8 @@
 
 #include "ros/ros.h"
 
-#include "flarb_controller/cController.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_img_controller/cController.h"
+#include "flarb_img_controller/WaypointVector.h"
 using namespace std;
 
 /*
@@ -114,7 +114,7 @@ void cController::CallbackMap( const cImage &image)
 
 	// We have a filled message by now, publish it
 	// msg struct, which we'll be sending
-	flarb_controller::WaypointVector msg;
+	flarb_img_controller::WaypointVector msg;
 	msg.x = vector.getX();
 	msg.y = vector.getY();
 	_rosCom.PublishWaypoint( msg);

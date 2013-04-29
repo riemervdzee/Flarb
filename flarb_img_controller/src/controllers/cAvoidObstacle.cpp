@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_controller/controllers/cAvoidObstacle.h"
+#include "flarb_img_controller/controllers/cAvoidObstacle.h"
 
 // Functions executed at the beginning and end of the Application
 bool cAvoidObstacle::Create()

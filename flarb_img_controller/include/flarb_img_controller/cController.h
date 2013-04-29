@@ -3,15 +3,15 @@
 
 #include "ros/ros.h"
 
-#include "flarb_controller/types/tVector.h"
-#include "flarb_controller/types/tMatrix.h"
+#include "flarb_img_controller/types/tVector.h"
+#include "flarb_img_controller/types/tMatrix.h"
 
-#include "flarb_controller/sInputString.h"
-#include "flarb_controller/cImage.h"
-#include "flarb_controller/cRosCom.h"
-#include "flarb_controller/controllers/cFollowSegment.h"
-#include "flarb_controller/controllers/cFindSegment.h"
-#include "flarb_controller/controllers/cAvoidObstacle.h"
+#include "flarb_img_controller/sInputString.h"
+#include "flarb_img_controller/cImage.h"
+#include "flarb_img_controller/cRosCom.h"
+#include "flarb_img_controller/controllers/cFollowSegment.h"
+#include "flarb_img_controller/controllers/cFindSegment.h"
+#include "flarb_img_controller/controllers/cAvoidObstacle.h"
 
 
 /*

@@ -1,10 +1,10 @@
 #ifndef CLASS_AVOID_OBSTACLE_H
 #define CLASS_AVOID_OBSTACLE_H
 
-#include "flarb_controller/types/tVector.h"
-#include "flarb_controller/types/tMatrix.h"
+#include "flarb_img_controller/types/tVector.h"
+#include "flarb_img_controller/types/tMatrix.h"
 
-#include "flarb_controller/cImage.h"
+#include "flarb_img_controller/cImage.h"
 
 
 /*
