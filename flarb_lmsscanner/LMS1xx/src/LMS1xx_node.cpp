@@ -77,7 +77,11 @@ int main(int argc, char **argv)
 #endif
 
     dataCfg.outputChannel = 1;
-    dataCfg.remission = true;
+#ifdef SEND_INTENSITIES
+	dataCfg.remission = true;
+#else
+    dataCfg.remission = false;
+#endif
     dataCfg.resolution = 1;
     dataCfg.encoder = 0;
     dataCfg.position = false;
