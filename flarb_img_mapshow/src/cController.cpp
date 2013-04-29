@@ -4,7 +4,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_mapshow/cController.h"
+#include "flarb_img_mapshow/cController.h"
 using namespace std;
 
 
@@ -12,10 +12,10 @@ using namespace std;
 bool cController::Create()
 {
 	// Subscribe to "/map"
-	_subImg = _rosNode.subscribe<flarb_mapbuilder::MapImage>( "/map", 1, &cController::ImgCallback, this);
+	_subImg = _rosNode.subscribe<flarb_img_mapbuilder::MapImage>( "/map", 1, &cController::ImgCallback, this);
 
 	// Subscribe "steering/waypoint"
-	_subWaypoint = _rosNode.subscribe<flarb_controller::WaypointVector>
+	_subWaypoint = _rosNode.subscribe<flarb_img_controller::WaypointVector>
 					( "steering/waypoint", 1, &cController::WaypointCallback, this);
 
 	// Init video object
@@ -31,7 +31,7 @@ void cController::Destroy()
 	_video.Destroy();
 }
 
-void cController::ImgCallback( const flarb_mapbuilder::MapImage msg)
+void cController::ImgCallback( const flarb_img_mapbuilder::MapImage msg)
 {
 	// Clear screen
 	_video.Clear( msg.imageX, msg.imageY);
@@ -71,7 +71,7 @@ void cController::ImgCallback( const flarb_mapbuilder::MapImage msg)
 }
 
 
-void cController::WaypointCallback( const flarb_controller::WaypointVector msg)
+void cController::WaypointCallback( const flarb_img_controller::WaypointVector msg)
 {
 	// Copy the waypoint
 	_lastVector = msg;

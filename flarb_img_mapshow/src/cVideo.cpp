@@ -1,7 +1,7 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
 
-#include "flarb_mapshow/cVideo.h"
+#include "flarb_img_mapshow/cVideo.h"
 using namespace std;
 
 #define WINDOW_X    800

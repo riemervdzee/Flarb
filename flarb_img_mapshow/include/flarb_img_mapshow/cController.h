@@ -3,10 +3,10 @@
 
 #include "ros/ros.h"
 
-#include "flarb_mapshow/cVideo.h"
+#include "flarb_img_mapshow/cVideo.h"
 
-#include "flarb_mapbuilder/MapImage.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_img_mapbuilder/MapImage.h"
+#include "flarb_img_controller/WaypointVector.h"
 
 /*
  * Main controller class of the example node
@@ -20,12 +20,12 @@ public:
 
 private:
 	// Callbacks
-	void ImgCallback( const flarb_mapbuilder::MapImage msg);
-	void WaypointCallback( const flarb_controller::WaypointVector msg);
+	void ImgCallback( const flarb_img_mapbuilder::MapImage msg);
+	void WaypointCallback( const flarb_img_controller::WaypointVector msg);
 
 
-	// Copy of the last flarb_controller::WaypointVector
-	flarb_controller::WaypointVector _lastVector;
+	// Copy of the last flarb_img_controller::WaypointVector
+	flarb_img_controller::WaypointVector _lastVector;
 
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
