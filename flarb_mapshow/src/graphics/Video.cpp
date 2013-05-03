@@ -87,25 +87,30 @@ void drawLine( float x0, float y0, float x1, float y1)
  * Draws a hollow segmented circle at the given position and radius
  */
 void drawCircle( float cx, float cy, float r, int num_segments)
-{ 
-	float theta = (2 * M_PI) / float(num_segments); 
+{
+	float theta = (2 * M_PI) / float(num_segments);
 	float c = cosf( theta); //precalculate the sine and cosine
 	float s = sinf( theta);
 
-	float x = r;//we start at angle = 0 
-	float y = 0; 
-    
+	float x = r;//we start at angle = 0
+	float y = 0;
+
+	glPushMatrix();
+	glTranslatef( cx, cy, 0);
+
 	glBegin( GL_LINE_LOOP);
-	for(int ii = 0; ii < num_segments; ii++) 
-	{ 
-		glVertex2f(x + cx, y + cy);//output vertex 
-        
+	for(int ii = 0; ii < num_segments; ii++)
+	{
+		glVertex2f( x, y);//output vertex
+
 		//apply the rotation matrix
 		float t = x;
 		x = c * x - s * y;
 		y = s * t + c * y;
-	} 
-	glEnd(); 
+	}
+	glEnd();
+
+	glPopMatrix();
 }
 
 
