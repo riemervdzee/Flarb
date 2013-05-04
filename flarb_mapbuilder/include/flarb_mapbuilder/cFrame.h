@@ -3,14 +3,17 @@
 
 #include <vector>
 
-#include "flarb_mapbuilder/types/tVector.h"
+#include "flarb_mapbuilder/types/tMatrix.h"
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 
+#define CALCU_COSSIN 0
+#define CACHE_COSSIN 0
+#define USE_MATRIX   1
 
-// Init size of amount of points and objects (avoids reallocations)
-#define INIT_SIZE_POINTS  1082   // 1081 is the maximum amount of points we can receive
-
+#if (CALCU_COSSIN + CACHE_COSSIN + USE_MATRIX) != 1
+#error Only select one of the following: CALCU_COSSIN, CACHE_COSSIN or USE_MATRIX!
+#endif
 
 /*
  * 
@@ -23,6 +26,13 @@ public:
 
 	// Our result, in public domain for easy access
 	std::vector<tVector> _dataPoints;
+
+private:
+#if CACHE_COSSIN
+	// Caching sin/cos calculations
+	static void PreCache( unsigned int size, float angle, float AngleIncrement);
+	static std::vector<tMatrix> _cartesian_cache;
+#endif
 };
 
 #endif // CLASS_FRAME_H
