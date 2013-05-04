@@ -20,7 +20,7 @@ public:
 	// Constructors
 	inline tMatrix(): c( 1), s( 0){}
 	inline tMatrix( float _c, float _s): c( _c), s( _s){}
-	inline tMatrix( const float angle_rad);
+	tMatrix( const float angle_rad);
 
 	// Get functions
 	inline float getC() { return c;}
