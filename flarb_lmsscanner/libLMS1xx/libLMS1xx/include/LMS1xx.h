@@ -216,6 +216,12 @@ public:
 	bool isConnected();
 
 	/*!
+	* @brief Tells whether we are logged in or not
+	* @returns logged in or not.
+	*/
+	bool isLoggedin();
+
+	/*!
 	* @brief Start measurements.
 	* After receiving this command LMS1xx unit starts spinning laser and measuring.
 	*/
@@ -297,6 +303,7 @@ public:
 
 private:
 	bool connected;
+	bool loggedin;
 	bool debug;
 
 	int sockDesc;
