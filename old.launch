@@ -1,0 +1,6 @@
+<launch>
+	<node name="LMS100" pkg="LMS1xx" type="LMS100" />
+	<node name="mapbuilder" pkg="flarb_img_mapbuilder" type="mapbuilder" />
+	<node name="controller" pkg="flarb_img_controller" type="controller" />
+	<node name="mapshow"    pkg="flarb_img_mapshow" type="mapshow" />
+</launch>
