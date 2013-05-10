@@ -2,12 +2,42 @@
 #include <cstdio>
 #include <LMS1xx.h>
 #include "ros/ros.h"
+#include "LMS1xx/LMSConfig.h"
 #include "sensor_msgs/LaserScan.h"
+using namespace std;
 
+// Used in program
 #define DEG2RAD M_PI/180.0
 
-//#define SEND_INTENSITIES
+// Extra options
+#define SEND_INTENSITIES 0
 
+
+// Options setable via ROS service
+bool EnableRawOutput = false;
+int  FilterSelect = 0;
+
+
+/**
+ * Config service handler
+ */
+bool ConfigCallback( LMS1xx::LMSConfig::Request  &req, LMS1xx::LMSConfig::Response &res)
+{
+	// Check for out-of-range
+	if(req.FilterSelect < 0 && req.FilterSelect > 3)
+		return false;
+
+	// Set data and return true
+	EnableRawOutput = req.EnableRawOutput;
+	FilterSelect    = req.FilterSelect;
+
+	return true;
+}
+
+
+/**
+ * Main entry of program
+ */
 int main(int argc, char **argv)
 {
 	// laser data
@@ -15,30 +45,36 @@ int main(int argc, char **argv)
 	scanCfg cfg;
 	scanDataCfg dataCfg;
 	scanData data;
+
 	// published data
 	sensor_msgs::LaserScan scan_msg;
-	// parameters
-	std::string host;
-	std::string frame_id;
 
+	// parameters
+	string host;
+	string frame_id;
+
+	// ROS
 	ros::init(argc, argv, "lms1xx");
 	ros::NodeHandle nh;
 	ros::NodeHandle n("~");
 	ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("/sick/scan", 1);
+	ros::Publisher scanfil_pub = nh.advertise<sensor_msgs::LaserScan>("/sick/scan_filtered", 1);
+	
+	ros::ServiceServer LMSConfig = nh.advertiseService( "/sick/config", ConfigCallback);
 
-	n.param<std::string>("host", host, "192.168.1.2");
-	n.param<std::string>("frame_id", frame_id, "laser");
+	n.param<string>("host", host, "192.168.1.2");
+	n.param<string>("frame_id", frame_id, "laser");
 
-	ROS_INFO("connecting to laser at : %s", host.c_str());
 	// initialize hardware
-
+	ROS_INFO("connecting to laser at : %s", host.c_str());	
 	while (!laser.isConnected())
 		laser.connect(host);
 
-	ROS_INFO("Connected to laser.");
-
 	while(!laser.isLoggedin())
 		laser.login();
+
+	ROS_INFO("Connected to laser and logged in.");
+
 
 	cfg = laser.getScanCfg();
 
@@ -53,8 +89,8 @@ int main(int argc, char **argv)
 	scan_msg.angle_min = (double)cfg.startAngle/10000.0 * DEG2RAD;
 	scan_msg.angle_max = (double)cfg.stopAngle/10000.0 * DEG2RAD;
 
-	std::cout << "resolution : " << (double)cfg.angleResolution/10000.0 << " deg " << std::endl;
-	std::cout << "frequency : " << (double)cfg.scaningFrequency/100.0 << " Hz " << std::endl;
+	cout << "resolution : " << (double)cfg.angleResolution/10000.0 << " deg " << endl;
+	cout << "frequency : " << (double)cfg.scaningFrequency/100.0 << " Hz " << endl;
 
 	int num_values;
 	if (cfg.angleResolution == 2500)
@@ -72,18 +108,16 @@ int main(int argc, char **argv)
 	}
 
 	scan_msg.time_increment = scan_msg.scan_time/num_values;
-
 	scan_msg.ranges.resize(num_values);
-#ifdef SEND_INTENSITIES
-	scan_msg.intensities.resize(num_values);
-#endif
 
-	dataCfg.outputChannel = 1;
-#ifdef SEND_INTENSITIES
+#if SEND_INTENSITIES
+	scan_msg.intensities.resize(num_values);
 	dataCfg.remission = true;
 #else
 	dataCfg.remission = false;
 #endif
+
+	dataCfg.outputChannel = 1;
 	dataCfg.resolution = 1;
 	dataCfg.encoder = 0;
 	dataCfg.position = false;
@@ -103,8 +137,8 @@ int main(int argc, char **argv)
 	while (stat != ready_for_measurement);
 
 	laser.startDevice(); // Log out to properly re-enable system after config
-
 	laser.scanContinous(1);
+
 
 	while (ros::ok())
 	{
@@ -120,7 +154,7 @@ int main(int argc, char **argv)
 			scan_msg.ranges[i] = data.dist1[i] * 0.001;
 		}
 
-#ifdef SEND_INTENSITIES
+#if SEND_INTENSITIES
 		for (int i = 0; i < data.rssi_len1; i++)
 		{
 			scan_msg.intensities[i] = data.rssi1[i];

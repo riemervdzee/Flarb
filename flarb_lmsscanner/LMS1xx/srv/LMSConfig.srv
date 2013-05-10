@@ -1,0 +1,10 @@
+## Tells the LMS should output raw measurements to "/sick/scan"
+bool EnableRawOutput
+
+## Which filter to select
+##   0 = Noone
+##   1 = Averaging
+##   2 = Median filter
+##   3 = Kalman filter
+int8 FilterSelect
+---
