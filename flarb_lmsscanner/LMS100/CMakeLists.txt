@@ -14,5 +14,11 @@ rosbuild_init()
 #set the default path for built executables to the "bin" directory
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 rosbuild_gensrv()
-rosbuild_add_executable(LMS100 src/LMS1xx_node.cpp)
 rosbuild_add_executable(set_config src/setConfig.cpp)
+rosbuild_add_executable(LMS100 
+						src/LMS1xx_node.cpp 
+						src/filters/filterNone.cpp
+						src/filters/filterAverage.cpp
+						src/filters/filterMedian.cpp
+						src/filters/filterKalman.cpp
+)

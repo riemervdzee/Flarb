@@ -2,8 +2,9 @@
 #include <cstdio>
 #include <LMS1xx.h>
 #include "ros/ros.h"
-#include "LMS1xx/LMSConfig.h"
+#include "LMS100/LMSConfig.h"
 #include "sensor_msgs/LaserScan.h"
+#include "filters/filters.h"
 using namespace std;
 
 // Used in program
@@ -21,7 +22,7 @@ int  FilterSelect = 0;
 /**
  * Config service handler
  */
-bool ConfigCallback( LMS1xx::LMSConfig::Request  &req, LMS1xx::LMSConfig::Response &res)
+bool ConfigCallback( LMS100::LMSConfig::Request  &req, LMS100::LMSConfig::Response &res)
 {
 	// Check for out-of-range
 	if(req.FilterSelect < 0 && req.FilterSelect > 3)
@@ -106,7 +107,14 @@ int main(int argc, char **argv)
 		ROS_ERROR("Unsupported resolution");
 		return 0;
 	}
+	
+	// Init filters
+	InitFilterNone    ( num_values);
+	InitFilterAverage ( num_values);
+	InitFilterMedian  ( num_values);
+	InitFilterKalman  ( num_values);
 
+	// Set some scan_msg defaults
 	scan_msg.time_increment = scan_msg.scan_time/num_values;
 	scan_msg.ranges.resize(num_values);
 
@@ -149,11 +157,6 @@ int main(int argc, char **argv)
 
 		laser.getData(data);
 
-		for (int i = 0; i < data.dist_len1; i++)
-		{
-			scan_msg.ranges[i] = data.dist1[i] * 0.001;
-		}
-
 #if SEND_INTENSITIES
 		for (int i = 0; i < data.rssi_len1; i++)
 		{
@@ -161,10 +164,47 @@ int main(int argc, char **argv)
 		}
 #endif
 
-		scan_pub.publish(scan_msg);
+		// Send to /sick/scan if raw data is wanted
+		if( EnableRawOutput)
+		{
+			for (int i = 0; i < data.dist_len1; i++)
+			{
+				scan_msg.ranges[i] = data.dist1[i] * 0.001;
+			}
+
+			scan_pub.publish(scan_msg);
+		}
+		
+		switch( FilterSelect)
+		{
+			case 1:
+				ExecuteFilterAverage( data, scan_msg);
+				break;
+
+			case 2:
+				ExecuteFilterMedian( data, scan_msg);
+				break;
+
+			// TODO wait till implemented
+			/*case 3:
+				ExecuteFilterKalman( data, scan_msg);
+				break;*/
+
+			default:
+				ExecuteFilterNone( data, scan_msg);
+				break;
+		}
+		
+		scanfil_pub.publish(scan_msg);
 
 		ros::spinOnce();
 	}
+	
+	// de-init filters
+	DestroyFilterNone();
+	DestroyFilterAverage();
+	DestroyFilterMedian();
+	DestroyFilterKalman();
 
 	laser.scanContinous(0);
 	laser.stopMeas();
