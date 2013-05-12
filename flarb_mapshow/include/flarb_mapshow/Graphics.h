@@ -37,11 +37,9 @@ enum gColor {
 
 // All handled inputs
 extern bool INPUT_STOP; // Should we stop the simulation?
-extern bool KEY_R;      // Is the R button pressed
-extern bool KEY_LEFT;   // Key flags
-extern bool KEY_RIGHT;
-extern bool KEY_UP;
-extern bool KEY_DOWN;
+extern bool INPUT_Z;
+extern bool INPUT_X;
+extern bool INPUT_C;
 
 // Prototypes for windowing code
 bool window_create( const char* caption);

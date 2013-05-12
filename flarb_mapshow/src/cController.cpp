@@ -8,14 +8,14 @@
 #include "flarb_mapshow/Graphics.h"
 using namespace std;
 
-
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
-	// Subscribe to "/map"
-	_subImg = _rosNode.subscribe<flarb_mapbuilder::Map>( "/map", 1, &cController::ImgCallback, this);
+	// Subscribe to topics
+	_subMap      = _rosNode.subscribe<flarb_mapbuilder::Map>( "/map", 1, &cController::MapbuildCallback, this);
+	_subRaw      = _rosNode.subscribe<sensor_msgs::LaserScan>( "/sick/scan", 1, &cController::RawCallback, this);
+	_subFiltered = _rosNode.subscribe<sensor_msgs::LaserScan>( "/sick/scan_filtered", 1, &cController::FilterCallback, this);
 
-	// Subscribe "steering/waypoint"
 	//_subWaypoint = _rosNode.subscribe<flarb_img_controller::WaypointVector>
 	//				( "steering/waypoint", 1, &cController::WaypointCallback, this);
 
@@ -36,22 +36,113 @@ void cController::Destroy()
 void cController::Update()
 {
 	InputUpdate();
-	// TODO Use INPUT_STOP 
+	
+	// Quit on X click
+	if( INPUT_STOP)
+		ros::shutdown();
+
+	// Togglers
+	if(INPUT_Z) {
+		INPUT_Z = false;
+		DrawMap = !DrawMap;
+	}
+	if(INPUT_X) {
+		INPUT_X = false;
+		DrawRaw = !DrawRaw;
+	}
+	if(INPUT_C) {
+		INPUT_C = false;
+		DrawFilter = !DrawFilter;
+	}
+
+	
 }
 
-void cController::ImgCallback( const flarb_mapbuilder::Map msg)
+void cController::Draw()
 {
-	drawSetColor( gBlack);
-
-	for( unsigned int i = 0; i < msg.list.size(); i++)
+	// Draw the Map
+	if( DrawMap)
 	{
-		flarb_mapbuilder::Object obj = msg.list[i];
-		drawCircle( obj.x, obj.y, obj.radius, 8);
-		//drawPixel( obj.x, obj.y);
+		drawSetColor( gBlack);
+		for( unsigned int i = 0; i < _lastMap.list.size(); i++)
+		{
+			flarb_mapbuilder::Object obj = _lastMap.list[i];
+			drawCircle( obj.x, obj.y, obj.radius, 8);
+		}
+	}
+
+	// Draw Raw
+	if( DrawRaw)
+	{
+		drawSetColor( gRed);
+		DrawLaserScan( _lastLaserRaw);
+	}
+
+	// Draw Filtered
+	if( DrawFilter)
+	{
+		drawSetColor( gBlue);
+		DrawLaserScan( _lastLaserFiltered);
 	}
 
 	// Flip it
 	window_flip();
+}
+
+void cController::DrawLaserScan( const sensor_msgs::LaserScan &msg)
+{
+	// Vars
+	float x_old = -1;
+	float y_old = -1;
+	bool  first = true;
+	float angle = msg.angle_min;
+
+	// Go through all points
+	for( unsigned int i = 0; i < msg.ranges.size(); i++, angle += msg.angle_increment)
+	{
+		const float range = msg.ranges.at( i);
+
+		// Is the value out of range? continue
+		if( range < msg.range_min || range > msg.range_max)
+			continue;
+
+		float x = cos( angle) * range;
+		float y = sin( angle) * range;
+
+		// If this ain't the first pixel, draw it. otherwise skip
+		if( !first)
+		{
+			// If the distance between points ain't too much, draw a line otherwise a dot
+			if( ((x-x_old)*(x-x_old) + (y-y_old)*(y-y_old)) < OBJECT_DISTANCE_MAX)
+				drawLine( x_old, y_old, x, y);
+			else
+				drawPixel( x, y);
+		}
+		else
+			first = false;
+
+		// Set old points
+		x_old = x;
+		y_old = y;
+	}
+}
+
+void cController::MapbuildCallback( const flarb_mapbuilder::Map msg)
+{
+	_lastMap = msg;
+	Draw();
+}
+
+void cController::FilterCallback( const sensor_msgs::LaserScan msg)
+{
+	_lastLaserFiltered = msg;
+	if( !DrawMap) Draw();
+}
+
+void cController::RawCallback( const sensor_msgs::LaserScan msg)
+{
+	_lastLaserRaw = msg;
+	if( !DrawMap && !DrawFilter) Draw();
 }
 
 

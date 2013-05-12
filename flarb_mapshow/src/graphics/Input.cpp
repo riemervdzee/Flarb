@@ -29,11 +29,9 @@
 
 // All handled inputs
 bool INPUT_STOP = false; // Should we stop the simulation?
-bool KEY_R		= false; // Is the R button pressed
-bool KEY_LEFT	= false; // Key flags
-bool KEY_RIGHT	= false;
-bool KEY_UP		= false;
-bool KEY_DOWN	= false;
+bool INPUT_Z    = false;
+bool INPUT_X    = false;
+bool INPUT_C    = false;
 
 // Private event struct
 SDL_Event event;
@@ -52,14 +50,10 @@ void InputUpdate()
 		case SDL_KEYDOWN:
 			switch( event.key.keysym.sym )
 			{
-				// Arrow keys
-				case SDLK_LEFT:		KEY_LEFT	= true; break;
-				case SDLK_RIGHT:	KEY_RIGHT	= true; break;
-				case SDLK_UP:		KEY_UP		= true; break;
-				case SDLK_DOWN:		KEY_DOWN	= true; break;
-
-				// Reset button
-				case SDLK_r:		KEY_R		= true; break;
+				// Toggle keys
+				case SDLK_z:   INPUT_Z  = true; break;
+				case SDLK_x:   INPUT_X  = true; break;
+				case SDLK_c:   INPUT_C  = true; break;
 
 				// Escape button
 				case SDLK_ESCAPE:	INPUT_STOP	= true; break;
@@ -71,14 +65,10 @@ void InputUpdate()
 		case SDL_KEYUP:
 			switch( event.key.keysym.sym )
 			{
-				// Arrow keys
-				case SDLK_LEFT:		KEY_LEFT	= false; break;
-				case SDLK_RIGHT:	KEY_RIGHT	= false; break;
-				case SDLK_UP:		KEY_UP		= false; break;
-				case SDLK_DOWN:		KEY_DOWN	= false; break;
-
-				// Reset button
-				case SDLK_r:		KEY_R		= false; break;
+				// Toggle keys
+				case SDLK_z:   INPUT_Z  = true; break;
+				case SDLK_x:   INPUT_X  = true; break;
+				case SDLK_c:   INPUT_C  = true; break;
 
 				default:			break;
 			}
