@@ -20,7 +20,7 @@ public:
 	// Passes reference of "vector", is used as output
 	// Executes the AvoidObstacle sub-controller based on the rest of the arguments
 	// TODO maybe more parameters?
-	bool Execute( tVector &vector, const flarb_mapbuilder::Map &image);
+	bool Execute( tVector &vector, const flarb_mapbuilder::Map &map);
 
 private:
 };

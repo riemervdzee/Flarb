@@ -17,7 +17,7 @@ void cAvoidObstacle::Destroy()
 // Passes reference of "msg", is used as output
 // Executes the AvoidObstacle sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
-bool cAvoidObstacle::Execute( tVector &vector, const flarb_mapbuilder::Map &image)
+bool cAvoidObstacle::Execute( tVector &vector, const flarb_mapbuilder::Map &map)
 {
 	return false;
 }
