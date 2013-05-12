@@ -29,10 +29,10 @@ public:
 
 private:
 	// Callbacks
-	void MapbuildCallback( const flarb_mapbuilder::Map msg);
-	void RawCallback( const sensor_msgs::LaserScan msg);
-	void FilterCallback( const sensor_msgs::LaserScan msg);
-	//void WaypointCallback( const flarb_controller::WaypointVector msg);
+	void MapbuildCallback ( const flarb_mapbuilder::Map msg);
+	void RawCallback      ( const sensor_msgs::LaserScan msg);
+	void FilterCallback   ( const sensor_msgs::LaserScan msg);
+	void WaypointCallback ( const flarb_controller::WaypointVector msg);
 
 	// Helper functions
 	void Draw();
@@ -48,7 +48,7 @@ private:
 	flarb_mapbuilder::Map  _lastMap;
 	sensor_msgs::LaserScan _lastLaserRaw;
 	sensor_msgs::LaserScan _lastLaserFiltered;
-	//flarb_controller::WaypointVector _lastVector;
+	flarb_controller::WaypointVector _lastVector;
 
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;

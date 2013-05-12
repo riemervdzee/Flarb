@@ -12,12 +12,14 @@ using namespace std;
 bool cController::Create()
 {
 	// Subscribe to topics
-	_subMap      = _rosNode.subscribe<flarb_mapbuilder::Map>( "/map", 1, &cController::MapbuildCallback, this);
-	_subRaw      = _rosNode.subscribe<sensor_msgs::LaserScan>( "/sick/scan", 1, &cController::RawCallback, this);
-	_subFiltered = _rosNode.subscribe<sensor_msgs::LaserScan>( "/sick/scan_filtered", 1, &cController::FilterCallback, this);
-
-	//_subWaypoint = _rosNode.subscribe<flarb_img_controller::WaypointVector>
-	//				( "steering/waypoint", 1, &cController::WaypointCallback, this);
+	_subMap      = _rosNode.subscribe<flarb_mapbuilder::Map>
+					( "/map", 1, &cController::MapbuildCallback, this);
+	_subRaw      = _rosNode.subscribe<sensor_msgs::LaserScan>
+					( "/sick/scan", 1, &cController::RawCallback, this);
+	_subFiltered = _rosNode.subscribe<sensor_msgs::LaserScan>
+					( "/sick/scan_filtered", 1, &cController::FilterCallback, this);
+	_subWaypoint = _rosNode.subscribe<flarb_img_controller::WaypointVector>
+					( "steering/waypoint", 1, &cController::WaypointCallback, this);
 
 	// Init video
 	window_create( "FLARB - Showing output topic \"/Map\"");
@@ -36,7 +38,7 @@ void cController::Destroy()
 void cController::Update()
 {
 	InputUpdate();
-	
+
 	// Quit on X click
 	if( INPUT_STOP)
 		ros::shutdown();
@@ -54,8 +56,6 @@ void cController::Update()
 		INPUT_C = false;
 		DrawFilter = !DrawFilter;
 	}
-
-	
 }
 
 void cController::Draw()
@@ -84,6 +84,17 @@ void cController::Draw()
 		drawSetColor( gBlue);
 		DrawLaserScan( _lastLaserFiltered);
 	}
+
+	// Draw the velocity vector
+	if( DrawMap)
+	{
+		drawSetColor( gRed);
+		drawLine( 0, 0, _lastVector.x, _lastVector.y);
+	}
+
+	// Draw camera position
+	drawSetColor( gBlue);
+	drawPixel( 0, 0);
 
 	// Flip it
 	window_flip();
@@ -146,9 +157,8 @@ void cController::RawCallback( const sensor_msgs::LaserScan msg)
 }
 
 
-/*void cController::WaypointCallback( const flarb_controller::WaypointVector msg)
+void cController::WaypointCallback( const flarb_controller::WaypointVector msg)
 {
-	// Copy the waypoint
 	_lastVector = msg;
-}*/
+}
 
