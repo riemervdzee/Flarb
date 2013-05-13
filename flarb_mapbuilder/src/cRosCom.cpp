@@ -15,7 +15,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode)
 	_pubMap = rosNode->advertise<flarb_mapbuilder::Map>( "map", 1);
 
 	// Init Subscriber obj.
-	_subSicklaser = rosNode->subscribe<sensor_msgs::LaserScan>( "/sick/scan", 1, &cRosCom::ScanCallback, this);
+	_subSicklaser = rosNode->subscribe<sensor_msgs::LaserScan>( "/sick/scan_filtered", 1, &cRosCom::ScanCallback, this);
 
 	return 0;
 }
