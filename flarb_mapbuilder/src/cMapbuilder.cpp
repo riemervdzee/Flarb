@@ -70,7 +70,7 @@ void cMapbuilder::Build( const cPointCloud& pc, flarb_mapbuilder::Map& msg)
 				}
 				else
 				{
-					tVector pMid = pMin + ((pMin - pMax) * 0.5f);
+					tVector pMid = (pMax + pMin) * 0.5f;
 					cobj.x       = pMid.getX();
 					cobj.y       = pMid.getY();
 					cobj.radius  = (pMin - pMid).Length();
@@ -96,7 +96,7 @@ void cMapbuilder::Build( const cPointCloud& pc, flarb_mapbuilder::Map& msg)
 		}
 		else
 		{
-			tVector pMid = pMin + ((pMin - pMax) * 0.5f);
+			tVector pMid = (pMax + pMin) * 0.5f;
 			cobj.x       = pMid.getX();
 			cobj.y       = pMid.getY();
 			cobj.radius  = (pMin - pMid).Length();

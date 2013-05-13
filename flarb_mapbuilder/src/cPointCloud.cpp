@@ -46,6 +46,7 @@ void cPointCloud::ProcessMessage( const sensor_msgs::LaserScan &msg)
 		{
 			sObject obj = { .index = i, .length = 1};
 			_objects.push_back( obj);
+			previousObject++;
 		}
 	}
 }
