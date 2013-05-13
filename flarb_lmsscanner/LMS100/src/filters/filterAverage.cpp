@@ -11,6 +11,8 @@ void InitFilterAverage ( const int size)
 {
 	int s = AVERAGE_SIZE + 1;
 	buffer = new int[s * size];
+
+	memset( buffer, 0, s * size * sizeof(int));
 }
 
 void DestroyFilterAverage () 
@@ -25,7 +27,7 @@ void ExecuteFilterAverage ( const scanData &data, sensor_msgs::LaserScan &msg)
 {
 	// Offsets
 	int offset_sum = 0;
-	int offset_pos = position;
+	int offset_pos = position + 1;
 
 	for (int i = 0; i < data.dist_len1; i++)
 	{
