@@ -6,7 +6,7 @@
 
 #include "sensor_msgs/LaserScan.h"
 #include "flarb_mapbuilder/Map.h"
-//#include "flarb_img_controller/WaypointVector.h"
+#include "flarb_controller/WaypointVector.h"
 
 
 // Maximum distance between points before considered separate objects

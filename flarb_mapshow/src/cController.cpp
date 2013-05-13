@@ -18,7 +18,7 @@ bool cController::Create()
 					( "/sick/scan", 1, &cController::RawCallback, this);
 	_subFiltered = _rosNode.subscribe<sensor_msgs::LaserScan>
 					( "/sick/scan_filtered", 1, &cController::FilterCallback, this);
-	_subWaypoint = _rosNode.subscribe<flarb_img_controller::WaypointVector>
+	_subWaypoint = _rosNode.subscribe<flarb_controller::WaypointVector>
 					( "steering/waypoint", 1, &cController::WaypointCallback, this);
 
 	// Init video

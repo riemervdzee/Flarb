@@ -35,6 +35,9 @@ int main(int argc, char **argv)
 		ros::spinOnce();
 #endif
 
+		// Let the controller update
+		controller.Update();
+
 		// Sleep for a little while
 		loop_rate.sleep();
 	}

@@ -62,7 +62,7 @@ void InputUpdate()
 			break;
 
 		// Case UP event
-		case SDL_KEYUP:
+		/*case SDL_KEYUP:
 			switch( event.key.keysym.sym )
 			{
 				// Toggle keys
@@ -72,7 +72,7 @@ void InputUpdate()
 
 				default:			break;
 			}
-			break;
+			break;*/
 
 		// Did we receive any stop-messages from the OS?
 		case SDL_QUIT:
