@@ -32,7 +32,7 @@ bool cFollowSegment::Execute( tVector &vector, const flarb_mapbuilder::Map &map)
 	unsigned int index = 0;
 	bool result = false;
 
-	while(!result && _WaypointAttempts.size() > index)
+	while(!result && _WaypointAttempts.size() > index && _WaypointAttempts.size() < 50)
 	{
 		bool collision_found = false;
 		tVector current = _WaypointAttempts[index];
@@ -66,6 +66,8 @@ bool cFollowSegment::Execute( tVector &vector, const flarb_mapbuilder::Map &map)
 
 	if( result)
 		vector = _WaypointAttempts[index];
+	else
+		vector = tVector();
 
 	return true;
 }
