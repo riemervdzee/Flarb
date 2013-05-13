@@ -56,7 +56,15 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 
 		// Is the value out of range? continue
 		if( range < msg.range_min || range > msg.range_max)
+		{
+#if CALCU_COSSIN
+		angle += msg.angle_increment;
+
+#elif USE_MATRIX
+		angle *= increment;
+#endif
 			continue;
+		}
 
 		// Convert polar coordinates to cartesian, and add it
 		// TODO use inclination/gyro to get rid of any ground info, plus correct X/Y
