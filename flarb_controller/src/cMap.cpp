@@ -19,8 +19,11 @@ static bool compare_tVector( const tVector &first, const tVector &second)
 // TODO write explanation
 float cMap::FindFreePath( const tVector &input, tVector &output)
 {
-	// Our first attempt
+	// Clear containers
 	_WaypointAttempts.clear();
+	_ObjectsCollided.clear();
+
+	// Our first attempt
 	_WaypointAttempts.push_back( input);
 
 	bool result = false;
@@ -38,23 +41,38 @@ float cMap::FindFreePath( const tVector &input, tVector &output)
 		{
 			flarb_mapbuilder::Object obj = _map->list[i];
 			tVector c = tVector( obj.x, obj.y);
-			tVector p3;
+			tVector p1;
 
-			if( IntersectCircle( tVector(), current, c, obj.radius, p3))
+			if( IntersectCircle( tVector(), current, c, obj.radius, p1))
 			{
 				collision_found = true;
-				
-				// Shrink p3
-				// TODO fix?
-				//p3 *= 0.9;
 
-				// TODO, check for uniqueness before pushing? "i"
-				tVector p1, p2;
-				GetOuterPoints( tVector(), c, obj.radius + 0.001f, p1, p2);
-				// TODO resize p1 and p2 to length of input
-				_WaypointAttempts.push_back( p1);
-				_WaypointAttempts.push_back( p2);
-				//_WaypointAttempts.push_back( p3);
+				// Shrink p1
+				// TODO fix?
+				//p1 *= 0.9;
+				//_WaypointAttempts.push_back( p1);
+
+				// Check for uniquenes
+				bool unique = true;
+				for( unsigned int j = 0; j < _ObjectsCollided.size(); j++)
+				{
+					if( _ObjectsCollided[j] == i)
+					{
+						unique = false;
+						break;
+					}
+				}
+
+				if( unique)
+				{
+					tVector p2, p3;
+					GetOuterPoints( tVector(), c, obj.radius + 0.001f, p2, p3);
+					// TODO resize p2 and p3 to length of input, only if p1 is fixed!
+					_WaypointAttempts.push_back( p2);
+					_WaypointAttempts.push_back( p3);
+
+					_ObjectsCollided.push_back( i);
+				}
 
 				// TODO should we break?
 				//break;

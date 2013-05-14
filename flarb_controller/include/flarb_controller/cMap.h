@@ -28,7 +28,7 @@ public:
 
 private:
 	std::list<tVector> _WaypointAttempts;
-	std::vector<int> _ObjectsCollided;
+	std::vector<unsigned int> _ObjectsCollided;
 
 	const flarb_mapbuilder::MapList *_map;
 };

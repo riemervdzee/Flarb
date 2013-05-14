@@ -20,7 +20,7 @@ void cFollowSegment::Destroy()
 // TODO maybe more parameters?
 bool cFollowSegment::Execute( tVector &vector, cMap &map)
 {
-	tVector direction = tVector( 0.5f, 0.0f);
+	tVector direction = tVector( 0.0f, 0.5f);
 	tVector output;
 	float result = map.FindFreePath( direction, output);
 
