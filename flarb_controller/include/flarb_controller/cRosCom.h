@@ -4,7 +4,9 @@
 #include "ros/ros.h"
 
 #include "flarb_controller/WaypointVector.h"
-#include "flarb_mapbuilder/Map.h"
+#include "flarb_controller/cMap.h"
+#include "flarb_mapbuilder/MapList.h"
+
 
 // forward declaration of cController
 class cController;
@@ -25,16 +27,19 @@ public:
 
 private:
 	// We received a map
-	void MapbuildCallback( const flarb_mapbuilder::Map msg);
+	void MapbuildCallback( const flarb_mapbuilder::MapList msg);
 
 
 	// Pointer to the cController class _NOTE: WE ARE NOT THE OWNER_
 	cController *_controller;
 
+	// MapList
+	cMap _map;
+
 	// This node is subscribed to the topic "map"
 	ros::Subscriber _subMap;
 
-	// This node is subscribed to the topic "map"
+	// We publish on "/steering/waypoint/"
 	ros::Publisher _pubVector;
 };
 

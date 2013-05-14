@@ -57,14 +57,14 @@ void cController::Update()
 /*
  * Gets called by cRosCom when we received a /map message
  */
-void cController::CallbackMap( const flarb_mapbuilder::Map &image)
+void cController::CallbackMap( cMap &map)
 {
 	// Vector
 	tVector vector;
 
 
 	// Always execute AvoidObstacle sub-controller
-	bool ret = _avoidObstacle.Execute( vector, image);
+	bool ret = _avoidObstacle.Execute( vector, map);
 
 	// Did AvoidObstacle return true, and we ain't in AvoidObstacle mode? Save state
 	if( ret == true && _state != STATE_AVOID_OBSTACLE)
@@ -84,13 +84,13 @@ void cController::CallbackMap( const flarb_mapbuilder::Map &image)
 		switch( _state)
 		{
 			case STATE_FOLLOW_SEGMENT:
-				ret = _followSegment.Execute( vector, image);
+				ret = _followSegment.Execute( vector, map);
 				if( ret == false)
 					_state = STATE_FIND_SEGMENT;
 				break;
 
 			case STATE_FIND_SEGMENT:
-				ret = _findSegment.Execute( vector, image);
+				ret = _findSegment.Execute( vector, map);
 				if( ret == false)
 					_state = STATE_FOLLOW_SEGMENT;
 				break;

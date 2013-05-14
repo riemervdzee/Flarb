@@ -41,7 +41,7 @@ public:
 	void Update();
 
 	// Gets called by cRosCom when we received a /map message
-	void CallbackMap( const flarb_mapbuilder::Map &image);
+	void CallbackMap( cMap &map);
 
 private:
 

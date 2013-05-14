@@ -12,7 +12,7 @@ using namespace std;
 bool cController::Create()
 {
 	// Subscribe to topics
-	_subMap      = _rosNode.subscribe<flarb_mapbuilder::Map>
+	_subMap      = _rosNode.subscribe<flarb_mapbuilder::MapList>
 					( "/map", 1, &cController::MapbuildCallback, this);
 	_subRaw      = _rosNode.subscribe<sensor_msgs::LaserScan>
 					( "/sick/scan", 1, &cController::RawCallback, this);
@@ -138,7 +138,7 @@ void cController::DrawLaserScan( const sensor_msgs::LaserScan &msg)
 	}
 }
 
-void cController::MapbuildCallback( const flarb_mapbuilder::Map msg)
+void cController::MapbuildCallback( const flarb_mapbuilder::MapList msg)
 {
 	_lastMap = msg;
 	Draw();

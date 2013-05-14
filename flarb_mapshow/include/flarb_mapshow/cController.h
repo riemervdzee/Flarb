@@ -5,7 +5,7 @@
 
 
 #include "sensor_msgs/LaserScan.h"
-#include "flarb_mapbuilder/Map.h"
+#include "flarb_mapbuilder/MapList.h"
 #include "flarb_controller/WaypointVector.h"
 
 
@@ -29,7 +29,7 @@ public:
 
 private:
 	// Callbacks
-	void MapbuildCallback ( const flarb_mapbuilder::Map msg);
+	void MapbuildCallback ( const flarb_mapbuilder::MapList msg);
 	void RawCallback      ( const sensor_msgs::LaserScan msg);
 	void FilterCallback   ( const sensor_msgs::LaserScan msg);
 	void WaypointCallback ( const flarb_controller::WaypointVector msg);
@@ -45,9 +45,9 @@ private:
 	bool DrawFilter;
 
 	// Copy of the last few messages
-	flarb_mapbuilder::Map  _lastMap;
-	sensor_msgs::LaserScan _lastLaserRaw;
-	sensor_msgs::LaserScan _lastLaserFiltered;
+	flarb_mapbuilder::MapList  _lastMap;
+	sensor_msgs::LaserScan     _lastLaserRaw;
+	sensor_msgs::LaserScan     _lastLaserFiltered;
 	flarb_controller::WaypointVector _lastVector;
 
 	// Reference to the ros node handle

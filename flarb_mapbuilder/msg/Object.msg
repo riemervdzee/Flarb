@@ -1,4 +1,4 @@
-## object ID, unique per obj
+## object ID the circle belongs to, unique per obj
 uint32 id
 
 ## Object position

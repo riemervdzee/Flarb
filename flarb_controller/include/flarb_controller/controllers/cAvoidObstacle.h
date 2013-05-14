@@ -4,7 +4,7 @@
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
 
-#include "flarb_mapbuilder/Map.h"
+#include "flarb_controller/cMap.h"
 
 
 /*
@@ -20,7 +20,7 @@ public:
 	// Passes reference of "vector", is used as output
 	// Executes the AvoidObstacle sub-controller based on the rest of the arguments
 	// TODO maybe more parameters?
-	bool Execute( tVector &vector, const flarb_mapbuilder::Map &map);
+	bool Execute( tVector &vector, cMap &map);
 
 private:
 };

@@ -1,6 +1,6 @@
 #include "flarb_mapbuilder/cMapbuilder.h"
 
-void cMapbuilder::Build( const cPointCloud& pc, flarb_mapbuilder::Map& msg)
+void cMapbuilder::Build( const cPointCloud &pc, flarb_mapbuilder::MapList &msg)
 {
 	const std::vector<tVector> points  = pc.getVectorPoints();
 	const std::vector<sObject> objects = pc.getVectorObjects();

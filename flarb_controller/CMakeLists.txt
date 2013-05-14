@@ -30,8 +30,8 @@ rosbuild_genmsg()
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(controller  src/main.cpp
-									src/cAlgorithm.cpp
 									src/cController.cpp
+									src/cMap.cpp
 									src/cRosCom.cpp
 									src/controllers/cFollowSegment.cpp
 									src/controllers/cFindSegment.cpp

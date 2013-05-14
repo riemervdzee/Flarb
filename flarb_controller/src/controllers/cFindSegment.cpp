@@ -17,7 +17,7 @@ void cFindSegment::Destroy()
 // Passes reference of "msg", is used as output
 // Executes the FindSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
-bool cFindSegment::Execute( tVector &vector, const flarb_mapbuilder::Map &map)
+bool cFindSegment::Execute( tVector &vector, cMap &map)
 {
 	return false;
 }
