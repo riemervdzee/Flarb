@@ -12,7 +12,6 @@
 #include "flarb_controller/controllers/cFindSegment.h"
 #include "flarb_controller/controllers/cAvoidObstacle.h"
 
-
 /*
  * Enumerates the possible states the segmentsolver can be in
  */

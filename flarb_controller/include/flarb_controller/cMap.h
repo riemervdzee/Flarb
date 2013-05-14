@@ -27,7 +27,7 @@ public:
 	 * 1 means input = output. 0 = 90 degrees difference, -1 = 180 degrees difference
 	 * FREEPATH_NO_SOLUTION = special case, output = {0,0} no solution possible
 	 */
-	float FindFreePath( const tVector &input, tVector &output);
+	float FindFreePath( const float protection_margin, const tVector &input, tVector &output);
 
 	// Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
 	// TODO circleWhenHit is buggy

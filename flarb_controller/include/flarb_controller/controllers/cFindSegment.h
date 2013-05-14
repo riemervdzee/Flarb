@@ -4,6 +4,7 @@
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
 
+#include "flarb_controller/Config.h"
 #include "flarb_controller/cMap.h"
 
 

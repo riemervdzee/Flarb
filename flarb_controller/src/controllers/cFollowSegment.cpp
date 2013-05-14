@@ -22,7 +22,7 @@ bool cFollowSegment::Execute( tVector &vector, cMap &map)
 {
 	tVector direction = tVector( 0.0f, 0.5f);
 	tVector output;
-	float result = map.FindFreePath( direction, output);
+	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output);
 
 	// TODO here we can do stuff with the result, whether 0 or negative 
 	// return false maybe? For now, just set vector = output

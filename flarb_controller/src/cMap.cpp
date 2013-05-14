@@ -29,33 +29,39 @@ static bool compare_tVector( const tVector &first, const tVector &second)
  * 1 means input = output. 0 = 90 degrees difference, -1 = 180 degrees difference
  * FREEPATH_NO_SOLUTION = special case, output = {0,0} no solution possible
  */
-float cMap::FindFreePath( const tVector &input, tVector &output)
+float cMap::FindFreePath( const float protection_margin, const tVector &input, tVector &output)
 {
-	// Clear containers
+	// Clear containers. Vars used in the upcoming while loop
 	_WaypointAttempts.clear();
 	_ObjectsCollided.clear();
+	bool  result = false; // positive result?
+	float inputLength = input.Length();
+	tVector currentAttempt;
 
-	// Our first attempt
+	// Push our first attempt (input), set the vector we should compare to
 	_WaypointAttempts.push_back( input);
+	CompareTo = input;
 
-	bool result = false;
-	tVector current;
-
+	// When there is no result yet, when it ain't empty or too large
 	while(!result && !_WaypointAttempts.empty() && _WaypointAttempts.size() < 50)
 	{
+		// Var to tell when we got a collision, gets the attempt with the lowest score
 		bool collision_found = false;
-		current = _WaypointAttempts.front();
+
+		// Gets the vector which corosponds the most with input
+		currentAttempt = _WaypointAttempts.front();
 		_WaypointAttempts.pop_front();
 
-		CompareTo = current;
-
+		// Go through all objects, check for collisions
 		for( unsigned int i = 0; i < _map->list.size(); i++)
 		{
 			flarb_mapbuilder::Object obj = _map->list[i];
 			tVector c = tVector( obj.x, obj.y);
 			tVector p1;
 
-			if( IntersectCircle( tVector(), current, c, obj.radius, p1))
+			// Check for collision
+			float r = (obj.radius + protection_margin);
+			if( IntersectCircle( tVector(), currentAttempt, c, r, p1))
 			{
 				collision_found = true;
 
@@ -75,11 +81,21 @@ float cMap::FindFreePath( const tVector &input, tVector &output)
 					}
 				}
 
+				// If unique, gather the outer points as well
+				// Otherwise these points are/were already in the list
 				if( unique)
 				{
+					// Something extra to prevent future collisions!
+					float radius = obj.radius + protection_margin + 0.001f;
 					tVector p2, p3;
-					GetOuterPoints( tVector(), c, obj.radius + 0.001f, p2, p3);
-					// TODO resize p2 and p3 to length of input, only if p1 is fixed!
+
+					// Execute
+					GetOuterPoints( tVector(), c, radius, p2, p3);
+
+					// Resize p2 and p3 to the length of the input and insert
+					// TODO only if p1 is fixed!
+					//p2.setLength( inputLength);
+					//p3.setLength( inputLength);
 					_WaypointAttempts.push_back( p2);
 					_WaypointAttempts.push_back( p3);
 
@@ -87,29 +103,27 @@ float cMap::FindFreePath( const tVector &input, tVector &output)
 				}
 			}
 		}
-		
-		//cout << "collision_found " << collision_found << ", size " << _WaypointAttempts.size() << endl << endl;
 
-		// We got a winner? otherwise sort and proceed
+		// We got a winner? Otherwise sort and proceed
 		if(!collision_found)
 			result = true;
 		else
-			// Sort
 			_WaypointAttempts.sort( compare_tVector);
 	}
 
-	// Do we got a result? otherwise, set the values to 0
+
+	// Do we got a result?
 	if( result)
 	{
-		output = current;
+		output = currentAttempt;
 
 		// The return val is the dot-product/diff of the normalized vectors
-		tVector inN = input;
-		tVector inO = output;
-		inN.Normalize();
-		inO.Normalize();
-		return inN.Dot( inO);
+		tVector inputN  = input * (1 / inputLength);
+		tVector outputN = output;
+		outputN.Normalize();
+		return inputN.Dot( outputN);
 	}
+	// Otherwise, set the values to 0
 	else
 	{
 		output = tVector();
