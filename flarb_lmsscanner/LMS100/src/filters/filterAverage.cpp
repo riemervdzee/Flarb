@@ -7,7 +7,7 @@ static int  position = 0;
 static bool filled   = false;
 
 
-void InitFilterAverage ( const int size) 
+void InitFilterAverage ( const int size)
 {
 	int s = AVERAGE_SIZE + 1;
 	buffer = new int[s * size];
@@ -15,7 +15,7 @@ void InitFilterAverage ( const int size)
 	memset( buffer, 0, s * size * sizeof(int));
 }
 
-void DestroyFilterAverage () 
+void DestroyFilterAverage ()
 {
 	delete buffer;
 	buffer   = NULL;
@@ -36,7 +36,17 @@ void ExecuteFilterAverage ( const scanData &data, sensor_msgs::LaserScan &msg)
 
 		if(filled)
 		{
-			msg.ranges[i] = (float)(buffer[offset_sum] / AVERAGE_SIZE)  * 0.001f;
+			// TODO we could also cache this, just like the sum
+			int div = 0;
+
+			for(int j = 1; j <= AVERAGE_SIZE; j++)
+				if( buffer[offset_sum+j] > 4)
+					div++;
+
+			if(div != 0)
+				msg.ranges[i] = (float)(buffer[offset_sum] / div)  * 0.001f;
+			else
+				msg.ranges[i] = 0;
 		}
 		else
 			msg.ranges[i] = data.dist1[i] * 0.001;
