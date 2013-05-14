@@ -16,7 +16,7 @@ using namespace std;
 
 // Options setable via ROS service
 bool EnableRawOutput = false;
-int  FilterSelect = 0;
+int  FilterSelect = 2; // Median filter is standard
 
 
 /**
