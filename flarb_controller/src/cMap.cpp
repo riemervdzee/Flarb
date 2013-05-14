@@ -3,12 +3,19 @@
 #include "flarb_controller/cMap.h"
 using namespace std;
 
+
+/*
+ * Sets the map list to use for the upcoming functions
+ */
 void cMap::setMapList( const flarb_mapbuilder::MapList &map)
 {
 	_map = &map;
 }
 
-// Helpers for cMap::FindFreePath
+
+/*
+ * Helpers for cMap::FindFreePath
+ */
 static tVector CompareTo;
 static bool compare_tVector( const tVector &first, const tVector &second)
 {
@@ -16,7 +23,12 @@ static bool compare_tVector( const tVector &first, const tVector &second)
 }
 
 
-// TODO write explanation
+/*
+ * Checks whether "input" is accessable. The ending result is put in "output"
+ * Returns the dotproduct between input and output. range is 1 to -1
+ * 1 means input = output. 0 = 90 degrees difference, -1 = 180 degrees difference
+ * FREEPATH_NO_SOLUTION = special case, output = {0,0} no solution possible
+ */
 float cMap::FindFreePath( const tVector &input, tVector &output)
 {
 	// Clear containers
@@ -73,34 +85,36 @@ float cMap::FindFreePath( const tVector &input, tVector &output)
 
 					_ObjectsCollided.push_back( i);
 				}
-
-				// TODO should we break?
-				//break;
 			}
 		}
 		
 		//cout << "collision_found " << collision_found << ", size " << _WaypointAttempts.size() << endl << endl;
 
-		// We got a winner? otherwise proceed
+		// We got a winner? otherwise sort and proceed
 		if(!collision_found)
-		{
 			result = true;
-		}
 		else
-		{
 			// Sort
 			_WaypointAttempts.sort( compare_tVector);
-		}
 	}
 
 	// Do we got a result? otherwise, set the values to 0
 	if( result)
+	{
 		output = current;
-	else
-		output = tVector();
 
-	// The result is the dot/difference between the two vectors
-	return input.Dot( output);
+		// The return val is the dot-product/diff of the normalized vectors
+		tVector inN = input;
+		tVector inO = output;
+		inN.Normalize();
+		inO.Normalize();
+		return inN.Dot( inO);
+	}
+	else
+	{
+		output = tVector();
+		return FREEPATH_NO_SOLUTION;
+	}
 }
 
 
@@ -142,7 +156,13 @@ bool cMap::IntersectCircle( tVector lineStart, tVector lineEnd,
 	return true;
 }
 
-
+/*
+ * Having a point (lineStart) and a circle (circle + radius), there are two
+ * lines from this point where there is only one intersection with the circle.
+ * This function puts the colisionpoints of these two lines into p1 and p2
+ *
+ * See the documentation for details
+ */
 void cMap::GetOuterPoints( tVector lineStart, tVector circle, 
 	float radius, tVector &p1, tVector &p2)
 {
