@@ -67,9 +67,9 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 				collision_found = true;
 
 				// Shrink p1
-				// TODO fix?
-				//p1 *= 0.9;
-				//_WaypointAttempts.push_back( p1);
+				// TODO Check if neccesary?
+				p1 *= 0.95;
+				_WaypointAttempts.push_back( p1);
 
 				// Check for uniquenes
 				bool unique = true;
@@ -171,14 +171,19 @@ bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 
 	// If t1 is in the 0 >= t1 >= 1 range, it is a hit at t1
 	// t1 also comes before t2
-	// TODO put result in "result"
+	// TODO test result..
 	if( t1 >= 0 && t1 <= 1)
+	{
+		result = l * t1 + l1;
 		return true;
+	}
 
 	// It is a hit at t2
-	// TODO put result in "result"
 	if( t2 >= 0 && t2 <= 1)
+	{
+		result = l * t2 + l1;
 		return true;
+	}
 
 	return false;
 }
