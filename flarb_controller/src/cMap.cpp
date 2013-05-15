@@ -1,4 +1,5 @@
 #include <cmath>
+#include <algorithm>
 #include <iostream>
 #include "flarb_controller/cMap.h"
 using namespace std;
@@ -131,7 +132,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 	}
 }
 
-
+#if 0
 // Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
 // http://stackoverflow.com/questions/7060519/
 // TODO cleanup
@@ -170,9 +171,98 @@ bool cMap::IntersectCircle( tVector lineStart, tVector lineEnd,
 	return true;
 }
 
+#else
+// TODO bit messy
+bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
+	float radius, tVector &result)
+{
+	// Empty the resulting vector
+	result = tVector();
+
+	// Translate coordinates so l1 = {0,0)
+	tVector l  = l2 - l1;
+	tVector cs = circle - l1;
+
+	// Get discriminant
+	float a = l.Dot( l);
+	float b = 2 * l.Dot( cs);
+	float c = cs.Dot( cs) -  (radius * radius);
+	float d = (b * b) - (4 * a * c);
+
+	// If d is negative, no real solution exists. This means that the infinite
+	// line formed by lineStart and lineEnd doesn't collide with the circle
+	if( d < 0)
+		return false;
+
+	// Although if d == 0, only one solution exists. but chances are low due
+	// floating point arithmetics. If it is actually 0, it won't have any effect
+	// Just try to look for the two possible solutions. Note that these two
+	// solutions are the points of the infinite line, not the segment we want
+	float dsqrt=sqrt(d);
+	float div = 2 * a;
+	float t1 = (-b - dsqrt) / div;
+	float t2 = (-b + dsqrt) / div;
+
+	// The two results
+	// TODO check correctness
+	float x1 = (-1 * l.getX() * t1);
+	float y1 = (-1 * l.getY() * t1);
+	float x2 = ( 1 * l.getX() * t2);
+	float y2 = ( 1 * l.getY() * t2);
+
+	// To check whether they lie on our segment, do a bounding box test
+	float minX = 0, maxX = l.getX();
+	float minY = 0, maxY = l.getY();
+
+	if( maxX < 0)
+		std::swap( minX, maxX);
+	if( maxY< 0)
+		std::swap( minY, maxY);
+
+	// Check whether one of these two points actually lies in the segment
+	bool r1 = false, r2 = false;
+
+	if (x1 >= minX && x1 <= maxX && y1 >= minY && y1 <= maxY)
+		r1 = true;
+	if (x2 >= minX && x2 <= maxX && y2 >= minY && y2 <= maxY)
+		r2 = true;
+
+	// If both ain't in the segment, the segment ain't coliding with the circle
+	if( r1 == false && r2 == false)
+		return false;
+	// If either r1 or r2 is true (exclusive), return the retranslated point
+	else if( r1 == true && r2 == false)
+	{
+		result = l1 + tVector( x1, y1);
+		return true;
+	}
+	else if( r1 == false && r2 == true)
+	{
+		result = l1 + tVector( x2, y2);
+		return true;
+	}
+	// Both lie on the segment, pick the one with the smallest length
+	// smallestlength = point which we collide first. coming from l1
+	else
+	{
+		// We calculate the squared length
+		float len1 = (x1*x1) + (y1*y1);
+		float len2 = (x2*x2) + (y2*y2);
+
+		if( len1 < len2)
+			result = l1 + tVector( x1, y1);
+		else
+			result = l1 + tVector( x2, y2);
+
+		return true;
+	}
+}
+#endif
+
 /*
  * Having a point (lineStart) and a circle (circle + radius), there are two
  * lines from this point where there is only one intersection with the circle.
+ * These are also called tangent-lines, but have their base as lineStart
  * This function puts the colisionpoints of these two lines into p1 and p2
  *
  * See the documentation for details

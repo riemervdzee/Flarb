@@ -31,8 +31,8 @@ public:
 
 	// Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
 	// TODO circleWhenHit is buggy
-	bool IntersectCircle( tVector lineStart, tVector lineEnd, 
-		tVector circle, float radius, tVector &circleWhenHit);
+	bool IntersectCircle( tVector l1, tVector l2, tVector circle,
+		float radius, tVector &result)
 
 	/*
 	 * Having a point (lineStart) and a circle (circle + radius), there are two
