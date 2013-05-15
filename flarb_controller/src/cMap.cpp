@@ -1,6 +1,7 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
+#include "flarb_controller/types/tBoundingBox.h"
 #include "flarb_controller/cMap.h"
 using namespace std;
 
@@ -210,51 +211,53 @@ bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 	float x2 = ( 1 * l.getX() * t2);
 	float y2 = ( 1 * l.getY() * t2);
 
-	// To check whether they lie on our segment, do a bounding box test
-	float minX = 0, maxX = l.getX();
-	float minY = 0, maxY = l.getY();
+	tVector p1( x1, y1);
+	tVector p2( x2, y2);
 
-	if( maxX < 0)
-		std::swap( minX, maxX);
-	if( maxY< 0)
-		std::swap( minY, maxY);
+	// To check whether they lie on our segment, do a bounding box test
+	// Construct a bb from the origin and l
+	tBoundingBox bb( tVector(), l);
 
 	// Check whether one of these two points actually lies in the segment
 	bool r1 = false, r2 = false;
+	if ( bb.Test( p1)) r1 = true;
+	if ( bb.Test( p2)) r2 = true;
 
-	if (x1 >= minX && x1 <= maxX && y1 >= minY && y1 <= maxY)
-		r1 = true;
-	if (x2 >= minX && x2 <= maxX && y2 >= minY && y2 <= maxY)
-		r2 = true;
-
-	// If both ain't in the segment, the segment ain't coliding with the circle
-	if( r1 == false && r2 == false)
-		return false;
-	// If either r1 or r2 is true (exclusive), return the retranslated point
-	else if( r1 == true && r2 == false)
+	// Most common cases first. tad unlogic, I know
+	if( r1 == false)
 	{
-		result = l1 + tVector( x1, y1);
-		return true;
+		// If both ain't in the segment, the segment ain't coliding with the circle
+		if( r2 == false)
+		{
+			return false;
+		}
+		// r1 == false, r2 == true. When one is true, just return that point
+		else
+		{
+			result = l1 + p2;
+			return true;
+		}
 	}
-	else if( r1 == false && r2 == true)
-	{
-		result = l1 + tVector( x2, y2);
-		return true;
-	}
-	// Both lie on the segment, pick the one with the smallest length
-	// smallestlength = point which we collide first. coming from l1
 	else
 	{
-		// We calculate the squared length
-		float len1 = (x1*x1) + (y1*y1);
-		float len2 = (x2*x2) + (y2*y2);
-
-		if( len1 < len2)
-			result = l1 + tVector( x1, y1);
+		// r1 == true, r2 == false. When one is true, just return that point
+		if( r2 == false)
+		{
+			result = l1 + p1;
+			return true;
+		}
+		// Both are true
 		else
-			result = l1 + tVector( x2, y2);
+		{
+			// Both lie on the segment, pick the one with the smallest length
+			// smallestlength = point which we collide first. coming from l1
+			if( p1.LengthSquared() < p2.LengthSquared())
+				result = l1 + p1;
+			else
+				result = l1 + p2;
 
-		return true;
+			return true;
+		}
 	}
 }
 #endif

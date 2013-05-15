@@ -40,12 +40,3 @@ tVector& tVector::Perpendicular()
 	return *this;
 }
 
-// Clamps the vector to the rectangle formed by min/max
-tVector& tVector::Clamp( const tVector& min, const tVector& max)
-{
-	// Clamp both the X and Y
-	x = (x > max.x) ? max.x : (x < min.x) ? min.x : x;
-	y = (y > max.y) ? max.y : (y < min.y) ? min.y : y;
-
-	return *this;
-}

@@ -30,9 +30,9 @@ public:
 	float FindFreePath( const float protection_margin, const tVector &input, tVector &output);
 
 	// Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
-	// TODO circleWhenHit is buggy
+	// TODO needs to be checked
 	bool IntersectCircle( tVector l1, tVector l2, tVector circle,
-		float radius, tVector &result)
+		float radius, tVector &result);
 
 	/*
 	 * Having a point (lineStart) and a circle (circle + radius), there are two

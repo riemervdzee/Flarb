@@ -67,9 +67,6 @@ public:
 
 	// Makes this vector perpendicular to the existing values (rotating 90 degrees right-hand wise)
 	tVector& Perpendicular();
-
-	// Clamps the vector to the rectangle formed by min/max
-	tVector& Clamp( const tVector& min, const tVector& max);
 };
 
 

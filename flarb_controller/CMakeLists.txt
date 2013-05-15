@@ -30,6 +30,7 @@ rosbuild_genmsg()
 #target_link_libraries(example ${PROJECT_NAME})
 
 rosbuild_add_executable(controller  src/main.cpp
+									src/types/tBoundingBox.cpp
 									src/types/tVector.cpp
 									src/types/tMatrix.cpp
 									src/cController.cpp
