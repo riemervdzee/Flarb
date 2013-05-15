@@ -1,7 +1,6 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-#include "flarb_controller/types/tBoundingBox.h"
 #include "flarb_controller/cMap.h"
 using namespace std;
 
@@ -133,56 +132,21 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 	}
 }
 
-#if 0
-// Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
-// http://stackoverflow.com/questions/7060519/
-// TODO cleanup
-bool cMap::IntersectCircle( tVector lineStart, tVector lineEnd, 
-		tVector circle, float radius, tVector &circleWhenHit)
-{
-	circleWhenHit = tVector();
 
-	// find the closest point on the line segment to the center of the circle
-	tVector line = lineEnd - lineStart;
-	float lineLength = line.Length();
-	tVector lineNorm = (1/lineLength)*line;
-	tVector segmentToCircle = circle - lineStart;
-	float closestPointOnSegment = segmentToCircle.Dot(line) / lineLength;
-
-	// Special cases where the closest point happens to be the end points
-	tVector closest;
-	if (closestPointOnSegment < 0) closest = lineStart;
-	else if (closestPointOnSegment > lineLength) closest = lineEnd;
-	else closest = lineStart + closestPointOnSegment*lineNorm;
-
-	// Find that distance.  If it is less than the radius, then we 
-	// are within the circle
-	tVector distanceFromClosest = circle - closest;
-	float distanceFromClosestLength = distanceFromClosest.Length();
-	if (distanceFromClosestLength > radius) return false;
-
-	// So find the distance that places the intersection point right at 
-	// the radius.  This is the center of the circle at the time of collision
-	// and is different than the result from Doswa
-	// TODO this is a tad faulty
-	tVector offset = (radius - distanceFromClosestLength) *
-					 ((1/distanceFromClosestLength)*distanceFromClosest);
-	circleWhenHit = circle - offset;
-
-	return true;
-}
-
-#else
-// TODO bit messy
+/*
+ * Tells us whether a finite line (l1, l2) intersects with the given circle and
+ * radius. Puts the point of first contact in result
+ * TODO fix "result"
+ */
 bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 	float radius, tVector &result)
 {
 	// Empty the resulting vector
 	result = tVector();
 
-	// Translate coordinates so l1 = {0,0)
+	// l = line end from {0,0}; cs line-beginning from circle
 	tVector l  = l2 - l1;
-	tVector cs = circle - l1;
+	tVector cs = l1 - circle;
 
 	// Get discriminant
 	float a = l.Dot( l);
@@ -196,71 +160,29 @@ bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 		return false;
 
 	// Although if d == 0, only one solution exists. but chances are low due
-	// floating point arithmetics. If it is actually 0, it won't have any effect
-	// Just try to look for the two possible solutions. Note that these two
-	// solutions are the points of the infinite line, not the segment we want
+	// floating point arithmetics. If it is actually 0, it hardly has an effect
+	// Just try to look for the two possible solutions. Note that we'll get two
+	// Scalars. When t1 and t2 are in [0,1] range, it is a hit.
+	// t1 is guaranteed to be first.
 	float dsqrt=sqrt(d);
 	float div = 2 * a;
 	float t1 = (-b - dsqrt) / div;
 	float t2 = (-b + dsqrt) / div;
 
-	// The two results
-	// TODO check correctness
-	float x1 = (-1 * l.getX() * t1);
-	float y1 = (-1 * l.getY() * t1);
-	float x2 = ( 1 * l.getX() * t2);
-	float y2 = ( 1 * l.getY() * t2);
+	// If t1 is in the 0 >= t1 >= 1 range, it is a hit at t1
+	// t1 also comes before t2
+	// TODO put result in "result"
+	if( t1 >= 0 && t1 <= 1)
+		return true;
 
-	tVector p1( x1, y1);
-	tVector p2( x2, y2);
+	// It is a hit at t2
+	// TODO put result in "result"
+	if( t2 >= 0 && t2 <= 1)
+		return true;
 
-	// To check whether they lie on our segment, do a bounding box test
-	// Construct a bb from the origin and l
-	tBoundingBox bb( tVector(), l);
-
-	// Check whether one of these two points actually lies in the segment
-	bool r1 = false, r2 = false;
-	if ( bb.Test( p1)) r1 = true;
-	if ( bb.Test( p2)) r2 = true;
-
-	// Most common cases first. tad unlogic, I know
-	if( r1 == false)
-	{
-		// If both ain't in the segment, the segment ain't coliding with the circle
-		if( r2 == false)
-		{
-			return false;
-		}
-		// r1 == false, r2 == true. When one is true, just return that point
-		else
-		{
-			result = l1 + p2;
-			return true;
-		}
-	}
-	else
-	{
-		// r1 == true, r2 == false. When one is true, just return that point
-		if( r2 == false)
-		{
-			result = l1 + p1;
-			return true;
-		}
-		// Both are true
-		else
-		{
-			// Both lie on the segment, pick the one with the smallest length
-			// smallestlength = point which we collide first. coming from l1
-			if( p1.LengthSquared() < p2.LengthSquared())
-				result = l1 + p1;
-			else
-				result = l1 + p2;
-
-			return true;
-		}
-	}
+	return false;
 }
-#endif
+
 
 /*
  * Having a point (lineStart) and a circle (circle + radius), there are two
