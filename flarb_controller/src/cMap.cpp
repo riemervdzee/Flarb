@@ -37,6 +37,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 	_ObjectsCollided.clear();
 	bool  result = false; // positive result?
 	float inputLength = input.Length();
+	float resizeLength = inputLength * 0.95f;
 	tVector currentAttempt;
 
 	// Push our first attempt (input), set the vector we should compare to
@@ -53,6 +54,9 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 		currentAttempt = _WaypointAttempts.front();
 		_WaypointAttempts.pop_front();
 
+		//cout << "size " << _WaypointAttempts.size() + 1;
+		//cout << ", Trying: " << currentAttempt.getX() << ", " << currentAttempt.getY() << endl;
+
 		// Go through all objects, check for collisions
 		for( unsigned int i = 0; i < _map->list.size(); i++)
 		{
@@ -66,11 +70,6 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 			{
 				collision_found = true;
 
-				// Shrink p1
-				// TODO Check if neccesary?
-				p1 *= 0.95;
-				_WaypointAttempts.push_back( p1);
-
 				// Check for uniquenes
 				bool unique = true;
 				for( unsigned int j = 0; j < _ObjectsCollided.size(); j++)
@@ -82,10 +81,17 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 					}
 				}
 
+				//cout << "Collided with id" << i << endl;
+
 				// If unique, gather the outer points as well
 				// Otherwise these points are/were already in the list
 				if( unique)
 				{
+					// Shrink p1
+					// TODO Check if neccesary?
+					p1 *= 0.9;
+					_WaypointAttempts.push_back( p1);
+
 					// Something extra to prevent future collisions!
 					float radius = obj.radius + protection_margin + 0.001f;
 					tVector p2, p3;
@@ -95,8 +101,8 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 
 					// Resize p2 and p3 to the length of the input and insert
 					// TODO only if p1 is fixed!
-					//p2.setLength( inputLength);
-					//p3.setLength( inputLength);
+					p2.setLength( resizeLength);
+					p3.setLength( resizeLength);
 					_WaypointAttempts.push_back( p2);
 					_WaypointAttempts.push_back( p3);
 
@@ -128,6 +134,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 	else
 	{
 		output = tVector();
+		cout << "Oh dear.. No result " << endl;
 		return FREEPATH_NO_SOLUTION;
 	}
 }
