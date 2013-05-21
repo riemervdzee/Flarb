@@ -10,8 +10,9 @@
 using namespace std;
 
 
-#define SERIAL_PORT   "/dev/ttyUSB0"
-#define SERIAL_BAUD   B9600
+#define SERIAL_PORT   "/dev/ttyUSB0"   // Device filename used in linux
+#define SERIAL_BAUD   B9600            // baudrate used, Lawicel has auto-baud
+#define CANBUS_SPEED  6                // Canbus speed, see the Lawicel docs
 
 
 /*
@@ -23,7 +24,7 @@ bool cController::Create()
 	_roscom.Create( &_rosNode, &_canbus);
 
 	// Init Canbus object
-	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, 6, &_roscom);
+	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, CANBUS_SPEED, &_roscom);
 
 	return true;
 }
