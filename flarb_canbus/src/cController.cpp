@@ -12,7 +12,7 @@ using namespace std;
 
 #define SERIAL_PORT   "/dev/ttyUSB0"   // Device filename used in linux
 #define SERIAL_BAUD   B9600            // baudrate used, Lawicel has auto-baud
-#define CANBUS_SPEED  6                // Canbus speed, see the Lawicel docs
+#define CANBUS_SPEED  4                // Canbus speed, see the Lawicel docs
 
 
 /*
