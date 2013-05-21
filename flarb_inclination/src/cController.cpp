@@ -74,15 +74,16 @@ int cController::Openport()
 {
 	int ret = -1;
 
-	while( ret != 0)
+	while( ret != 0 && ros::ok())
 	{
 		ret = _serial.PortOpen(DEV_PORT, BAUD_RATE);
 
 		if( ret != 0)
 			sleep(1);
 	}
-
-	cout<< "Opened serial " <<endl;
+	if(ret == 0)
+		cout<< "Opened serial " <<endl;
+	
 
 	return 0;
 }
