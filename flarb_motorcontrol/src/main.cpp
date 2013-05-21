@@ -22,8 +22,8 @@ int main(int argc, char **argv)
 
 	// Create a cController object
 	cController controller;
-	controller.Create();
-	
+	controller.Create( NODE_FREQUENCY);
+
 	// Update timer
 	ros::Rate loop_rate( NODE_FREQUENCY);
 

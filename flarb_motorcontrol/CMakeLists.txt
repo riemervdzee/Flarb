@@ -31,4 +31,5 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_executable(motorcontrol src/main.cpp
                                      src/cController.cpp
+                                     src/cPID.cpp
                                      src/cRosCom.cpp)
