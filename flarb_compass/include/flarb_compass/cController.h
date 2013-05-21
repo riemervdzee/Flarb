@@ -31,6 +31,7 @@ private:
 	int getData(int status);
 	int checksum(char *s);
 	int configure();
+	int Calibration();
 	char Buffer[1024];
 	int ptr;
 };
