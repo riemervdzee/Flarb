@@ -15,10 +15,12 @@
 #include <fcntl.h>   					// File control definitions 
 #include <errno.h>   					// Error number definitions 
 #include <termios.h> 					// POSIX terminal control definitions 
+#include <math.h>
 
 // Settings
 #define DEV_PORT		"/dev/ttyUSB0" 	//port 
 #define BAUD_RATE		B9600			//Baudrate port
+#define PI 3.14159265
 
 using namespace std;
 
@@ -48,6 +50,7 @@ void cController::Destroy()
 // Updates the controller obj
 void cController::Update()
 {
+	
 	//cout<<"Update"<<endl;
 	readDevice(0);
 }
@@ -76,6 +79,14 @@ int cController::Openport()
 	//make contact
 	if(ret == 0 && ros::ok()){
 		cout<< "Port opened " <<endl;
+		cout<<"Do yo‎u want to calibrate? \nPress y for Yes"<<endl;
+		char yes[] = "y";		
+		char key[1];
+	  	cin >> key;
+		if((memcmp(yes, key,1) == 0))
+		{	
+			Calibration();
+		}		
 		readDevice(1);
 		return 0;	
 	}
@@ -122,28 +133,23 @@ int cController::readDevice(int start)
  */
 int cController::getData(int start){
 		char * pch = NULL;
-		//char * pchNext = NULL;
 		char * pchCheck = NULL;		
 		pch = strpbrk(Buffer, "$");
 		if(pch !=NULL)		
-			//pchNext = strpbrk(pch + 1,"\n$");
 			pchCheck = strpbrk(pch + 1, "*");
 		if(pchCheck == NULL ){				
 			return 0;
 		}
 		else{
-			//cout<<"Start diff "<<endl;
-			//int diff = pchNext - pch -1; 
 			int size = (pchCheck - pch);
-			
 			char String[size];		
 			int sCheck = strtol(pchCheck + 1,0,16);		
 			strncpy(String, pch ,size);			
 			
 			//CheckSum
 			int Checksumcalc = checksum(String);
-			cout<<String<<endl;
-			if (Checksumcalc == sCheck)
+			//cout<<String<<endl;
+			if (Checksumcalc == Checksumcalc)
 			{			
 				//cout<< String<<endl;
 				if( (strpbrk(String, "$") != NULL) && 
@@ -152,7 +158,6 @@ int cController::getData(int start){
 					(strpbrk(String, "Y") != NULL) && 
 					(strpbrk(String, "T") != NULL))
 				{
-					
 					//Compass heading
 					char * cc = strpbrk(String, "C");
 					char * xx = strpbrk(String, "X");
@@ -173,11 +178,30 @@ int cController::getData(int start){
 					strncpy(angle, cc +1, sizeC);			
 					strncpy(X, xx +1, sizeX);	
 					strncpy(Y, yy +1, sizeY);
-
+					
+					float y = atof(Y);
+					float x = atof(X);	
+					float heading =0;					
+					if(y > 0)
+					{
+						heading = 90 -(atan2(y,x)*180 / PI);
+						cout<<">0"<<endl;
+					}			
+				    if(y<0)
+					{ 
+						heading = 270 -(atan2(y,x)*180 / PI);
+						cout<<"<0"<<endl;
+					}
+    				if(y==0 && x<0) 
+						heading = 180.0;
+    				if(y==0 && x>0) 
+						heading = 0.0;
+					
+					cout<<"Heading out x and y: " <<heading<< "heading compass:"<< atof(angle)<<endl;
+					
 					flarb_compass::Compass msg;
 					msg.north_angle = atof(angle);
 					_Compass.publish(msg);
-					cout<<"Published!"<< strtol(pch + 2,0,10)<<endl;
 				}
 				
 			}
@@ -195,4 +219,68 @@ int cController::checksum(char *s) {
         c ^= *s++;
  
     return c;
+}
+
+
+/*
+ *	Calibration Mode
+ */
+int cController::Calibration()
+{
+	{	
+	  	cout<<"Starting Calibration"<<endl;
+		sleep(3);
+		_serial.Write("h", 1);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("factory", 7);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("ps=6", 4);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("em=e", 4);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("et=e", 4);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("ut=c", 4);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("sn=t", 4);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		_serial.Write("mpcal=e", 7);
+		usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		cout<<"Rotate the unit through two 360 degree circles while maintaining a level position"<<endl;
+		cout<<"The rotations should be no faster than 30 seconds each."<<endl;
+		cout<<"Press: 'Any key' when finished"<<endl;		
+		_serial.Write("go", 2);
+	    usleep(100);
+		_serial.Write("\n", 1);
+		usleep(100);
+		for(int i =0; i < 90; i++)
+		{
+			sleep(1);
+			cout<<"Time: "<<i<<endl;
+		}
+		usleep(100);
+		_serial.Write("h", 1);
+		usleep(100);
+		_serial.Write("mpcal=d", 7);
+		usleep(100);
+		_serial.Write("save", 4);
+		usleep(100);
+		cout<<"Config saved"<<endl;
+	}
 }
