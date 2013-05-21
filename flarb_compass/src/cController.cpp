@@ -79,6 +79,8 @@ int cController::Openport()
 	//make contact
 	if(ret == 0 && ros::ok()){
 		cout<< "Port opened " <<endl;
+		/*		
+		//Calibration		
 		cout<<"Do yo‎u want to calibrate? \nPress y for Yes"<<endl;
 		char yes[] = "y";		
 		char key[1];
@@ -86,7 +88,9 @@ int cController::Openport()
 		if((memcmp(yes, key,1) == 0))
 		{	
 			Calibration();
-		}		
+		}
+		*/
+		sleep(1);		
 		readDevice(1);
 		return 0;	
 	}
@@ -124,6 +128,7 @@ int cController::readDevice(int start)
 	char buffRaw[255];
 	_serial.Read(buffRaw, sizeof(buffRaw));
 	strncpy(Buffer, buffRaw, 255);
+	//cout<<"Succesfull buffer read"<<endl;
 	getData(start);
 	return 1;
 }
@@ -143,13 +148,13 @@ int cController::getData(int start){
 		else{
 			int size = (pchCheck - pch);
 			char String[size];		
-			int sCheck = strtol(pchCheck + 1,0,16);		
+			int sCheck = strtol(*pchCheck + 1,0,16);		
 			strncpy(String, pch ,size);			
 			
 			//CheckSum
 			int Checksumcalc = checksum(String);
 			//cout<<String<<endl;
-			if (Checksumcalc == Checksumcalc)
+			if (Checksumcalc == sCheck)
 			{			
 				//cout<< String<<endl;
 				if( (strpbrk(String, "$") != NULL) && 
@@ -185,23 +190,27 @@ int cController::getData(int start){
 					if(y > 0)
 					{
 						heading = 90 -(atan2(y,x)*180 / PI);
-						cout<<">0"<<endl;
+						//cout<<">0"<<endl;
 					}			
 				    if(y<0)
 					{ 
 						heading = 270 -(atan2(y,x)*180 / PI);
-						cout<<"<0"<<endl;
+						//cout<<"<0"<<endl;
 					}
     				if(y==0 && x<0) 
 						heading = 180.0;
     				if(y==0 && x>0) 
 						heading = 0.0;
 					
-					cout<<"Heading out x and y: " <<heading<< "heading compass:"<< atof(angle)<<endl;
+					//cout<<"Heading out x and y: " <<heading<< "heading compass:"<< atof(angle)<<endl;
 					
 					flarb_compass::Compass msg;
 					msg.north_angle = atof(angle);
+					msg.x = x;
+					msg.y = y;
+					msg.heading = heading;
 					_Compass.publish(msg);
+					
 				}
 				
 			}
@@ -268,12 +277,9 @@ int cController::Calibration()
 		_serial.Write("go", 2);
 	    usleep(100);
 		_serial.Write("\n", 1);
-		usleep(100);
-		for(int i =0; i < 90; i++)
-		{
-			sleep(1);
-			cout<<"Time: "<<i<<endl;
-		}
+		usleep(100);		
+		char key[1];
+	  	cin >> key;
 		usleep(100);
 		_serial.Write("h", 1);
 		usleep(100);
@@ -281,6 +287,8 @@ int cController::Calibration()
 		usleep(100);
 		_serial.Write("save", 4);
 		usleep(100);
+		_serial.Write("go", 2);
 		cout<<"Config saved"<<endl;
+		return 1;
 	}
 }
