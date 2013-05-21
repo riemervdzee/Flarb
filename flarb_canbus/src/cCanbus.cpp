@@ -200,7 +200,7 @@ int cCanbus::ClearReadCache()
 	printf( "ClearReadCache is called! \n");
 
 	// Just keep reading from the serial, in the hope we can recover from this grieve error
-	while( _serial.Read( _canbus_readbuffer, CANBUS_READBUFFER_SIZE) != 0) {}
+	for( int i = 0; _serial.Read( _canbus_readbuffer, CANBUS_READBUFFER_SIZE) != 0 && i < 20; i++) {}
 
 	// Return 0, cause well yea...
 	return 0;
@@ -232,19 +232,21 @@ int cCanbus::PortRead()
 int cCanbus::PortSend( const CanMessage &msg)
 {
 	// Our message buffer + pointer
-	char buffer[14];
+	char buffer[27];
 	char* buff = buffer;
 
 	// Fill first part
-	sprintf( buffer, "t%03X%X", msg.identifier, msg.length);
-	buff += 5;
+	sprintf( buffer, "T%08X%X", msg.identifier, msg.length);
+	buff += 10;
 
 	// Fill the data
-	for(int i = 0; i < msg.length; i++, buff+=2)
+	for(unsigned int i = 0; i < msg.length; i++, buff+=2)
 		sprintf( buff, "%02X", msg.data[i] );
 
 	// Debug
+#if 0
 	printf( "Sending %s + \\r, length %i \n", buffer, int(buff - buffer+1));
+#endif
 	
 	// Add delim byte
 	sprintf( buff, "\r" );
@@ -290,7 +292,7 @@ int cCanbus::CheckErrors()
 
 /*
  * Helper function for reads
- * 't' is already in the buffer if skipFirst is true
+ * 'T' is already in the buffer if skipFirst is true
  *
  * Returns     0  Success, we read a package! (only one!)
  *            -1  If there are no packages
@@ -320,7 +322,7 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 		}
 
 		// Check if it is a Package, then handle it
-		if( _canbus_readbuffer[0] != 't')
+		if( _canbus_readbuffer[0] != 'T')
 		{
 			// Unknown package, abbandon ship!
 			printf( "ReadPackage: Unknown package! value=%d\n", _canbus_readbuffer[0]);
@@ -333,8 +335,8 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 		}
 	}
 
-	// If we got this far, we can assume 't' is in the _canbus_readbuffer. Now we must read the rest
-	ret = _serial.ReadBytes( _canbus_readbuffer, 4, retries);
+	// If we got this far, we can assume 'T' is in the _canbus_readbuffer. Now we must read the rest
+	ret = _serial.ReadBytes( _canbus_readbuffer, 9, retries);
 	if( ret != 0)
 	{
 		printf( "ReadPackage: Could not read\n");
@@ -342,10 +344,10 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 	}
 
 	// Get length, length is always in the range of 0-8
-	msg.length = _canbus_readbuffer[3] - '0';
+	msg.length = _canbus_readbuffer[8] - '0';
 
 	// Get identifier
-	_canbus_readbuffer[3] = '\0';
+	_canbus_readbuffer[8] = '\0';
 	msg.identifier = strtoul( _canbus_readbuffer, NULL, 16);
 
 	// Get data
@@ -358,7 +360,7 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 
 	// Get the data from the buffer
 	char databuffer[3] = { '\0'};
-	for( int i = 0; i < msg.length; i++)
+	for( unsigned int i = 0; i < msg.length; i++)
 	{
 		databuffer[0] = _canbus_readbuffer[ i * 2];
 		databuffer[1] = _canbus_readbuffer[ i * 2 + 1];
@@ -371,8 +373,8 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 
 	// DEBUG
 #if 0
-	printf( "Received package. ID=%03X, length=%i \ndata: 0x", msg.identifier, msg.length);
-	for(int i = 0; i < msg.length; i++)
+	printf( "Received package. ID=%05X, length=%i \ndata: 0x", msg.identifier, msg.length);
+	for( unsigned int i = 0; i < msg.length; i++)
 		printf( "%02X", msg.data[i]);
 #endif
 
@@ -423,7 +425,7 @@ int cCanbus::SendCommand( const char* string, int length, int charPositionRight,
 		}
 
 		// Check if it is a Package, then handle it
-		if( _canbus_readbuffer[0] == 't')
+		if( _canbus_readbuffer[0] == 'T')
 		{
 			// Handle the received package
 			ret = ReadPackage( retries, true);

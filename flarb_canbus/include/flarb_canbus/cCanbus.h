@@ -13,8 +13,8 @@ class cRosCom;
  * Canbus message struct
  */
 struct CanMessage {
-	unsigned short identifier; /* In the range of 000-7FF hex */
-	unsigned short length;	   /* In the range of 0-8 hex */
+	unsigned int identifier;   /* In the range of 000-7FF hex */
+	unsigned int length;	   /* In the range of 0-8 hex */
 	unsigned char data[8];	   /* Per byte 0-255 */
 };
 
