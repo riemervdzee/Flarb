@@ -37,7 +37,7 @@ cCanbus::~cCanbus() { delete _canbus_readbuffer;}
 /*
  * Opens a canbus connection
  */
-int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom)
+int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom, bool printSuccess)
 {
 	// Vars
 	int ret;
@@ -128,14 +128,16 @@ int cCanbus::PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* 
 	_devSerial[5] = '\0';
 
 	// Everything is set up, print something nice
-	printf(
-			"Lawicel canbus is opened! Hurray \n" \
-			"Port     : %s \n" \
-			"Version  : %s \n" \
-			"Serial   : %s \n" \
-			"Baudrate : %i (internal representation)\n" \
-			"Canspeed : S%i \n\n",
-		device, _devVersion, _devSerial, baudrate, canSpeed);
+	if( printSuccess) {
+		printf(
+				"Lawicel canbus is opened! Hurray \n" \
+				"Port     : %s \n" \
+				"Version  : %s \n" \
+				"Serial   : %s \n" \
+				"Baudrate : %i (internal representation)\n" \
+				"Canspeed : S%i \n\n",
+			device, _devVersion, _devSerial, baudrate, canSpeed);
+	}
 
 	// We succeeded
 	return 0;

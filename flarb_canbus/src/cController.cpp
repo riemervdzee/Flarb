@@ -10,10 +10,13 @@
 using namespace std;
 
 
+// Canbus settings
 #define SERIAL_PORT   "/dev/ttyUSB0"   // Device filename used in linux
 #define SERIAL_BAUD   B9600            // baudrate used, Lawicel has auto-baud
 #define CANBUS_SPEED  4                // Canbus speed, see the Lawicel docs
 
+// Tells whether we should reopen the canbus on error
+#define RESET_ON_ERRORS 1
 
 /*
  * Functions executed at the beginning and end of the Node
@@ -24,7 +27,7 @@ bool cController::Create()
 	_roscom.Create( &_rosNode, &_canbus);
 
 	// Init Canbus object
-	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, CANBUS_SPEED, &_roscom);
+	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, CANBUS_SPEED, &_roscom, true);
 
 	return true;
 }
@@ -43,7 +46,15 @@ void cController::Destroy()
 void cController::Update()
 {
 	// Check for canbus errors
+#if RESET_ON_ERRORS
+	if(_canbus.CheckErrors())
+	{
+		_canbus.PortClose();
+		_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, CANBUS_SPEED, &_roscom, false);
+	}
+#else
 	_canbus.CheckErrors();
+#endif
 
 	// Check for messages
 	_canbus.PortRead();

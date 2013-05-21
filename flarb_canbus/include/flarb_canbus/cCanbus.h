@@ -30,7 +30,7 @@ public:
 	~cCanbus();
 
 	// Functions executed at the beginning and end of the Application
-	int PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom);
+	int PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom, bool printSuccess);
 	int PortClose();
 
 	// Reads the port for messages, sends them to RosCom object
