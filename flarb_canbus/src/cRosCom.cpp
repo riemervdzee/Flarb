@@ -17,7 +17,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 	_rosNode = rosNode;
 
 	// Subscribe to /canbus/send
-	_canSend = _rosNode->subscribe<flarb_canbus::CanMessage>( "/canbus/send", 20, &cRosCom::SendCallback, this);
+	_canSend = _rosNode->subscribe<flarb_canbus::CanMessage>( "/canbus/send", 100, &cRosCom::SendCallback, this);
 
 	// Setup service
 	_srvSubscribe = _rosNode->advertiseService
@@ -84,7 +84,7 @@ bool cRosCom::SubscribeCallback( flarb_canbus::CanSubscribe::Request  &req,
 	entr.id = req.identifier;
 
 	// Create topic entry
-	entr.topic = _rosNode->advertise<flarb_canbus::CanMessage>( req.topicname, 10);
+	entr.topic = _rosNode->advertise<flarb_canbus::CanMessage>( req.topicname, 100);
 
 	// Add entry to the vector
 	_PublishEntries.push_back( entr);
