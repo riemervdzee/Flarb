@@ -30,22 +30,27 @@ private:
 	// We are publishing shizzle
 	ros::Publisher _GGA;
 	ros::Publisher _RMC;
-	
+	flarb_gps::GGA gga;
+	flarb_gps::RMC rmc;	
+
 	//Open port
 	int Openport();
 	//Read device
 	int readDevice(int start);
 	int getPackage(char* dataPack);
 	//Data packs
-	int GGAMessage(char data[], int counter, flarb_gps::GGA gga);
-	int RMCMessage(char *data, int counter, flarb_gps::RMC rmc);
+	int GGAMessage(char *data, int counter);
+	int RMCMessage(char *data, int counter);
 	//checksum
 	int checksum(char *s);
 	//Opening FileDescriptor
 	int OpenDevice();
-	
 	// Get package from the serial port
 	int getPackage();
+
+	int getData();
+	char Buffer[1024];
+	int ptrb;
 };
 
 #endif // CLASS_CONTROLLER_H
