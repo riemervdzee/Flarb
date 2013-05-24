@@ -15,6 +15,7 @@
 #include <fcntl.h>   					// File control definitions 
 #include <errno.h>   					// Error number definitions 
 #include <termios.h> 					// POSIX terminal control definitions 
+#include <math.h>
 
 // Settings
 #define DEV_PORT		"/dev/ttyUSB0" 	//port 
@@ -27,6 +28,7 @@ using namespace std;
  */
 int cController::Create()
 {
+	ptrb = 0;
 	// Topic name / buffer
 	_GGA = _rosNode.advertise<flarb_gps::GGA>("NMEA/GGA", 1);
 	_RMC = _rosNode.advertise<flarb_gps::RMC>("NMEA/RMC", 1);
@@ -40,7 +42,6 @@ int cController::Create()
  */
 void cController::Destroy()
 {
-	//always close the port
 	_serial.PortClose();
 	ros::shutdown();
 }
@@ -68,7 +69,6 @@ int cController::Openport()
 	while( ret != 0 && ros::ok())
 	{
 		ret = _serial.PortOpen(DEV_PORT, BAUD_RATE);
-
 		if( ret != 0)
 			sleep(1);
 	}
@@ -90,111 +90,159 @@ int cController::Openport()
  *	Read data from Device
  */
 int cController::readDevice(int start){
-	char buffer[255];
+	//when it is getting out of hand
+	if(ptrb > 512)
+	{
+		ptrb = 0;
+	}
+	
 	char buffRaw[255];
-	int a = _serial.Read(buffRaw, sizeof(buffRaw));				
-if(a > 0){
-		if(size == 0)
-			start = 1;
-		if(start == 1){
-			memcpy(buffer,buffRaw, a);
-			cout<< "buffer start is: "<< buffer << endl;
-			size = a;	
-		}
-		else{
-			cout<<"else"<<endl;
-			memcpy(buffer, buff, size);
-			memcpy(buffer + size, buffRaw, a);
-			size = a + size;
-			cout<< "buffer afther copy"<< buff << endl;	
-		}
-
-		char * pch;
-		char * pch_next;
-		cout<<"before strchr"<<endl;
-		pch = strchr(buffer,'$');
-		if(pch != NULL){	
-			pch_next = strchr(pch + 1,'$');		
-		}
-		cout<<"Size at start: "<<size<<endl;	
-		while((pch != NULL) && (pch_next != NULL) ){
-			cout<<"while loop"<<endl;
-			char NMEA[(pch_next - pch) - 1];
-			cout<<"Sizeof NMEA: "<< sizeof(NMEA) <<endl;
-			memcpy( NMEA, pch, ((pch_next - pch) - 1));
-			cout<<"NMEA: "<<NMEA<<endl;
-			pch = pch_next;
-			cout<<"Size in loop: "<< size << endl;
-			pch_next = strchr(pch + 1,'$');	
-			//pch_next--;
-			if(pch_next == NULL)
-				size = 255 - (buffer - pch);	
-		}
-		cout<<"or here size: "<< size <<endl;
-		memset(buff, '-', 255);	
-		memcpy(buff, buffer + pch, size);
-		cout<<"size: "<<size<< endl;
-		cout<<"buffer: "<<buffer << endl;
-		sleep(1);
-	}
-	return 1;
+	int a = _serial.Read(buffRaw, sizeof(buffRaw));
+	if(a>0)
+		memcpy(Buffer + ptrb, buffRaw, a);
+	ptrb += a;
+	int b = getData();
+	return b;
 }
-
+	
 /*
- *	Get Data from package
+ * Getting data from stream
  */
-int cController::getPackage(char* dataPack)
-{
-		
-	//Check GGA Message
-	if(dataPack[3] == 'G' && dataPack[4] == 'G' && dataPack[5] == 'A'){
-		//gga message
-		flarb_gps::GGA gga;	
+int cController::getData(){
+	int result=0;	
+	char * pch = NULL;
+	char * pchCheck = NULL;		
+	pch = (char*) memchr(Buffer, '$', ptrb);
+	char * pchNext = NULL;
+	
+	if(pch !=NULL)		
+		pchCheck = (char*) memchr(pch + 1, '*', ptrb);
+		if(pchCheck != NULL)
+			pchNext = (char*) memchr(pchCheck + 1, '$', 6);
+	if((pchCheck == NULL) || (pchNext == NULL) ){				
+		return 0;
+	}
+	else
+	{
+		//get data stream
+		int size = (pchCheck - pch);
+		char String[size];
+		strncpy(String, pch+1 ,size -1);
+		String[size-1] = '\0';	
 
-		char * pch;
-		int counter = 1;		
+		//CheckSum
+		char sCheck[3];
+		strncpy(sCheck, pchCheck + 1,2);
+		sCheck[2] = '\0';
+		int checksumString = strtol(sCheck,0,16);		
+		int Checksumcalc = checksum(String);
 		
-		pch=strchr(dataPack , ',');
-		while (pch != NULL)
-		{
-			GGAMessage( pch + 1, counter, gga );
-			pch = strchr( pch + 1 , ',');
-			counter++;
+		if (Checksumcalc == checksumString)
+		{	
+			
+			//GGA
+			if (memcmp(String, "GPGGA", 5) == 0) 
+			{
+				result = 1;
+			}				
+			//RMC
+			else if (memcmp(String, "GPRMC", 5) == 0) 
+			{
+				result = 2;
+			}
+			//VTG
+			else if (memcmp(String, "GPVTG", 5) == 0) 
+			{
+				result = 3;
+	
+			}
+			//RMB
+			else if (memcmp(String, "GPRMB",5) == 0) 
+			{
+				result = 4;			
+			
+			}	
+			//GSA
+			else if (memcmp(String, "GPGSA",5) == 0) 
+			{
+				result = 5;	
+						
+			}
+			//GSV
+			else if (memcmp(String, "GPGSV",5) == 0) 
+			{
+				result = 6;	
+								
+			}
+			else
+			{	
+				return -1;	
+			}
+			if(result < 3)
+			{
+				int counter = 1;		
+				char *ptr_start=strchr(String , ',');
+				char *ptr;
+				while (ptr_start != NULL)
+				{
+					ptr = strchr(ptr_start + 1 , ',');
+					if(ptr != NULL)
+					{
+						if((ptr - ptr_start) > 1)
+						{
+							int dataSize = ptr - ptr_start;
+							char data[dataSize];
+							data[dataSize -1] = '\0';
+							memcpy(data, ptr_start +1, dataSize-1);
+							//MessageType
+							if(result == 1)	 {	GGAMessage( data, counter );	}
+							if(result == 2)	 {	RMCMessage( data, counter );	}
+							if(result == 3)	 {		}
+							if(result == 4)	 {		}
+							if(result == 5)	 {		}
+							if(result == 6)	 {		}
+						}
+					}
+					else
+					{
+						if((ptr_start + 1) != '\0')	{
+							//last data
+							if(result == 1)	 {	GGAMessage(ptr_start + 1, counter);	cout<<"GGA"<<endl;}
+							if(result == 2)	 {	RMCMessage(ptr_start + 1, counter);	cout<<"RMC"<<endl;}
+							if(result == 3)	 {		cout<<"VTG"<<endl;}
+							if(result == 4)	 {		cout<<"RMB"<<endl;}
+							if(result == 5)	 {		cout<<"GSA"<<endl;}
+							if(result == 6)	 {		cout<<"GSV"<<endl;}
+						}	
+					}
+					ptr_start = strchr( ptr_start + 1 , ',');
+					counter++;
+				}
+				//publish
+				if(result == 1) {	_GGA.publish(gga);	}
+				if(result == 2) {	_RMC.publish(rmc);	}
+				if(result == 3) {		}
+				if(result == 4) {		}
+				if(result == 5) {		}
+				if(result == 6) {		}
+			}
+		
+			
 		}
-		//_NMEA.publish(gga);
-		cout<<"publish gga"<<endl;
-		return 1;
+		char Buftemp[1024];
+		memcpy(Buftemp, pchNext, ptrb - (size + 4));
+		memcpy(Buffer, Buftemp, 1024);
+		ptrb -= size -1;
+		getData();
 	}
-	//check rmc message
-	else if(dataPack[3] == 'R' && dataPack[4] == 'M' && dataPack[5] == 'C'){
-		//vtg message
-		flarb_gps::RMC rmc;
-		
-		char * pch;
-		int counter = 1;		
-		
-		pch=strchr(dataPack , ',');
-		while (pch != NULL)
-		{
-			RMCMessage(pch + 1, counter, rmc);
-			pch = strchr(pch + 1 , ',');
-			counter++;
-		}
-		//_NMEA.publish(rmc);
-		cout<<"publish RMC"<<endl;
-		return 1;
-	}
-	else if(dataPack[3] == 'V' && dataPack[4] == 'T' && dataPack[5] == 'G'){}
-	else{
-		return 0 ;
-	}
-	return 1;
+	return 0;
 }
+
 
 /*
  *	Fill VTG message
  */
-int cController::RMCMessage(char *data, int counter, flarb_gps::RMC rmc){
+int cController::RMCMessage(char *data, int counter){
 	switch(counter){
 		case 1:
 			rmc.Track = atof (data);
@@ -209,7 +257,7 @@ int cController::RMCMessage(char *data, int counter, flarb_gps::RMC rmc){
 /*
  *	Fill GGA Message
  */
-int cController::GGAMessage(char *data, int counter, flarb_gps::GGA gga){
+int cController::GGAMessage(char *data, int counter){
 	
 	switch(counter){
 		case 1:

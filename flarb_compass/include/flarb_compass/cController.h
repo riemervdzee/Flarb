@@ -25,6 +25,7 @@ private:
 
 	// We are publishing shizzle
 	ros::Publisher _Compass;
+	flarb_compass::Compass msg;
 	cSerial _serial;
 	int Openport();
 	int readDevice(int status);

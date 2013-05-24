@@ -50,9 +50,10 @@ void cController::Destroy()
 // Updates the controller obj
 void cController::Update()
 {
-	
 	//cout<<"Update"<<endl;
-	readDevice(0);
+	int res = readDevice(0);
+	if(res == 0)	
+		_Compass.publish(msg);
 }
 
 /*
@@ -125,12 +126,17 @@ int cController::configure()
  */	
 int cController::readDevice(int start)
 {
+	//getting out of hand
+	if(ptr > 512)
+	{
+		ptr = 0;
+	}
 	char buffRaw[255];
-	_serial.Read(buffRaw, sizeof(buffRaw));
-	strncpy(Buffer, buffRaw, 255);
-	//cout<<"Succesfull buffer read"<<endl;
-	getData(start);
-	return 1;
+	int a = _serial.Read(buffRaw, sizeof(buffRaw));
+	strncpy(Buffer + ptr, buffRaw, a);
+	ptr += a;
+	int b = getData(start);
+	return b;
 }
 
 /*
@@ -143,20 +149,18 @@ int cController::getData(int start){
 		if(pch !=NULL)		
 			pchCheck = strpbrk(pch + 1, "*");
 		if(pchCheck == NULL ){				
-			return 0;
+			return -1;
 		}
 		else{
-			int size = (pchCheck - pch);
-			char String[size];		
-			int sCheck = strtol(*pchCheck + 1,0,16);		
-			strncpy(String, pch ,size);			
-			
+			int size = (pchCheck - pch) + 1;
+			char String[size];
+			int sCheck = strtol(pchCheck + 1,0,16);		
+			strncpy(String, pch ,size -1);
+			String[size-1] = '\0';	
 			//CheckSum
 			int Checksumcalc = checksum(String);
-			//cout<<String<<endl;
 			if (Checksumcalc == sCheck)
-			{			
-				//cout<< String<<endl;
+			{	
 				if( (strpbrk(String, "$") != NULL) && 
 					(strpbrk(String, "C") != NULL) && 
 					(strpbrk(String, "X") != NULL) && 
@@ -183,39 +187,65 @@ int cController::getData(int start){
 					strncpy(angle, cc +1, sizeC);			
 					strncpy(X, xx +1, sizeX);	
 					strncpy(Y, yy +1, sizeY);
-					
+					//termination string
+					angle[sizeC-1] = '\0';
+					X[sizeX-1] = '\0';
+					Y[sizeY-1] = '\0';
+					//cout<<X<<":"<<Y<<":"<<angle<<endl;
 					float y = atof(Y);
 					float x = atof(X);	
 					float heading =0;					
 					if(y > 0)
 					{
 						heading = 90 -(atan2(y,x)*180 / PI);
-						//cout<<">0"<<endl;
 					}			
 				    if(y<0)
 					{ 
 						heading = 270 -(atan2(y,x)*180 / PI);
-						//cout<<"<0"<<endl;
 					}
     				if(y==0 && x<0) 
 						heading = 180.0;
     				if(y==0 && x>0) 
 						heading = 0.0;
-					
-					//cout<<"Heading out x and y: " <<heading<< "heading compass:"<< atof(angle)<<endl;
-					
-					flarb_compass::Compass msg;
+						
 					msg.north_angle = atof(angle);
 					msg.x = x;
 					msg.y = y;
 					msg.heading = heading;
-					_Compass.publish(msg);
 					
+					
+					char * pchNext = NULL;
+					char * stringLoc = String;
+					pchNext = strpbrk(pch + 1, "$");
+					if(pchNext != NULL){
+						int diff = pchNext - pch -1;
+						char Buftemp[1024];
+						memcpy(Buftemp, Buffer, diff);
+						memcpy(Buffer, Buftemp, 1024);
+						ptr = 0;
+						getData(1);
+					}
+					ptr = 0;
+					return 0;					
 				}
-				
+				//all other trash
+				else
+				{
+					char * pchNext = NULL;
+					char * stringLoc = String;
+					pchNext = strpbrk(pch + 1, "$");
+					if(pchNext != NULL){
+						int diff = pchNext - pch -1;
+						char Buftemp[1024];
+						memcpy(Buftemp, Buffer, diff);
+						memcpy(Buffer, Buftemp, 1024);
+						ptr = 0;
+					}
+					return -1;
+				}
 			}
 	}
-	return 1;
+	return 0;
 }
 
 /*
