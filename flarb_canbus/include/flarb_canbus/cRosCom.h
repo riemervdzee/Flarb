@@ -5,20 +5,17 @@
 
 #include "ros/ros.h"
 
-#include "flarb_canbus/CanMessage.h"
-#include "flarb_canbus/CanSubscribe.h"
+// msgs
+#include "flarb_canbus/DualMotorEncoder.h"
+#include "flarb_canbus/DualMotorSpeed.h"
+
+// Canbus protocol
+#include "flarb_canbus/protocol/protocol.h"
+#include "flarb_canbus/protocol/protocol_dual_dc_motor_driver.h"
 
 // Prototype class
 struct cCanbus;
 
-/*
- * Helper struct for topics we should publish
- * note: first ros:Publisher, then int id (from big to small).
- */
-struct sRosComPublishEntry{
-	ros::Publisher	topic;
-	int				id;
-};
 
 /*
  * Ros communication class
@@ -26,21 +23,25 @@ struct sRosComPublishEntry{
 class cRosCom
 {
 public:
+	// C-tor
+	cRosCom() : _devSpeedID( -1) {}
+
 	// Functions executed at the beginning and end of the Application
 	int Create( ros::NodeHandle *rosNode, cCanbus *canbus);
 	int Destroy();
 
 	// Publish a message from the canbus to ROS-topics
-	void PublishMessage( const struct CanMessage &msg);
+	void MessageReceived( const struct CanMessage &msg);
 
 private:
-	// Puts a message on the Canbus
-	void SendCallback( const flarb_canbus::CanMessageConstPtr &msg);
+	// Puts a speed message on the Canbus
+	void SendSpeed( const flarb_canbus::DualMotorSpeedPtr msg);
+	
+	// Processors
+	void ProcessHelloMessage( const struct CanMessage &canmessage);
 
-	// We have a new Subscriber!
-	bool SubscribeCallback( flarb_canbus::CanSubscribe::Request  &req,
-							flarb_canbus::CanSubscribe::Response &res);
-
+	// ID of every device we are connected to
+	int _devSpeedID;
 
 	// Handle to the rosnode __ROSCOM IS NOT THE OWNER OF THIS OBJ__
 	ros::NodeHandle* _rosNode;
@@ -50,12 +51,6 @@ private:
 
 	// Subscriber to /canbus/send sends messages posted here
 	ros::Subscriber _canSend;
-
-	// Provides service so other Ros-Nodes can subscribe to certain Canbus id messages
-	ros::ServiceServer _srvSubscribe;
-
-	// Big sorted array of: id => ros::Subscriber ;
-	std::vector< sRosComPublishEntry> _PublishEntries;
 };
 
 #endif // CLASS_ROSCOM_H

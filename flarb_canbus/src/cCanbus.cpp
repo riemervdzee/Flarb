@@ -369,7 +369,7 @@ int cCanbus::ReadPackage( int retries, bool skipFirst)
 	}
 
 	// Process the msg
-	_roscom->PublishMessage( msg);
+	_roscom->MessageReceived( msg);
 
 	// DEBUG
 #if 0

@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <iostream>
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
@@ -6,6 +7,26 @@
 #include "flarb_canbus/cRosCom.h"
 #include "flarb_canbus/cCanbus.h"
 using namespace std;
+
+/*
+ * Helper union to "convert" signed/unsigned ints (16/32) to char buffers
+ */
+union mix_t {
+	int32_t  s32;
+	uint32_t u32;
+
+	struct {
+		int16_t hi;
+		int16_t lo;
+	} s16;
+
+	struct {
+		uint16_t hi;
+		uint16_t lo;
+	} u16;
+
+	char c[4];
+};
 
 /*
  * Basically the init-er of cRosCom
@@ -16,12 +37,8 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 	_canbus  = canbus;
 	_rosNode = rosNode;
 
-	// Subscribe to /canbus/send
-	_canSend = _rosNode->subscribe<flarb_canbus::CanMessage>( "/canbus/send", 20, &cRosCom::SendCallback, this);
-
-	// Setup service
-	_srvSubscribe = _rosNode->advertiseService
-					( "canbus/subscribe", &cRosCom::SubscribeCallback, this);
+	// Subscribe to /canbus/speed
+	_canSend = _rosNode->subscribe<flarb_canbus::DualMotorSpeedPtr>( "/canbus/speed", 1, &cRosCom::SendSpeed, this);
 
 	// return success
 	return 0;
@@ -36,97 +53,86 @@ int cRosCom::Destroy()
 }
 
 /**
- * Puts a message on the Canbus
+ * We received a message on the canbus, publish if we got the right subscriber
  */
-void cRosCom::SendCallback( const flarb_canbus::CanMessageConstPtr &msg)
+void cRosCom::MessageReceived( const struct CanMessage &canmessage)
 {
-	// Construct a canbus message
-	struct CanMessage canmessage;
-	canmessage.identifier	= msg->identifier;
-	canmessage.length		= msg->data.size();
+	// Get opcode
+	uint8_t opcode = canmessage.data[0];
 
-	// Copy data
-	for( int i = 0; i < canmessage.length; i++)
-		canmessage.data[i] = msg->data.at( i);
-
-	// Forward message to canbus
-	_canbus->PortSend( canmessage);
-}
-
-/**
- * Helper function for below
- */
-static bool vectorSort( const sRosComPublishEntry i, const sRosComPublishEntry j)
-{
-	return ( i.id < j.id);
-}
-
-/**
- * We have a new Subscriber!
- */
-bool cRosCom::SubscribeCallback( flarb_canbus::CanSubscribe::Request  &req,
-                                 flarb_canbus::CanSubscribe::Response &res)
-{
-	// Check for uniqueness
-	vector< sRosComPublishEntry>::iterator itr;
-	for ( itr = _PublishEntries.begin(); itr != _PublishEntries.end(); itr++)
+	// crisis canbus protocol standard opcodes
+	switch( opcode)
 	{
-		// If it is the same, return false
-		if( itr->id == req.identifier)
-		{
-			printf( "cRosCom: id %d trying to subscribe twice\n", req.identifier);
-			return false;
-		}
+		case crisis_header::OP_CRISIS_INVALID_FRAME:
+			cout << "[OPCODE] ERROR: Invalid frame received from dev id " << canmessage.identifier << endl;
+			break;
+
+		case crisis_header::OP_HELLO:
+			ProcessHelloMessage( canmessage);
+			break;
+
+		// An unknown opcode can still mean we have a device specific opcode
+		default:
+			break;
 	}
 
-	// Set first stuff
-	sRosComPublishEntry entr;
-	entr.id = req.identifier;
-
-	// Create topic entry
-	entr.topic = _rosNode->advertise<flarb_canbus::CanMessage>( req.topicname, 10);
-
-	// Add entry to the vector
-	_PublishEntries.push_back( entr);
-
-	// Sort on ID
-	// TODO check if this going alrighty
-	std::sort( _PublishEntries.begin(), _PublishEntries.end(), vectorSort );
-
-	// Return true
-	return true;
+	// TODO add device specific messages
 }
 
 /**
  * We received a message on the canbus, publish if we got the right subscriber
  */
-void cRosCom::PublishMessage( const struct CanMessage &canmessage)
+void cRosCom::ProcessHelloMessage( const struct CanMessage &canmessage)
 {
-	// Vars
-	vector< sRosComPublishEntry>::iterator itr;
-	flarb_canbus::CanMessage msg;
+	uint8_t device_type = canmessage.data[1];
+	/* bytes from 2 to 5 contain the id */
 
-	// Loop through all entries, to get the right one
-	for ( itr = _PublishEntries.begin(); itr != _PublishEntries.end(); itr++)
+	switch( device_type)
 	{
-		if( itr->id == canmessage.identifier)
+		case crisis_hello::DUAL_DC_MOTOR_DRIVER:
+			cout << "[OPCODE] Dual DC motor driver registered" << endl;
+			_devSpeedID = canmessage.identifier;
+			break;
+
+		default:
+			cout << "[OPCODE] ERROR: Unknown device. canID" << canmessage.identifier;
+			cout << ", DevID " << device_type << endl;
+			
 			break;
 	}
+}
 
-	// Check if we haven't found anything at all
-	if( itr == _PublishEntries.end())
+
+/**
+ * Puts an encoder message on the Canbus
+ */
+void cRosCom::SendSpeed( const flarb_canbus::DualMotorSpeedPtr msg)
+{
+	if( _devSpeedID == -1)
 	{
-		// Print error, return
-		printf( "cRosCom: Received unknown canbus-message, with id=%d. Dropping it \n", canmessage.identifier);
+		cout << "[ROSCOM] DUAL_DC_MOTOR_DRIVER not connected!" << endl;
 		return;
 	}
 
-	// Construct the ROS-msg
-	msg.identifier = canmessage.identifier;
-	for( int i = 0; i < canmessage.length; i++)
-		msg.data.push_back( canmessage.data[i]);
+	// Construct a canbus message
+	struct CanMessage canmessage;
+	canmessage.identifier = _devSpeedID;
+	canmessage.length     = 6;
 
-	// Send the message
-	itr->topic.publish( msg);
+	//
+	mix_t val;
+	val.s16.hi = msg->speed_left;
+	val.s16.lo = msg->speed_right;
+
+	// Copy data
+	canmessage.data[0] = dual_motor_driver_opcodes::OP_SET_SPEED;
+	canmessage.data[1] = val.c[0];
+	canmessage.data[2] = val.c[1];
+	canmessage.data[3] = val.c[2];
+	canmessage.data[4] = val.c[3];
+	canmessage.data[5] = msg->flags;
+
+	// Forward message to canbus
+	_canbus->PortSend( canmessage);
 }
 
