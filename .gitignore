@@ -44,8 +44,7 @@ flarb_lmsscanner/LMS100/src/LMS100/
 flarb_mapbuilder/src/flarb_mapbuilder/
 flarb_mapshow/src/flarb_mapshow/
 flarb_mobile/src/flarb_mobile/
-flarb_motor/src/flarb_motor/
+flarb_motorcontrol/src/flarb_motorcontrol/
 flarb_plantquality/src/flarb_plantquality/
-flarb_signaler/src/flarb_signaler/
-flarb_steeringcontrol/src/flarb_steeringcontrol/
+flarb_simulation/src/flarb_simulation/
 flarb_VDMixer/src/flarb_VDMixer/
