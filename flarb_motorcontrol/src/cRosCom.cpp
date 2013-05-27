@@ -35,6 +35,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 	_subWaypoint = rosNode->subscribe<flarb_controller::WaypointVector>( "/steering/waypoint", 1, &cRosCom::WVCallback, this);
 	_subEncoder  = rosNode->subscribe<flarb_canbus::DualMotorEncoder>  ( "/canbus/encoder", 1, &cRosCom::EncoderCallback, this);
 	_pubSpeed    = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/canbus/send", 1);
+	_pubEncoder  = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/steering/encoder", 1);
 
 
 	// Set controller ref

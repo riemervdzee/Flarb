@@ -30,16 +30,13 @@ private:
 	void EncoderCallback( const flarb_canbus::DualMotorEncoder msg);
 
 
-	// Subscribing to "/steering/waypoint"
-	ros::Subscriber _subWaypoint;
+	// Our subscribers and publishers
+	ros::Subscriber _subWaypoint;  //  "/steering/waypoint"
+	ros::Subscriber _subEncoder;   //  "/canbus/encoder"
+	ros::Publisher  _pubSpeed;     //  "/canbus/send"
+	ros::Publisher  _pubEncoder;   //  "/steering/encoder"
 
-	// Subscribing to "/canbus/encoder"
-	ros::Subscriber _subEncoder;
-
-	// We send to "/canbus/speed"
-	ros::Publisher _pubSpeed;
-
-	// When getting a waypoint or Encoder, we need to call the controller back
+	// When getting a waypoint or encoder info, we need to call the controller back
 	cController *_controller;
 };
 
