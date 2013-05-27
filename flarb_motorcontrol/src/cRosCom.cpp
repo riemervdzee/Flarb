@@ -7,20 +7,35 @@
 #include "flarb_motorcontrol/cController.h"
 using namespace std;
 
-// Helper struct
-union int2char{
-	char buff[4];
-	int  val;
+/*
+ * Helper union to "convert" signed/unsigned ints (16/32) to char buffers
+ */
+union mix_t {
+	int32_t  s32;
+	uint32_t u32;
+
+	struct {
+		int16_t hi;
+		int16_t lo;
+	} s16;
+
+	struct {
+		uint16_t hi;
+		uint16_t lo;
+	} u16;
+
+	char c[4];
 };
+
 
 
 int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 {
-	// Init publisher obj
-	_pubCanbus = rosNode->advertise<flarb_canbus::CanMessage>( "/canbus/send", 1);
-
-	// Init Subscriber obj.
+	// Init Subscribers and publishers
 	_subWaypoint = rosNode->subscribe<flarb_controller::WaypointVector>( "/steering/waypoint", 1, &cRosCom::WVCallback, this);
+	_subEncoder  = rosNode->subscribe<flarb_canbus::DualMotorEncoder>  ( "/canbus/encoder", 1, &cRosCom::EncoderCallback, this);
+	_pubSpeed    = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/canbus/send", 1);
+
 
 	// Set controller ref
 	_controller = controller;
@@ -37,26 +52,13 @@ int cRosCom::Destroy()
 /*
  * Sends the requested motor strengths via the canbus
  */
-void cRosCom::SendMotorStrength( int l, int r)
+void cRosCom::SendMotorStrength( int l, int r, bool brake)
 {
-	flarb_canbus::CanMessage msg;
-	msg.identifier = CANBUS_ID_OUTPUT;
-	msg.data.reserve( 8);
+	flarb_canbus::DualMotorSpeed msg;
+	msg.speed_left  = (int16_t) l;
+	msg.speed_right = (int16_t) r;
 
-	int2char _l, _r;
-	_l.val = l;
-	msg.data[0] = _l.buff[0];
-	msg.data[1] = _l.buff[1];
-	msg.data[2] = _l.buff[2];
-	msg.data[3] = _l.buff[3];
-
-	_r.val = r;
-	msg.data[4] = _r.buff[0];
-	msg.data[5] = _r.buff[1];
-	msg.data[6] = _r.buff[2];
-	msg.data[7] = _r.buff[3];
-
-	_pubCanbus.publish( msg);
+	_pubSpeed.publish( msg);
 }
 
 
@@ -66,5 +68,10 @@ void cRosCom::SendMotorStrength( int l, int r)
 void cRosCom::WVCallback( const flarb_controller::WaypointVector msg)
 {
 	_controller->SetWaypoint( msg.x, msg.y);
+}
+
+void cRosCom::EncoderCallback( const flarb_canbus::DualMotorEncoder msg)
+{
+
 }
 

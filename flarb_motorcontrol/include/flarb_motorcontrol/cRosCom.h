@@ -3,11 +3,10 @@
 
 #include "ros/ros.h"
 
-#include "flarb_canbus/CanMessage.h"
+#include "flarb_canbus/DualMotorSpeed.h"
+#include "flarb_canbus/DualMotorEncoder.h"
 #include "flarb_controller/WaypointVector.h"
 
-#define CANBUS_ID_OUTPUT  0x11
-#define CANBUS_ID_INPUT   0x12
 
 // Class prototype
 class cController;
@@ -23,20 +22,24 @@ public:
 	int Destroy();
 
 	// Send motor strengths on the canbus
-	void SendMotorStrength( int l, int r);
+	void SendMotorStrength( int l, int r, bool brake);
 
 private:
 	// We received a waypoint vector
 	void WVCallback( const flarb_controller::WaypointVector msg);
+	void EncoderCallback( const flarb_canbus::DualMotorEncoder msg);
 
 
 	// Subscribing to "/steering/waypoint"
 	ros::Subscriber _subWaypoint;
 
-	// We send to "/canbus/send"
-	ros::Publisher _pubCanbus;
+	// Subscribing to "/canbus/encoder"
+	ros::Subscriber _subEncoder;
 
-	// When getting a waypoint, call the controller back
+	// We send to "/canbus/speed"
+	ros::Publisher _pubSpeed;
+
+	// When getting a waypoint or Encoder, we need to call the controller back
 	cController *_controller;
 };
 
