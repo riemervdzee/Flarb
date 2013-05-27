@@ -8,6 +8,7 @@
 #include "flarb_canbus/cCanbus.h"
 using namespace std;
 
+
 /*
  * Helper union to "convert" signed/unsigned ints (16/32) to char buffers
  */
@@ -28,6 +29,7 @@ union mix_t {
 	char c[4];
 };
 
+
 /*
  * Basically the init-er of cRosCom
  */
@@ -38,11 +40,15 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 	_rosNode = rosNode;
 
 	// Subscribe to /canbus/speed
-	_canSend = _rosNode->subscribe<flarb_canbus::DualMotorSpeedPtr>( "/canbus/speed", 1, &cRosCom::SendSpeed, this);
+	_subSpeed = _rosNode->subscribe<flarb_canbus::DualMotorSpeedPtr>( "/canbus/speed", 1, &cRosCom::SendSpeed, this);
+
+	// We publish at /canbus/encoder
+	_pubEncoder = _rosNode->advertise<flarb_canbus::DualMotorEncoder>( "/canbus/encoder", 1);
 
 	// return success
 	return 0;
 }
+
 
 /*
  * Stuff is quite boring here, ain't it?
@@ -51,6 +57,7 @@ int cRosCom::Destroy()
 {
 	return 0;
 }
+
 
 /**
  * We received a message on the canbus, publish if we got the right subscriber
@@ -73,14 +80,24 @@ void cRosCom::MessageReceived( const struct CanMessage &canmessage)
 
 		// An unknown opcode can still mean we have a device specific opcode
 		default:
+
+			// SpeedController device
+			if( canmessage.identifier == (unsigned int)_devSpeedID)
+			{
+				ProcessDeviceSpeedMessage( canmessage);
+				break;
+			}
+
+			// We got nothing
+			cout << "[OPCODE] ERROR: Unknown opcode. canID" << canmessage.identifier;
+			cout << ", Opcode " << opcode << endl;
 			break;
 	}
-
-	// TODO add device specific messages
 }
 
+
 /**
- * We received a message on the canbus, publish if we got the right subscriber
+ * We received a hello message, check the device type
  */
 void cRosCom::ProcessHelloMessage( const struct CanMessage &canmessage)
 {
@@ -104,7 +121,44 @@ void cRosCom::ProcessHelloMessage( const struct CanMessage &canmessage)
 
 
 /**
- * Puts an encoder message on the Canbus
+ * We received a dev Speed specific message
+ */
+void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
+{
+	uint8_t opcode = canmessage.data[0];
+
+	switch( opcode)
+	{
+		// We received an encoder message
+		case dual_motor_driver_opcodes::OP_SET_ENCODER:
+		{
+			flarb_canbus::DualMotorEncoder msg;
+			mix_t val;
+
+			val.c[0] = canmessage.data[1];
+			val.c[1] = canmessage.data[2];
+			val.c[2] = canmessage.data[3];
+			val.c[3] = canmessage.data[4];
+
+			msg.speed_left  = val.s16.hi;
+			msg.speed_right = val.s16.lo;
+
+			_pubEncoder.publish( msg);
+
+			break;
+		}
+
+		default:
+			cout << "[OPCODE] ERROR: Unknown opcode. canID" << canmessage.identifier;
+			cout << ", Opcode " << opcode << endl;
+
+			break;
+	}
+}
+
+
+/**
+ * Puts an speed message on the Canbus
  */
 void cRosCom::SendSpeed( const flarb_canbus::DualMotorSpeedPtr msg)
 {

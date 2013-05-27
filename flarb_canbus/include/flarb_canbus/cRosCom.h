@@ -37,8 +37,9 @@ private:
 	// Puts a speed message on the Canbus
 	void SendSpeed( const flarb_canbus::DualMotorSpeedPtr msg);
 	
-	// Processors
+	// Process functions
 	void ProcessHelloMessage( const struct CanMessage &canmessage);
+	void ProcessDeviceSpeedMessage( const struct CanMessage &canmessage);
 
 	// ID of every device we are connected to
 	int _devSpeedID;
@@ -49,8 +50,11 @@ private:
 	// Pointer towards the canbus obj __ROSCOM IS NOT THE OWNER OF THIS OBJ__
 	cCanbus* _canbus;
 
-	// Subscriber to /canbus/send sends messages posted here
-	ros::Subscriber _canSend;
+	// Subscriber to /canbus/speed sends messages posted here
+	ros::Subscriber _subSpeed;
+
+	// Publisher to /canbus/encoder
+	ros::Publisher _pubEncoder;
 };
 
 #endif // CLASS_ROSCOM_H
