@@ -5,6 +5,7 @@
 
 #include "flarb_motorcontrol/cRosCom.h"
 #include "flarb_motorcontrol/cController.h"
+#include "flarb_motorcontrol/Encoder.h"
 using namespace std;
 
 /*
@@ -73,6 +74,11 @@ void cRosCom::WVCallback( const flarb_controller::WaypointVector msg)
 
 void cRosCom::EncoderCallback( const flarb_canbus::DualMotorEncoder msg)
 {
+	flarb_motorcontrol::Encoder newMsg;
 
+	newMsg.speed_left  = msg.speed_left  * MOTOR2VEC;
+	newMsg.speed_right = msg.speed_right * MOTOR2VEC;
+
+	_pubEncoder.publish( newMsg);
 }
 

@@ -6,10 +6,13 @@
 #include "flarb_motorcontrol/cRosCom.h"
 
 // The width of the chassis in meters
+//TODO work out details
 #define CHASSIS_WIDTH 0.4f
 #define MOTOR_MAX     100
 #define VECTOR_MAX    0.5f
+//TODO quite shitty
 #define VEC2MOTOR     (MOTOR_MAX / VECTOR_MAX)
+#define MOTOR2VEC     (VECTOR_MAX / MOTOR_MAX)
 
 /*
  * Main controller class of the example node

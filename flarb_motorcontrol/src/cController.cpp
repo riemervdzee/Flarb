@@ -28,11 +28,11 @@ void cController::SetWaypoint( float x, float y)
 	float SpeedFactor  = sqrt(x*x + y*y*4) * VEC2MOTOR;
 	float R       = AlphaRadians / M_PI;
 	float L	      = (AlphaRadians < 0) ? (-1 - R) : (1-R);
-	int _inputRight   = R * SpeedFactor;
-	int _inputLeft    = L * SpeedFactor;
+	int _inputRight   = (int)(R * SpeedFactor);
+	int _inputLeft    = (int)(L * SpeedFactor);
 
 	// Send motor strengths
-	_roscom.SendMotorStrength( (int)_inputLeft, (int)_inputRight, false);
+	_roscom.SendMotorStrength( _inputLeft, _inputRight, false);
 
 #if 0
 	cout << "[SET] Right " << _inputRight << ", Left " << _inputLeft << endl;

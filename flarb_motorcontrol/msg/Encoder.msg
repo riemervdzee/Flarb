@@ -1,7 +1,7 @@
 ##
 # The speed field is the most recent measured frequency of the encoder.
-# In pulses
+# in CM
 ##
 
-int16 speed_left
-int16 speed_right
+float32 speed_left
+float32 speed_right
