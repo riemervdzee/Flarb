@@ -62,10 +62,10 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 		{
 			flarb_mapbuilder::Object obj = _map->list[i];
 			tVector c = tVector( obj.x, obj.y);
+			float r = (obj.radius + protection_margin);
 			tVector p1;
 
 			// Check for collision
-			float r = (obj.radius + protection_margin);
 			if( IntersectCircle( tVector(), currentAttempt, c, r, p1))
 			{
 				collision_found = true;
@@ -88,7 +88,6 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 				if( unique)
 				{
 					// Shrink p1
-					// TODO Check if neccesary?
 					p1 *= 0.9;
 					_WaypointAttempts.push_back( p1);
 
@@ -100,7 +99,6 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 					GetOuterPoints( tVector(), c, radius, p2, p3);
 
 					// Resize p2 and p3 to the length of the input and insert
-					// TODO only if p1 is fixed!
 					p2.setLength( resizeLength);
 					p3.setLength( resizeLength);
 					_WaypointAttempts.push_back( p2);
@@ -141,9 +139,30 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 
 
 /*
+ * Tells whether a bbaa region with the map
+ */
+bool cMap::CheckIntersectionRegion( const tBoundingBox region)
+{
+	// Go through all objects, check for collisions
+	for( unsigned int i = 0; i < _map->list.size(); i++)
+	{
+		flarb_mapbuilder::Object obj = _map->list[i];
+		tVector c = tVector( obj.x, obj.y);
+		float r   = obj.radius;
+
+		if( BoundingBoxCircleCollision( region, c, r))
+			return true;
+	}
+
+	// We checked all objects, return fase
+	return false;
+}
+
+
+/*
  * Tells us whether a finite line (l1, l2) intersects with the given circle and
  * radius. Puts the point of first contact in result
- * TODO fix "result"
+ * Based on http://mathworld.wolfram.com/Circle-LineIntersection.html
  */
 bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 	float radius, tVector &result)
@@ -178,7 +197,6 @@ bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 
 	// If t1 is in the 0 >= t1 >= 1 range, it is a hit at t1
 	// t1 also comes before t2
-	// TODO test result..
 	if( t1 >= 0 && t1 <= 1)
 	{
 		result = l * t1 + l1;
@@ -221,4 +239,18 @@ void cMap::GetOuterPoints( tVector lineStart, tVector circle,
 	tVector hVec = h * P;
 	p1 = l1Vec + hVec;
 	p2 = l1Vec - hVec;
+}
+
+
+/*
+ * Tells whether a boundingbox is coliding with the given circle with radius
+ */
+bool cMap::BoundingBoxCircleCollision( tBoundingBox box, tVector circle, float radius)
+{
+	// If we clamp the point to the box, we end up with the point nearest to the circle
+	tVector pos = box.Clamp( circle);
+
+	// Get the difference and test whether it is inside the radius
+	tVector dif = circle - pos;
+	return (dif.LengthSquared() < radius*radius);
 }
