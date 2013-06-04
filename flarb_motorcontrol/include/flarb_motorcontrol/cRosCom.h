@@ -18,11 +18,11 @@ class cRosCom
 {
 public:
 	// Functions executed at the beginning and end of the Application
-	int Create( ros::NodeHandle *rosNode, cController *controller);
+	int Create( ros::NodeHandle *rosNode);
 	int Destroy();
 
-	// Send motor strengths on the canbus
-	void SendMotorStrength( int l, int r, bool brake);
+	// Tells whether to brake, to be called by the controller
+	void MotorBrake();
 
 private:
 	// We received a waypoint vector
@@ -35,9 +35,6 @@ private:
 	ros::Subscriber _subEncoder;   //  "/canbus/encoder"
 	ros::Publisher  _pubSpeed;     //  "/canbus/send"
 	ros::Publisher  _pubEncoder;   //  "/steering/encoder"
-
-	// When getting a waypoint or encoder info, we need to call the controller back
-	cController *_controller;
 };
 
 #endif // CLASS_ROSCOM_H

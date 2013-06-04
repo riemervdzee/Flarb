@@ -8,8 +8,11 @@ using namespace std;
 // Functions executed at the beginning and end of the Node
 bool cController::Create( int hz)
 {
+	// TODO now we just wait 1 sec before braking, maybe use other number?
+	_framesToWait = hz;
+
 	// RosCom
-	_roscom.Create( &_rosNode, this);
+	_roscom.Create( &_rosNode);
 	return true;
 }
 
@@ -19,28 +22,18 @@ void cController::Destroy()
 	_roscom.Destroy();
 }
 
-// Calculates motor strengths based on input
-void cController::SetWaypoint( float x, float y)
+// Resets counter
+void cController::WaypointReceived()
 {
-	// Convert the vector to two motor strengths
-	// TODO write this a bit more proper. Support turning!
-	float AlphaRadians = atan2( y, x);
-	float SpeedFactor  = sqrt(x*x + y*y*4) * VEC2MOTOR;
-	float R       = AlphaRadians / M_PI;
-	float L	      = (AlphaRadians < 0) ? (-1 - R) : (1-R);
-	int _inputRight   = (int)(R * SpeedFactor);
-	int _inputLeft    = (int)(L * SpeedFactor);
-
-	// Send motor strengths
-	_roscom.SendMotorStrength( _inputLeft, _inputRight, false);
-
-#if 0
-	cout << "[SET] Right " << _inputRight << ", Left " << _inputLeft << endl;
-#endif
+	_framesWaiting = 0;
 }
 
 // Updates the controller obj
 void cController::Update()
 {
-	// TODO after X updates with no SetWaypoint, brake the mofo thing
+	_framesWaiting++;
+	if( _framesWaiting == _framesToWait)
+	{
+		_roscom.MotorBrake();
+	}
 }

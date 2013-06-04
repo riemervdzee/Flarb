@@ -1,18 +1,24 @@
 #ifndef CLASS_CONTROLLER_H
 #define CLASS_CONTROLLER_H
 
+#include <cmath>
 #include "ros/ros.h"
-
 #include "flarb_motorcontrol/cRosCom.h"
 
-// The width of the chassis in meters
+// Defines
 //TODO work out details
-#define CHASSIS_WIDTH 0.4f
-#define MOTOR_MAX     100
-#define VECTOR_MAX    0.5f
-//TODO quite shitty
-#define VEC2MOTOR     (MOTOR_MAX / VECTOR_MAX)
-#define MOTOR2VEC     (VECTOR_MAX / MOTOR_MAX)
+const float CHASSIS_WIDTH   = 0.4f;
+const float PULSES_PER_TURN = 26;               // TODO not known yet
+const float METERS_PER_TURN = 0.10f * 2 * M_PI; // Circumference of wheel
+const float VECTOR_MAX      = 0.5f;             // TODO decide
+const float VECTOR_TIME     = 20;               // The amount of sec, the input needs to be executed
+
+// Converts
+const float PULSE2METER  = METERS_PER_TURN / PULSES_PER_TURN;
+const float METER2PULSE  = PULSES_PER_TURN / METERS_PER_TURN;
+const float VECTOR2SEC   = 1 / VECTOR_TIME;
+const float VECTOR2MOTOR = VECTOR2SEC * METER2PULSE;
+
 
 /*
  * Main controller class of the example node
@@ -20,12 +26,15 @@
 class cController
 {
 public:
+	// C-tor
+	cController() : _framesToWait( 1), _framesWaiting( 0) {}
+
 	// Functions executed at the begining and end of the Application
 	bool Create( int hz);
 	void Destroy();
 
-	// Calculates motor strengths based on input
-	void SetWaypoint( float x, float y);
+	// Resets the framecount
+	void WaypointReceived();
 
 	// Try to obtain the output values for the motor via PID and input vals
 	void Update();
@@ -33,6 +42,10 @@ public:
 private:
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
+
+	// We wait a few Update function calls before braking
+	int _framesToWait;
+	int _framesWaiting;
 
 	// RosCom obj, deals with the communication towards other ROS nodes
 	cRosCom _roscom;

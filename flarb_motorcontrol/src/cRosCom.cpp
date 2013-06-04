@@ -30,17 +30,13 @@ union mix_t {
 
 
 
-int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
+int cRosCom::Create( ros::NodeHandle *rosNode)
 {
 	// Init Subscribers and publishers
 	_subWaypoint = rosNode->subscribe<flarb_controller::WaypointVector>( "/steering/waypoint", 1, &cRosCom::WVCallback, this);
 	_subEncoder  = rosNode->subscribe<flarb_canbus::DualMotorEncoder>  ( "/canbus/encoder", 1, &cRosCom::EncoderCallback, this);
 	_pubSpeed    = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/canbus/send", 1);
 	_pubEncoder  = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/steering/encoder", 1);
-
-
-	// Set controller ref
-	_controller = controller;
 
 	return 0;
 }
@@ -52,13 +48,19 @@ int cRosCom::Destroy()
 
 
 /*
- * Sends the requested motor strengths via the canbus
+ * Tells whether to brake, to be called by the controller
  */
-void cRosCom::SendMotorStrength( int l, int r, bool brake)
+void cRosCom::MotorBrake()
 {
+	// Canbus message
 	flarb_canbus::DualMotorSpeed msg;
-	msg.speed_left  = (int16_t) l;
-	msg.speed_right = (int16_t) r;
+	msg.speed_right = 0;
+	msg.speed_left  = 0;
+
+	// Set both brake flags
+	msg.flags = 0;
+	msg.flags |= (1 << 0);
+	msg.flags |= (1 << 1);
 
 	_pubSpeed.publish( msg);
 }
@@ -69,15 +71,33 @@ void cRosCom::SendMotorStrength( int l, int r, bool brake)
  */
 void cRosCom::WVCallback( const flarb_controller::WaypointVector msg)
 {
-	_controller->SetWaypoint( msg.x, msg.y);
+	// Calculate 
+	float AlphaRadians = atan2( msg.y, msg.x);
+	float SpeedFactor  = sqrt(msg.x*msg.x + msg.y*msg.y*4) * VECTOR2MOTOR;
+	float R            = AlphaRadians / M_PI;
+	float L	           = (AlphaRadians < 0) ? (-1 - R) : (1-R);
+	int _inputRight    = (int)(R * SpeedFactor);
+	int _inputLeft     = (int)(L * SpeedFactor);
+
+	// Canbus message
+	flarb_canbus::DualMotorSpeed motormsg;
+	motormsg.speed_right = (int16_t) _inputRight;
+	motormsg.speed_left  = (int16_t) _inputLeft;
+	motormsg.flags       = 0;
+
+	_pubSpeed.publish( motormsg);
+
+#if 0
+	cout << "[SET] Right " << _inputRight << ", Left " << _inputLeft << endl;
+#endif
 }
 
 void cRosCom::EncoderCallback( const flarb_canbus::DualMotorEncoder msg)
 {
 	flarb_motorcontrol::Encoder newMsg;
 
-	newMsg.speed_left  = msg.speed_left  * MOTOR2VEC;
-	newMsg.speed_right = msg.speed_right * MOTOR2VEC;
+	newMsg.speed_left  = msg.speed_left  * PULSE2METER;
+	newMsg.speed_right = msg.speed_right * PULSE2METER;
 
 	_pubEncoder.publish( newMsg);
 }
