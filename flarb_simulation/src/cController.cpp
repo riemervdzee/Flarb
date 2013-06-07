@@ -17,7 +17,7 @@ bool cController::Create( int hz)
 	_map.Create();
 
 	//
-	_roscom.Create( &_rosNode, this, hz);
+	_roscom.Create( &_rosNode, this, &_car, hz);
 
 	return true;
 }
@@ -31,6 +31,9 @@ void cController::Destroy()
 // Updates the controller obj
 void cController::Update()
 {
+	// Update childs
+	_car.Update();
+	
 	// Draw map
 	drawSetColor( gBlack);
 	_map.Draw();
@@ -42,5 +45,5 @@ void cController::Update()
 	window_flip();
 
 	// Scan!
-	_roscom.PublishLaserScan( _car, _map);
+	_roscom.PublishLaserScan( _map);
 }

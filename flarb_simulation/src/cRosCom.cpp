@@ -9,14 +9,15 @@ using namespace std;
 
 
 
-int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, int hz)
+int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, cCar *car, int hz)
 {
-	// Set controller
+	// Set pointers
 	_controller = controller;
+	_car        = car;
 
 	// Subscribers and publishers
-	_pubSick = rosNode->advertise<sensor_msgs::LaserScan>( "/sick/scan_filtered/", 1);
-	//_subMap = rosNode->subscribe<flarb_mapbuilder::MapList>( "map", 1, &cRosCom::MapbuildCallback, this);
+	_pubSick  = rosNode->advertise<sensor_msgs::LaserScan>( "/sick/scan_filtered/", 1);
+	_subSpeed = rosNode->subscribe<flarb_canbus::DualMotorSpeed>( "/canbus/speed/", 1, &cRosCom::SpeedCallback, this);
 	
 	// Init LaserScan packet
 	_msg.header.frame_id = "laser";
@@ -47,7 +48,7 @@ int cRosCom::Destroy()
  * n 1081
  *
  */
-void cRosCom::PublishLaserScan( const cCar &car, const cMap &map)
+void cRosCom::PublishLaserScan( const cMap &map)
 {
 	// Update timestamp and sequence id
 	ros::Time start = ros::Time::now();
@@ -57,8 +58,8 @@ void cRosCom::PublishLaserScan( const cCar &car, const cMap &map)
 	// Set starts
 	// angle = car dir - 1/4PI (due min angle) - 1/2PI due the fact ROS wants
 	// 0 radians to be poining upwards instead of to the right. bloody idiots
-	float angle = car.direction - 2.35619449;
-	tVector pos = tVector( car.x, car.y);
+	float angle = _car->direction - 2.35619449;
+	tVector pos = tVector( _car->x, _car->y);
 
 	// Fill the ranges array
 	for (int i = 0; i < 1081; i++)
@@ -68,4 +69,9 @@ void cRosCom::PublishLaserScan( const cCar &car, const cMap &map)
 	}
 
 	_pubSick.publish(_msg);
+}
+
+void cRosCom::SpeedCallback( const flarb_canbus::DualMotorSpeed msg)
+{
+	_car->goal = msg;
 }
