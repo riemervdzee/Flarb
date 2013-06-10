@@ -13,6 +13,7 @@
   <depend package="flarb_inclination"/>
   <depend package="flarb_compass"/>
   <depend package="flarb_accelerometer"/>
+  <depend package="flarb_motorcontrol"/>
   <depend package="flarb_gps"/>
 </package>
 

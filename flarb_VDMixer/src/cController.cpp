@@ -6,11 +6,6 @@
 #include "std_msgs/String.h"
 
 #include "flarb_VDMixer/cController.h"
-#include "flarb_inclination/Axis.h"
-#include "flarb_compass/Compass.h" 
-#include "flarb_accelerometer/Accelerometer.h"
-#include "flarb_gps/GGA.h"
-#include "flarb_gps/RMC.h"
 
 // Functions executed at the beginning and end of the Node
 
@@ -35,7 +30,7 @@ void cController::compassmsg(const flarb_compass::Compass msgr)
 /*
  *	Callback message PhaseControl (Must be encoder or some kind...)
  */
-void cController::phasemsg(const flarb_VDMixer::Phase msgr)
+void cController::phasemsg(const flarb_motorcontrol::Encoder msgr)
 {
 	message_phase = msgr;
 }
@@ -64,8 +59,7 @@ bool cController::Create()
 	RMC = _rosNode.subscribe<flarb_gps::RMC>("NMEA/RMC",1, &cController::RMCmsg, this);
 	//TODO: Modify inclination to standard
 	Inclination = _rosNode.subscribe<flarb_inclination::Axis>("sensor/inclination", 1, &cController::axismsg, this);
-	//TODO: Modify PhaseControl to standard
-	PhaseControl = _rosNode.subscribe<flarb_VDMixer::Phase>("sensor/phasecontrol", 1, &cController::phasemsg, this);
+	PhaseControl = _rosNode.subscribe<flarb_motorcontrol::Encoder>("steering/encoder", 1, &cController::phasemsg, this);
 	return 0;
 }
 
