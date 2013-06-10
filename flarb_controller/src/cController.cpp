@@ -53,11 +53,18 @@ void cController::Update()
 	
 }
 
+/*
+ * Gets called when we receive something from the smartphone
+ */
+void cController::SmartphoneCallback( const std::string &str)
+{
+
+}
 
 /*
  * Gets called by cRosCom when we received a /map message
  */
-void cController::CallbackMap( cMap &map)
+void cController::MapCallback( cMap &map)
 {
 	// Vector
 	tVector vector;

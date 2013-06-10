@@ -3,6 +3,7 @@
 
 #include "ros/ros.h"
 
+#include "std_msgs/String.h"
 #include "flarb_controller/WaypointVector.h"
 #include "flarb_controller/cMap.h"
 #include "flarb_mapbuilder/MapList.h"
@@ -27,7 +28,10 @@ public:
 
 private:
 	// We received a map
-	void MapbuildCallback( const flarb_mapbuilder::MapList msg);
+	void MapCallback( const flarb_mapbuilder::MapList msg);
+
+	// We received orders from the smartphone
+	void SmartphoneCallback( const std_msgs::String msg);
 
 
 	// Pointer to the cController class _NOTE: WE ARE NOT THE OWNER_
@@ -36,11 +40,10 @@ private:
 	// MapList
 	cMap _map;
 
-	// This node is subscribed to the topic "map"
-	ros::Subscriber _subMap;
-
-	// We publish on "/steering/waypoint/"
-	ros::Publisher _pubVector;
+	// Our subscribers and publishers
+	ros::Subscriber _subMap;         //  "/map"
+	ros::Subscriber _subSmartphone;  //  "/smartphone/input"
+	ros::Publisher  _pubVector;      //  "/steering/waypoint/"
 };
 
 #endif // CLASS_FRAME_H

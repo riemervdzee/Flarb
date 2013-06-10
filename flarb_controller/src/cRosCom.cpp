@@ -16,10 +16,13 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 	_controller = controller;
 
 	// Subscribe to map
-	_subMap = rosNode->subscribe<flarb_mapbuilder::MapList>( "map", 1, &cRosCom::MapbuildCallback, this);
+	_subMap = rosNode->subscribe<flarb_mapbuilder::MapList>( "/map", 1, &cRosCom::MapCallback, this);
+	
+	// Subscribe to our smartphone input
+	_subSmartphone = rosNode->subscribe<std_msgs::String>( "/smartphone/input", 1, &cRosCom::SmartphoneCallback, this);
 
-	// We publish to steering/waypoint
-	_pubVector = rosNode->advertise<flarb_controller::WaypointVector>( "steering/waypoint", 1);
+	// We publish to /steering/waypoint
+	_pubVector = rosNode->advertise<flarb_controller::WaypointVector>( "/steering/waypoint", 1);
 
 	return 0;
 }
@@ -29,14 +32,22 @@ int cRosCom::Destroy()
 	return 0;
 }
 
+// Publishes a WaypointVector
 void cRosCom::PublishWaypoint( const flarb_controller::WaypointVector &msg)
 {
 	_pubVector.publish( msg);
 }
 
-void cRosCom::MapbuildCallback( const flarb_mapbuilder::MapList msg)
+// We received a map
+void cRosCom::MapCallback( const flarb_mapbuilder::MapList msg)
 {
 	// Pass the message to the main-controller
 	_map.setMapList( msg);
-	_controller->CallbackMap( _map);
+	_controller->MapCallback( _map);
+}
+
+// We received orders from the smartphone
+void cRosCom::SmartphoneCallback( const std_msgs::String msg)
+{
+	_controller->SmartphoneCallback( msg.data);
 }

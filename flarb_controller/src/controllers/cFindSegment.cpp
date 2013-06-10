@@ -19,5 +19,7 @@ void cFindSegment::Destroy()
 // TODO maybe more parameters?
 bool cFindSegment::Execute( tVector &vector, cMap &map)
 {
-	return false;
+	// Just stop the vehicle
+	vector = tVector( 0, 0);
+	return true;
 }

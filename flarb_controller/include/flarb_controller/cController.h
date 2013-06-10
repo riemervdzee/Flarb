@@ -1,6 +1,7 @@
 #ifndef CLASS_CONTROLLER_H
 #define CLASS_CONTROLLER_H
 
+#include <string>
 #include "ros/ros.h"
 
 #include "flarb_controller/types/tVector.h"
@@ -18,7 +19,8 @@
 enum STATES {
 	STATE_INIT,            // Init-state, we should check if everything is online
 	STATE_STOPPED,         // We stopped doing anything
-	STATE_FOLLOW_SEGMENT,  // We should execute: cFollowSegment
+	STATE_FREERUN,         // We should execute: cFreerun
+	STATE_FOLLOW_SEGMENT,  // cFollowSegment
 	STATE_FIND_SEGMENT,    // cFindSegment
 	STATE_AVOID_OBSTACLE,  // cAvoidObstacle
 };
@@ -40,7 +42,10 @@ public:
 	void Update();
 
 	// Gets called by cRosCom when we received a /map message
-	void CallbackMap( cMap &map);
+	void MapCallback( cMap &map);
+
+	// Gets called when we receive something from the smartphone
+	void SmartphoneCallback( const std::string &str);
 
 private:
 

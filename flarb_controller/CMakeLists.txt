@@ -39,4 +39,5 @@ rosbuild_add_executable(controller  src/main.cpp
 									src/controllers/cFollowSegment.cpp
 									src/controllers/cFindSegment.cpp
 									src/controllers/cAvoidObstacle.cpp
+									src/controllers/cFreerun.cpp
 									)
