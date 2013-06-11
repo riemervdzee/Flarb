@@ -34,6 +34,7 @@ rosbuild_add_executable(controller  src/main.cpp
 									src/types/tVector.cpp
 									src/types/tMatrix.cpp
 									src/cController.cpp
+									src/cInputString.cpp
 									src/cMap.cpp
 									src/cRosCom.cpp
 									src/controllers/cFollowSegment.cpp

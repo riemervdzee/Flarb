@@ -1,7 +1,8 @@
-#ifndef STRUCT_INPUTSTRING_H
-#define STRUCT_INPUTSTRING_H
+#ifndef CLASS_INPUTSTRING_H
+#define CLASS_INPUTSTRING_H
 
 #include <vector>
+#include <string>
 
 /*
  * Enumerates the possible directions for the segments
@@ -14,7 +15,7 @@ enum DIRECTION {
 
 
 /*
- * Declares a segment 
+ * Declares a segment
  */
 struct sSegment {
 	enum DIRECTION  rowdir;
@@ -25,10 +26,17 @@ struct sSegment {
 /*
  * Manages the segments, plus it tells us where we are now
  */
-struct sInputString {
+class cInputString 
+{
+public:
+	// Constructors
+	cInputString(){}
+	cInputString( const std::string &str);
+
+	// The data
 	std::vector<sSegment> segments;  // List of all Segments
 	int   currentSegment;            // The index of the current Segment we are in
 };
 
 
-#endif // STRUCT_INPUTSTRING_H
+#endif // CLASS_INPUTSTRING_H

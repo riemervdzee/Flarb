@@ -11,7 +11,7 @@ using namespace std;
  * Constructor / C-tor
  */
 // TODO we should start in STATE_INIT
-cController::cController() : _state( STATE_FOLLOW_SEGMENT) {}
+cController::cController() : _state( STATE_INIT) {}
 
 
 /*
@@ -55,10 +55,26 @@ void cController::Update()
 
 /*
  * Gets called when we receive something from the smartphone
+ * Example input: S - 3L - 0 - 2L - 2R - 1R - 5L - F
  */
 void cController::SmartphoneCallback( const std::string &str)
 {
-
+	// We received a correct string, create a new cInputString obj
+	if( str[0] == 'S')
+	{
+		_inputString = cInputString( str);
+		_state = STATE_FIND_SEGMENT;
+	}
+	// We start in freerun mode
+	else if( str[0] == 'F')
+	{
+		_state = STATE_FREERUN;
+	}
+	// Invalid format
+	else
+	{
+		cout << "Smartphone input invalid!" << endl;
+	}
 }
 
 /*

@@ -7,7 +7,7 @@
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
 
-#include "flarb_controller/sInputString.h"
+#include "flarb_controller/cInputString.h"
 #include "flarb_controller/cRosCom.h"
 #include "flarb_controller/controllers/cFollowSegment.h"
 #include "flarb_controller/controllers/cFindSegment.h"
@@ -56,7 +56,7 @@ private:
 	cRosCom _rosCom;
 
 	// Our inputstring Manager
-	sInputString _inputString;
+	cInputString _inputString;
 
 	// Our current state
 	enum STATES _state;
