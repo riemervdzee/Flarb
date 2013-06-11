@@ -1,0 +1,16 @@
+<package>
+  <description brief="flarb_keyboard">
+
+     flarb_keyboard
+
+  </description>
+  <author>Daniel de Valk / Riemer van der Zee</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://flarb.nl/</url>
+  <depend package="roscpp"/>
+
+  <depend package="flarb_controller"/>
+</package>
+
+
