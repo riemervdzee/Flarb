@@ -14,8 +14,8 @@
 using namespace std;
 
 /*
-* Main controller class of the example node
-*/
+ * Main controller class of the example node
+ */
 class cController
 {
 public:
@@ -27,10 +27,10 @@ public:
     // Updates the Node
     void Update();
 
+	// State callback
 	bool StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMixer::State::Response &res);
 
 private:
-	
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
 
