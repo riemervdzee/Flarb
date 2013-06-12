@@ -71,9 +71,24 @@ void cRosCom::MotorBrake()
  */
 void cRosCom::WVCallback( const flarb_controller::WaypointVector msg)
 {
+	// Msg X/Y
+	float x = msg.x;
+	float y = msg.y;
+
+	// resize to VECTOR_MAXSEC
+	// TODO buggy
+	/*float size = (x*x + y*y);
+	if(size > (VECTOR_MAXSEC*VECTOR_MAXSEC)) // if size is bigger than 0.5^2
+	{
+		size = sqrt( size);
+		float L = VECTOR_MAXSEC / size;
+		x *= L;
+		y *= L;
+	}*/
+
 	// Calculate 
-	float AlphaRadians = atan2( msg.y, msg.x);
-	float SpeedFactor  = sqrt(msg.x*msg.x + msg.y*msg.y*4) * VECTOR2MOTOR;
+	float AlphaRadians = atan2( y, x);
+	float SpeedFactor  = sqrt(x*x + y*y*4) * VECTOR2MOTOR;
 	float R            = AlphaRadians / M_PI;
 	float L	           = (AlphaRadians < 0) ? (-1 - R) : (1-R);
 	int _inputRight    = (int)(R * SpeedFactor);

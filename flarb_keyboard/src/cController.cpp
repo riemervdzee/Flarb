@@ -42,16 +42,15 @@ void cController::Update()
 	if( x > 0) x -= 0.02f; else if( x < 0) x += 0.02f;
 	if( y > 0) y -= 0.02f; else if( y < 0) y += 0.02f;
 
-	// Put a limit
-	float size = (x*x + y*y);
-	if(size > 0.25f) // if size is bigger than 0.5^2
+	// Put a limit of the vector at 0.5
+	float size = sqrt(x*x + y*y);
+	if(size > 0.5f)
 	{
-		size = sqrt( size);
 		float L = 0.5f / size;
 		x *= L;
 		y *= L;
 	}
-	
+
 	// When near 0, clamp them to 0
 	if( x > -0.01f && x < 0.01f) x = 0.f;
 	if( y > -0.01f && y < 0.01f) y = 0.f;
@@ -66,6 +65,6 @@ void cController::Update()
 	msg.y = y;
 	_pubVector.publish( msg);
 
-	// Flip it
+	// Flip the window
 	window_flip();
 }

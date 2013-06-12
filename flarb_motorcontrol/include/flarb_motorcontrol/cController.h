@@ -13,10 +13,11 @@ const float VECTOR_MAX      = 0.5f;             // TODO decide
 const float VECTOR_TIME     = 4;                // The amount of sec, the input needs to be executed
 
 // Converts
-const float PULSE2METER  = METERS_PER_TURN / PULSES_PER_TURN;
-const float METER2PULSE  = PULSES_PER_TURN / METERS_PER_TURN;
-const float VECTOR2SEC   = 1 / VECTOR_TIME;
-const float VECTOR2MOTOR = VECTOR2SEC * METER2PULSE;
+const float PULSE2METER   = METERS_PER_TURN / PULSES_PER_TURN;
+const float METER2PULSE   = PULSES_PER_TURN / METERS_PER_TURN;
+const float VECTOR2SEC    = 1 / VECTOR_TIME;
+const float VECTOR2MOTOR  = VECTOR2SEC * METER2PULSE;
+const float VECTOR_MAXSEC = VECTOR2SEC * VECTOR_MAX;
 
 
 /*
