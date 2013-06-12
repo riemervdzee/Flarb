@@ -1,0 +1,15 @@
+## No input
+---
+## Relative position of the "start"
+float32 positionX
+float32 positionY
+
+## Distance traveled by the robot in meters
+float32 distance
+
+## First two are calculated by the Inclino, third via compass/gps
+## Values are in radians
+float32 axisX
+float32 axisY
+float32 axisZ
+

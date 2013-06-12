@@ -3,13 +3,14 @@
 
 #include "ros/ros.h"
 #include "flarb_VDMixer/cController.h"
+
+#include "flarb_VDMixer/State.h"
 #include "flarb_inclination/Axis.h"
 #include "flarb_compass/Compass.h"
 #include "flarb_motorcontrol/Encoder.h"
 #include "flarb_accelerometer/Accelerometer.h"
 #include "flarb_gps/GGA.h"
 #include "flarb_gps/RMC.h"
-
 using namespace std;
 
 /*
@@ -26,34 +27,36 @@ public:
     // Updates the Node
     void Update();
 
+	bool StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMixer::State::Response &res);
+
 private:
 	
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
-	//Actual Subscriber
+
+	// Service handle
+	ros::ServiceServer StateService;
+
+	// Our subscribers
+	ros::Subscriber Inclino;
 	ros::Subscriber Compass;
-	//ros::Subscriber Gyro;
-	ros::Subscriber Inclination;
-	ros::Subscriber PhaseControl;
+	ros::Subscriber Encoder;
 	ros::Subscriber GGA;
 	ros::Subscriber RMC;
-	
-	
-	flarb_inclination::Axis message_axis;
-	flarb_compass::Compass message_north_angle;
-	flarb_motorcontrol::Encoder message_phase;
-	flarb_gps::GGA message_gga;
-	flarb_gps::RMC message_rmc;
 
-	void axismsg(const flarb_inclination::Axis msgr);
-	void compassmsg(const flarb_compass::Compass msgr);
-	void phasemsg(const flarb_motorcontrol::Encoder msgr);
-	void GGAmsg(const flarb_gps::GGA msgr);
-	void RMCmsg(const flarb_gps::RMC msgr);
+	// Saved messages
+	flarb_inclination::Axis     message_axis;
+	flarb_compass::Compass      message_compass;
+	flarb_motorcontrol::Encoder message_encoder;
+	flarb_gps::GGA              message_gga;
+	flarb_gps::RMC              message_rmc;
 
-
-	float WGS_KML(float Coord);
-	int Log_KML(flarb_gps::GGA msg);
+	// Callbacks
+	void axismsg    (const flarb_inclination::Axis msgr);
+	void compassmsg (const flarb_compass::Compass msgr);
+	void encodermsg (const flarb_motorcontrol::Encoder msgr);
+	void GGAmsg     (const flarb_gps::GGA msgr);
+	void RMCmsg     (const flarb_gps::RMC msgr);
 };
 
 #endif // CLASS_CONTROLLER_H

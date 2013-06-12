@@ -1,65 +1,28 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
 #include <sstream>
+#include <cmath>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
-
 #include "flarb_VDMixer/cController.h"
 
-// Functions executed at the beginning and end of the Node
-
-
-/*
- *	Callback receiving message from MEAS Inclino
- */
-void cController::axismsg(const flarb_inclination::Axis msgr)
-{
-	message_axis = msgr;
-}
+// Used in program
+#define DEG2RAD M_PI/180.0
 
 /*
- * 	Callback message Compass
- *	
+ * Functions executed at the beginning of the Node
  */
-void cController::compassmsg(const flarb_compass::Compass msgr)
-{
-	message_north_angle = msgr;
-}
-
-/*
- *	Callback message PhaseControl (Must be encoder or some kind...)
- */
-void cController::phasemsg(const flarb_motorcontrol::Encoder msgr)
-{
-	message_phase = msgr;
-}
-
-/*
- *	Callback message NMEA/GGA
- */
-void cController::GGAmsg(const flarb_gps::GGA msgr)
-{
-	message_gga = msgr;
-}
-
-/*
- *	Callback message NMEA/RMC
- */
-void cController::RMCmsg(const flarb_gps::RMC msgr)
-{
-	message_rmc = msgr;
-}
-
 bool cController::Create()
 {
+	// Set up service
+	StateService = _rosNode.advertiseService<cController>( "/vdmixer/state", &cController::StateCallback, this);
+
 	//Subscriber for data 
+	Inclino = _rosNode.subscribe<flarb_inclination::Axis>("sensor/inclination", 1, &cController::axismsg, this);
 	Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compassmsg, this);
-	GGA = _rosNode.subscribe<flarb_gps::GGA>("NMEA/GGA",1, &cController::GGAmsg, this);
-	RMC = _rosNode.subscribe<flarb_gps::RMC>("NMEA/RMC",1, &cController::RMCmsg, this);
-	//TODO: Modify inclination to standard
-	Inclination = _rosNode.subscribe<flarb_inclination::Axis>("sensor/inclination", 1, &cController::axismsg, this);
-	PhaseControl = _rosNode.subscribe<flarb_motorcontrol::Encoder>("steering/encoder", 1, &cController::phasemsg, this);
+	Encoder = _rosNode.subscribe<flarb_motorcontrol::Encoder>("steering/encoder", 1, &cController::encodermsg, this);
+	GGA     = _rosNode.subscribe<flarb_gps::GGA>("NMEA/GGA",1, &cController::GGAmsg, this);
+	RMC     = _rosNode.subscribe<flarb_gps::RMC>("NMEA/RMC",1, &cController::RMCmsg, this);
 	return 0;
 }
 
@@ -69,60 +32,55 @@ void cController::Destroy()
 
 }
 
-// Updates the controller obj
+/*
+ * Generates a VDMixer/State message
+ */
 void cController::Update()
 {
-	float k = 5250.7544; 
-	WGS_KML(k);
 
-	float l = 00501.9356; 
-	WGS_KML(l);
 }
 
-int cController::Log_KML(flarb_gps::GGA msg){
-	return 0;
+/**
+ * Service handler
+ */
+bool cController::StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMixer::State::Response &res)
+{
+	// Fill values
+	//res.positionX
+	//res.positionY
+	//res.distance
+	res.axisX = message_axis.x * DEG2RAD;
+	res.axisY = message_axis.y * DEG2RAD;
+	res.axisZ = message_compass.north_angle * DEG2RAD;
+
+	return true;
 }
 
-float cController::WGS_KML(float Coord){
-	setprecision(6);
-	char data[32];
-	char last[6];
-	float KML = 0; 
-	bool start = true;
-	float aftherFloat = 0;
-	memset(last, '-', 6);
-	memset(data, '-', 32);
-	//cout<< "data Coord original" << Coord << endl;
-	//Getting point at the right position
-	KML = Coord / 100.0;
-	//Convert to Char
-	sprintf(data,"%f",KML);
-	//cout<< "integer: " << (int) KML << endl;
-	//cout<< "KML: " << KML << endl;
-	//cout<< "Coord: "<< Coord << endl;
-	//cout<< "Data: "<< data << endl; 	
-	int Size = sizeof(data);
-	for (int i = 0; i < Size; i++){			
-		if(data[i] == '.'){
-			int counter = 0;
-			for(int j = i + 1; j < i + 7; j++){
-				last[counter] = data[j];			
-				counter++;	
-			}
-			i = sizeof(data);
-			aftherFloat = ::atof(last);
-			cout<< "Atof raw: " << aftherFloat << endl;
-			aftherFloat =  aftherFloat / 600000;
-			cout<< "Aftherfloat2: " << aftherFloat << endl;
-			int klm = 0; 
-			klm = Coord / 100;			
-			aftherFloat += (float) klm;
-			cout<< "Aftherfloat4: " << aftherFloat << endl;
-			
-		}						
-	}
+/*
+ *	Callbacks
+ */
+void cController::axismsg(const flarb_inclination::Axis msgr)
+{
+	message_axis = msgr;
+}
 
-	
-	return Coord;
+void cController::compassmsg(const flarb_compass::Compass msgr)
+{
+	message_compass = msgr;
+}
+
+void cController::encodermsg(const flarb_motorcontrol::Encoder msgr)
+{
+	message_encoder = msgr;
+}
+
+void cController::GGAmsg(const flarb_gps::GGA msgr)
+{
+	message_gga = msgr;
+}
+
+void cController::RMCmsg(const flarb_gps::RMC msgr)
+{
+	message_rmc = msgr;
 }
 
