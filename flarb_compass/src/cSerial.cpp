@@ -5,6 +5,7 @@
  *      Author: Riemer van der Zee
  */
 
+#include <iostream>
 #include <stdio.h>     // standard input / output functions
 #include <string.h>    // string function definitions
 #include <unistd.h>    // UNIX standard function definitions
@@ -12,8 +13,10 @@
 #include <errno.h>     // Error number definitions
 #include <termios.h>   // POSIX terminal control definitions
 #include <time.h>      // time calls
+#include <sys/ioctl.h>
 
 #include "flarb_compass/cSerial.h"
+using namespace std;
 
 /*
  * Opens a serial non-modem 'device' with the given baudrate
@@ -26,35 +29,50 @@ int cSerial::PortOpen( const char* device, int baudrate)
 	
 	// Open the file
 	int fd_flags = O_RDWR | O_NOCTTY | O_NDELAY | O_SYNC;
-	
 	_fileDescriptor = open( device, fd_flags);
-	
+
 	if( _fileDescriptor < 0)
 	{
 		printf( "Failed to open device %s, error %i: %s\n", device, errno, strerror(errno));
 		ret = errno;
 		goto portopen_return;
 	}
-	//printf("[test]configure port \n");
+
+	// Flush it
+	tcflush( _fileDescriptor, TCIOFLUSH);
+
+	// Set NDELAY to 0
+	ret = fcntl( _fileDescriptor, F_GETFL, 0);
+	fcntl( _fileDescriptor, F_SETFL, ret & ~O_NDELAY); 
+
 	// Configure port
 	struct termios port_settings;
-	memset( &port_settings, 0, sizeof (port_settings));
+	// Get stuff
+	if ( tcgetattr( _fileDescriptor, &port_settings) != 0)
+	{
+		printf ("error %d from tcgetattr", errno);
+		goto portopen_close;
+	}
 
 	cfsetispeed( &port_settings, baudrate);    // set baud rates
 	cfsetospeed( &port_settings, baudrate);
-	
-	port_settings.c_iflag &= ~IGNBRK;         // ignore break signal
-	port_settings.c_lflag = 0;                // no signaling chars, no echo, no canonical processing
-	port_settings.c_oflag = 0;                // no remapping, no delays
-	port_settings.c_cc[VMIN]  = 0;            // read doesn't block
-	port_settings.c_cc[VTIME] = 1;            // 0.1 seconds read timeout
+
+	port_settings.c_iflag = IGNBRK;          // ignore break signal
+
+	port_settings.c_lflag = 0;                 // no signaling chars, no echo,
+                                               // no canonical processing
+    port_settings.c_oflag = 0;                 // no remapping, no delays
+	port_settings.c_cc[VMIN]  = 0;             // read doesn't block
+	port_settings.c_cc[VTIME] = 2;             // 0.1 seconds read timeout
 
 	port_settings.c_iflag &= ~(IXON | IXOFF | IXANY); // shut off xon/xoff ctrl
+	//port_settings.c_iflag |= ICRNL;           // Map CR to NL on input.
 
-	port_settings.c_cflag |= (CLOCAL | CREAD); // ignore modem controls, enable reading
-	port_settings.c_cflag &= ~PARENB;  // Set no parity
+	port_settings.c_cflag &= ~(PARENB | PARODD);  // Set no parity
 	port_settings.c_cflag &= ~CSTOPB;  // Only 1 stopbit
 	port_settings.c_cflag &= ~CSIZE;   // Clear CSize
+	port_settings.c_cflag &= ~CRTSCTS; // Clear hardware control
+	port_settings.c_cflag |= (CLOCAL | CREAD); // ignore modem controls, enable reading
 	port_settings.c_cflag |= CS8;      // Set datasize to 8 bits
 
     // apply the settings to the port
@@ -63,10 +81,31 @@ int cSerial::PortOpen( const char* device, int baudrate)
 		ret = errno;
 		goto portopen_close;
 	}
+
+	ioctl( _fileDescriptor, TIOCMGET, &ret);
+	ret |= TIOCM_RTS;
+	ioctl( _fileDescriptor, TIOCMSET, &ret);
+
+	// Get stuff again
+	if ( tcgetattr( _fileDescriptor, &port_settings) != 0)
+	{
+		printf ("error %d from tcgetattr", errno);
+		goto portopen_close;
+	}
 	
+	// Keep hardware handshake off
+	port_settings.c_cflag &= ~CRTSCTS;
+
+	// Apply it again
+	if( tcsetattr( _fileDescriptor, TCSANOW, &port_settings) != 0) {
+		printf( "Failed to set serial parameters. device %s, error %i: %s\n", device, errno, strerror(errno));
+		ret = errno;
+		goto portopen_close;
+	}
+
 	// Success
 	return 0;
-	
+
 	// Error unrolling
 portopen_close:
 	close( _fileDescriptor);

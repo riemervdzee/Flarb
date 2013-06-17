@@ -60,8 +60,8 @@ void cController::Update()
 {
 	//cout<<"Update"<<endl;
 	int res = readDevice(0);
-	//if(res == 0)	
-	//	_Compass.publish(msg);
+	if(res == 0)	
+		_Compass.publish(msg);
 }
 
 /*
@@ -154,30 +154,58 @@ int cController::readDevice( int start)
 	Buffer[0] = 0;
 
 	// Request a raw sample
-	_serial.Write("sr?", 3);
+	_serial.Write("sr?\n", 4);
+	/*usleep(10);
+	_serial.Write("r", 1);
 	usleep(10);
-	_serial.Write("\n", 1);
-	usleep(500);
+	_serial.Write("?", 1);
+	usleep(10);
+	_serial.Write("\r", 1);*/
 	
 	// Read response TODO wait for response?
 	int len = 0;
 	int attempts = 0;
 	do {
-		usleep(100);
-		//_serial.Write("\r", 1);
-		len += _serial.Read( Buffer + len, sizeof(BUFFER_SIZE) - len);
+		len += _serial.Read( Buffer + len, BUFFER_SIZE - len);
 		//cout << len << endl;
 		attempts++;
 	}
-	while ( ((strchr(Buffer, '$') == NULL) || strchr(Buffer, 'E') == NULL)  && len < BUFFER_SIZE && attempts < 100);
+	while ( ((strchr(Buffer, '$') == NULL) || strchr(Buffer, '\n') == NULL)  && 
+		len < BUFFER_SIZE && attempts < 10 && usleep(1000) == 0);
 
+	Buffer[len] = 0;
 
 	// Process, format: $raw,X-733Y35:E200*3C
-	//float x = atoi( Buffer+6);
-	//float y = atoi( strchr( Buffer+6, 'Y') + 1);
+	char *chrX = strchr( Buffer, 'X');
+	char *chrY = strchr( Buffer, 'Y');
 
-	cout << Buffer << endl;
-	//cout << x << ", " /*<< y*/ << endl;
+	// Check if the buffer is alrighty
+	if( chrX != NULL && chrY != NULL)
+	{
+		float x = atoi( chrX + 1);
+		float y = atoi( chrY + 1);
+
+		msg.north_angle = (atan2(y,x)* RAD2DEG);
+
+		if( msg.north_angle < 0)
+			msg.north_angle += 360;
+		else if( msg.north_angle > 360)
+			msg.north_angle -= 360;
+
+		msg.x = x;
+		msg.y = y;
+		//msg.heading = heading;
+
+		//cout << Buffer << endl;
+		//cout << x << ", " << y << endl;
+		//cout << msg.north_angle << endl;
+	}
+	else
+	{
+		static int i = 0;
+		i++;
+		cout << "thrown away " << i << endl;
+	}
 
 	return 0;
 }
