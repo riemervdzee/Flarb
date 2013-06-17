@@ -17,17 +17,25 @@
 #include <termios.h> 					// POSIX terminal control definitions 
 #include <math.h>
 
+
 // Settings
 #define DEV_PORT		"/dev/ttyUSB0" 	//port 
 #define BAUD_RATE		B9600			//Baudrate port
-#define PI 3.14159265
+
+
+// Math extension
+#define RAD2DEG  (180 / M_PI)
+#define DEG2RAD  (M_PI / 180)
+
 
 using namespace std;
 
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
+#if (USE_RAW == 0)
 	ptr = 0;
+#endif
 	Openport();	
 	_Compass = _rosNode.advertise<flarb_compass::Compass>("sensor/compass", 1);
 	return true;
@@ -40,7 +48,7 @@ void cController::Destroy()
 	usleep(100);
 	_serial.Write("\n", 1);
 	usleep(100);
-	printf("shutdown");
+	cout << "shutdown" << endl;
 	_serial.PortClose();	
 	//now shutdown ros
 	ros::shutdown();
@@ -52,8 +60,8 @@ void cController::Update()
 {
 	//cout<<"Update"<<endl;
 	int res = readDevice(0);
-	if(res == 0)	
-		_Compass.publish(msg);
+	//if(res == 0)	
+	//	_Compass.publish(msg);
 }
 
 /*
@@ -80,8 +88,9 @@ int cController::Openport()
 	//make contact
 	if(ret == 0 && ros::ok()){
 		cout<< "Port opened " <<endl;
-		/*		
-		//Calibration		
+		
+		//Calibration
+#if 0
 		cout<<"Do yo‎u want to calibrate? \nPress y for Yes"<<endl;
 		char yes[] = "y";		
 		char key[1];
@@ -90,7 +99,8 @@ int cController::Openport()
 		{	
 			Calibration();
 		}
-		*/
+#endif
+
 		sleep(1);		
 		readDevice(1);
 		return 0;	
@@ -108,21 +118,74 @@ int cController::Openport()
 int cController::configure()
 {
 	cout<<"Configuring"<<endl;
+
+	// Clear read buffer
+	//_serial.Read( Buffer, sizeof(BUFFER_SIZE));
+
 	//Configuring compass with delay
 	usleep(10);
 	_serial.Write("h", 1);
 	usleep(10);
 	_serial.Write("\n", 1);
 	usleep(10);
+
+	// Clear read buffer
+	_serial.Read( Buffer, sizeof(BUFFER_SIZE));
+
+#if (USE_RAW == 0)
 	_serial.Write("go", 2);
 	usleep(10);
 	_serial.Write("\n", 1);
 	usleep(10);
+#endif
+
 	return 0;
 }
 
+#if USE_RAW
+
 /* 
- *	For Reading device
+ *	For Reading device, Riemers way = raw
+ */	
+int cController::readDevice( int start)
+{
+	// Clear everything in the read buffer
+	_serial.Read( Buffer, sizeof(BUFFER_SIZE));
+	Buffer[0] = 0;
+
+	// Request a raw sample
+	_serial.Write("sr?", 3);
+	usleep(10);
+	_serial.Write("\n", 1);
+	usleep(500);
+	
+	// Read response TODO wait for response?
+	int len = 0;
+	int attempts = 0;
+	do {
+		usleep(100);
+		//_serial.Write("\r", 1);
+		len += _serial.Read( Buffer + len, sizeof(BUFFER_SIZE) - len);
+		//cout << len << endl;
+		attempts++;
+	}
+	while ( ((strchr(Buffer, '$') == NULL) || strchr(Buffer, 'E') == NULL)  && len < BUFFER_SIZE && attempts < 100);
+
+
+	// Process, format: $raw,X-733Y35:E200*3C
+	//float x = atoi( Buffer+6);
+	//float y = atoi( strchr( Buffer+6, 'Y') + 1);
+
+	cout << Buffer << endl;
+	//cout << x << ", " /*<< y*/ << endl;
+
+	return 0;
+}
+
+#else
+
+/* 
+ *	For Reading device, Daniels way (calibrated and all)
  */	
 int cController::readDevice(int start)
 {
@@ -197,17 +260,17 @@ int cController::getData(int start){
 					float heading =0;					
 					if(y > 0)
 					{
-						heading = 90 -(atan2(y,x)*180 / PI);
+						heading = 90 -(atan2(y,x)* RAD2DEG);
 					}			
 				    if(y<0)
 					{ 
-						heading = 270 -(atan2(y,x)*180 / PI);
+						heading = 270 -(atan2(y,x)* RAD2DEG);
 					}
     				if(y==0 && x<0) 
 						heading = 180.0;
     				if(y==0 && x>0) 
 						heading = 0.0;
-						
+
 					msg.north_angle = atof(angle);
 					msg.x = x;
 					msg.y = y;
@@ -259,7 +322,7 @@ int cController::checksum(char *s) {
  
     return c;
 }
-
+#endif
 
 /*
  *	Calibration Mode
@@ -307,9 +370,12 @@ int cController::Calibration()
 		_serial.Write("go", 2);
 	    usleep(100);
 		_serial.Write("\n", 1);
-		usleep(100);		
-		char key[1];
-	  	cin >> key;
+		usleep(100);
+
+		// Wait till user input
+		cin.ignore();
+		cin.get();
+
 		usleep(100);
 		_serial.Write("h", 1);
 		usleep(100);

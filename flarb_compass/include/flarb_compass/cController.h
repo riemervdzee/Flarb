@@ -5,6 +5,13 @@
 #include "flarb_compass/Compass.h"
 #include "flarb_compass/cSerial.h"
 
+// Program options
+#define USE_RAW 1
+
+// Class define
+#define BUFFER_SIZE 1024
+
+
 /*
 * Main controller class of the example node
 */
@@ -28,13 +35,17 @@ private:
 	flarb_compass::Compass msg;
 	cSerial _serial;
 	int Openport();
-	int readDevice(int status);
-	int getData(int status);
-	int checksum(char *s);
 	int configure();
 	int Calibration();
-	char Buffer[1024];
+
+	int readDevice(int status);
+
+#if (USE_RAW == 0)
+	int getData(int status);
+	int checksum(char *s);
 	int ptr;
+#endif
+	char Buffer[ BUFFER_SIZE];
 };
 
 #endif // CLASS_CONTROLLER_H
