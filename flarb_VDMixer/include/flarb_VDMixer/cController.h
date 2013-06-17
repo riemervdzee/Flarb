@@ -19,6 +19,8 @@ using namespace std;
 class cController
 {
 public:
+	// C-tor
+	cController() : distance(0.0f) {}
 
     // Functions executed at the beginning and end of the Application
     bool Create();
@@ -50,6 +52,9 @@ private:
 	flarb_motorcontrol::Encoder message_encoder;
 	flarb_gps::GGA              message_gga;
 	flarb_gps::RMC              message_rmc;
+
+	//
+	float distance;
 
 	// Callbacks
 	void axismsg    (const flarb_inclination::Axis msgr);

@@ -48,7 +48,7 @@ bool cController::StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMix
 	// Fill values
 	//res.positionX
 	//res.positionY
-	//res.distance
+	res.distance = distance;
 	res.axisX = message_axis.x * DEG2RAD;
 	res.axisY = message_axis.y * DEG2RAD;
 	res.axisZ = message_compass.north_angle * DEG2RAD;
@@ -72,6 +72,9 @@ void cController::compassmsg(const flarb_compass::Compass msgr)
 void cController::encodermsg(const flarb_motorcontrol::Encoder msgr)
 {
 	message_encoder = msgr;
+
+	// Increase distance
+	distance += ((msgr.speed_left + msgr.speed_right) * 0.5f);
 }
 
 void cController::GGAmsg(const flarb_gps::GGA msgr)
