@@ -10,7 +10,7 @@
 const float PULSES_PER_TURN = 50;               // TODO not known yet
 const float METERS_PER_TURN = 0.10f * 2 * M_PI; // Circumference of wheel
 const float VECTOR_MAX      = 0.5f;             // TODO decide
-const float VECTOR_TIME     = 4;                // The amount of sec, the input needs to be executed
+const float VECTOR_TIME     = 1;                // The amount of sec, the input needs to be executed
 
 // Converts
 const float PULSE2METER   = METERS_PER_TURN / PULSES_PER_TURN;
