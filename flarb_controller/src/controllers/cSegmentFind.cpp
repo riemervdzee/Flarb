@@ -1,15 +1,15 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
 #include "ros/ros.h"
-#include "flarb_controller/controllers/cFindSegment.h"
+#include "flarb_controller/controllers/cSegmentFind.h"
 
 // Functions executed at the beginning and end of the Application
-bool cFindSegment::Create()
+bool cSegmentFind::Create()
 {
 	return true;
 }
 
-void cFindSegment::Destroy()
+void cSegmentFind::Destroy()
 {
 
 }
@@ -17,9 +17,8 @@ void cFindSegment::Destroy()
 // Passes reference of "msg", is used as output
 // Executes the FindSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
-bool cFindSegment::Execute( tVector &vector, cMap &map)
+enum SUBRETURN cSegmentFind::Execute( tVector &output, 
+		const flarb_VDMixer::State &state, const cMap &map, bool reinit)
 {
-	// Just stop the vehicle
-	vector = tVector( 0, 0);
-	return true;
+	return RET_SUCCESS;
 }

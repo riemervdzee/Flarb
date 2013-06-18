@@ -6,12 +6,17 @@
 
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
-
 #include "flarb_controller/cInputString.h"
 #include "flarb_controller/cRosCom.h"
-#include "flarb_controller/controllers/cFollowSegment.h"
-#include "flarb_controller/controllers/cFindSegment.h"
-#include "flarb_controller/controllers/cAvoidObstacle.h"
+
+// Forward declaration of our sub-controllers
+class cSegmentStart;
+class cSegmentFollow;
+class cSegmentFind;
+class cAvoidObstacle;
+class cPlantQuality;
+class cFreeRun;
+
 
 /*
  * Enumerates the possible states the segmentsolver can be in
@@ -26,13 +31,24 @@ enum STATES {
 };
 
 /*
+ * The return states of the subcontrollers
+ */
+enum SUBRETURN {
+	RET_SUCCESS,
+	RET_NEXT,
+	RET_BLOCKED,
+};
+
+
+/*
  * Main controller class of the example node
  */
 class cController
 {
 public:
 	// Constructor
-	cController();
+	cController() : _blocked( false), _state( STATE_INIT), _segmentStart( NULL), _segmentFollow( NULL),
+		_segmentFind( NULL), _avoidObstacle( NULL), _plantQuality( NULL), _freeRun( NULL) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -61,13 +77,16 @@ private:
 	// Our current state
 	enum STATES _state;
 
-	//
-	enum STATES _statePrevious;
+	// Are we in AvoidObstacle state-solver?
+	bool _blocked;
 
 	// Our sub-controllers
-	cFollowSegment  _followSegment;
-	cFindSegment    _findSegment;
-	cAvoidObstacle  _avoidObstacle;
+	cSegmentStart   *_segmentStart;
+	cSegmentFollow  *_segmentFollow;
+	cSegmentFind    *_segmentFind;
+	cAvoidObstacle  *_avoidObstacle;
+	cPlantQuality   *_plantQuality;
+	cFreeRun        *_freeRun;
 };
 
 #endif // CLASS_CONTROLLER_H

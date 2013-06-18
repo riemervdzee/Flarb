@@ -3,15 +3,16 @@
 
 #include "ros/ros.h"
 
+#include "flarb_VDMixer/State.h"
 #include "flarb_controller/cController.h"
 #include "flarb_controller/WaypointVector.h"
+#include "flarb_controller/controllers/cSegmentStart.h"
+#include "flarb_controller/controllers/cSegmentFollow.h"
+#include "flarb_controller/controllers/cSegmentFind.h"
+#include "flarb_controller/controllers/cAvoidObstacle.h"
+#include "flarb_controller/controllers/cPlantQuality.h"
+#include "flarb_controller/controllers/cFreeRun.h"
 using namespace std;
-
-/*
- * Constructor / C-tor
- */
-// TODO we should start in STATE_INIT
-cController::cController() : _state( STATE_INIT) {}
 
 
 /*
@@ -21,11 +22,22 @@ bool cController::Create()
 {
 	// Init RosCom object
 	_rosCom.Create( &_rosNode, this);
+
+	// Create sub-controllers
+	_segmentStart  = new cSegmentStart();
+	_segmentFollow = new cSegmentFollow();
+	_segmentFind   = new cSegmentFind();
+	_avoidObstacle = new cAvoidObstacle();
+	_plantQuality  = new cPlantQuality();
+	_freeRun       = new cFreeRun();
 	
 	// Init sub-controllers
-	_followSegment.Create();
-	_findSegment.Create();
-	_avoidObstacle.Create();
+	_segmentStart->Create();
+	_segmentFollow->Create();
+	_segmentFind->Create();
+	_avoidObstacle->Create();
+	_plantQuality->Create();
+	_freeRun->Create();
 
 	return true;
 }
@@ -36,11 +48,21 @@ bool cController::Create()
  */
 void cController::Destroy()
 {
-	// Deinit RosCom and subcontrollers
-	_rosCom.Destroy();
-	_followSegment.Destroy();
-	_findSegment.Destroy();
-	_avoidObstacle.Destroy();
+	// De-init sub-controllers
+	_segmentStart->Destroy();
+	_segmentFollow->Destroy();
+	_segmentFind->Destroy();
+	_avoidObstacle->Destroy();
+	_plantQuality->Destroy();
+	_freeRun->Destroy();
+
+	// Delete the subs
+	delete _segmentStart;
+	delete _segmentFollow;
+	delete _segmentFind;
+	delete _avoidObstacle;
+	delete _plantQuality;
+	delete _freeRun;
 }
 
 
@@ -84,10 +106,11 @@ void cController::MapCallback( cMap &map)
 {
 	// Vector
 	tVector vector;
+	// TODO grab VDMixer State
 
 
 	// Always execute AvoidObstacle sub-controller
-	bool ret = _avoidObstacle.Execute( vector, map);
+	/*bool ret = _avoidObstacle.Execute( vector, map);
 
 	// Did AvoidObstacle return true, and we ain't in AvoidObstacle mode? Save state
 	if( ret == true && _state != STATE_AVOID_OBSTACLE)
@@ -140,6 +163,6 @@ void cController::MapCallback( cMap &map)
 	flarb_controller::WaypointVector msg;
 	msg.x = vector.getX();
 	msg.y = vector.getY();
-	_rosCom.PublishWaypoint( msg);
+	_rosCom.PublishWaypoint( msg);*/
 }
 

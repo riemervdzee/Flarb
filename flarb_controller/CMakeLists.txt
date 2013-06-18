@@ -37,8 +37,10 @@ rosbuild_add_executable(controller  src/main.cpp
 									src/cInputString.cpp
 									src/cMap.cpp
 									src/cRosCom.cpp
-									src/controllers/cFollowSegment.cpp
-									src/controllers/cFindSegment.cpp
+									src/controllers/cSegmentStart.cpp
+									src/controllers/cSegmentFollow.cpp
+									src/controllers/cSegmentFind.cpp
 									src/controllers/cAvoidObstacle.cpp
-									src/controllers/cFreerun.cpp
+									src/controllers/cPlantQuality.cpp
+									src/controllers/cFreeRun.cpp
 									)

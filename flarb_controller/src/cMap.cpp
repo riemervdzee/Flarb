@@ -29,8 +29,16 @@ static bool compare_tVector( const tVector &first, const tVector &second)
  * Returns the dotproduct between input and output. range is 1 to -1
  * 1 means input = output. 0 = 90 degrees difference, -1 = 180 degrees difference
  * FREEPATH_NO_SOLUTION = special case, output = {0,0} no solution possible
+ *
+ *
+ * float    protection_margin   Extra radius for each object
+ * tVector  input               Input vector to try
+ * tVector  output              The resulting vector, if any
+ * bool     UseCollisionPoint   if true, use the collisionpoint as an attempt as well. 
+ *                              use false if you want strict collision avoidance
+ *
  */
-float cMap::FindFreePath( const float protection_margin, const tVector &input, tVector &output)
+float cMap::FindFreePath( const float protection_margin, const tVector &input, tVector &output, bool UseCollisionPoint)
 {
 	// Clear containers. Vars used in the upcoming while loop
 	_WaypointAttempts.clear();
@@ -88,8 +96,11 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 				if( unique)
 				{
 					// Shrink p1
-					p1 *= 0.9;
-					_WaypointAttempts.push_back( p1);
+					if( UseCollisionPoint)
+					{
+						p1 *= 0.9;
+						_WaypointAttempts.push_back( p1);
+					}
 
 					// Something extra to prevent future collisions!
 					float radius = obj.radius + protection_margin + 0.001f;

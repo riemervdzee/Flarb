@@ -1,5 +1,5 @@
-#ifndef CLASS_AVOID_OBSTACLE_H
-#define CLASS_AVOID_OBSTACLE_H
+#ifndef CLASS_SEGMENT_FIND_H
+#define CLASS_SEGMENT_FIND_H
 
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
@@ -13,7 +13,7 @@
 /*
  * Main controller class of the example node
  */
-class cAvoidObstacle
+class cSegmentFind
 {
 public:
 	// Functions executed at the beginning and end of the Application
@@ -21,11 +21,11 @@ public:
 	void Destroy();
 
 	// Passes reference of "vector", is used as output
-	// Executes the AvoidObstacle sub-controller based on the rest of the arguments
+	// Executes the FindSegment sub-controller based on the rest of the arguments
 	// TODO maybe more parameters?
 	enum SUBRETURN Execute( tVector &output, const flarb_VDMixer::State &state, const cMap &map, bool reinit);
 
 private:
 };
 
-#endif // CLASS_AVOID_OBSTACLE_H
+#endif // CLASS_SEGMENT_FIND_H
