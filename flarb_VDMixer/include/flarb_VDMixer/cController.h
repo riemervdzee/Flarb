@@ -8,7 +8,6 @@
 #include "flarb_inclination/Axis.h"
 #include "flarb_compass/Compass.h"
 #include "flarb_motorcontrol/Encoder.h"
-#include "flarb_accelerometer/Accelerometer.h"
 #include "flarb_gps/GGA.h"
 #include "flarb_gps/RMC.h"
 using namespace std;
