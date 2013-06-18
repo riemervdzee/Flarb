@@ -75,12 +75,16 @@ int cController::Openport()
 		cout<<"Opening port" << endl;
 
 		try {
+			// Open device
 			if( !_serial.isOpen())
 				_serial.open( DEV_PORT, BAUD_RATE);
 
+			// Timeout for reads
 			_serial.setTimeout( boost::posix_time::milliseconds(100));
 
 			configure();
+
+			// If all succeeded without throwing exceptions, set ret to 0 quitting the loop
 			ret = 0;
 		}
 		catch(...){ sleep(1); cout<<"Reattempt opening" << endl;}
@@ -88,7 +92,7 @@ int cController::Openport()
 	//make contact
 	if(ret == 0 && ros::ok()){
 		cout<< "Port opened " <<endl;
-		
+
 		//Calibration
 #if 0
 		cout<<"Do yo‎u want to calibrate? \nPress y for Yes"<<endl;
@@ -106,8 +110,8 @@ int cController::Openport()
 	}
 	//abort
 	else{
-		cout<< "Abort opening" << endl; 
-		return -1; 
+		cout<< "Abort opening" << endl;
+		return -1;
 	}
 }
 
