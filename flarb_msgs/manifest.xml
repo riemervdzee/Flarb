@@ -1,0 +1,13 @@
+<package>
+  <description brief="flarb_msgs">
+
+     flarb_msgs
+
+  </description>
+  <author>Daniel de Valk / Riemer van der Zee</author>
+  <license>LGPL</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://flarb.nl/</url>
+</package>
+
+

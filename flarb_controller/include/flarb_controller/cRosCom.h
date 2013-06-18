@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 
 #include "std_msgs/String.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_msgs/WaypointVector.h"
 #include "flarb_controller/cMap.h"
 #include "flarb_mapbuilder/MapList.h"
 
@@ -24,7 +24,7 @@ public:
 	int Destroy();
 
 	// Publishes a WaypointVector
-	void PublishWaypoint( const flarb_controller::WaypointVector &msg);
+	void PublishWaypoint( const flarb_msgs::WaypointVector &msg);
 
 private:
 	// We received a map

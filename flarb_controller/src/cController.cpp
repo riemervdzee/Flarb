@@ -4,8 +4,8 @@
 #include "ros/ros.h"
 
 #include "flarb_VDMixer/State.h"
+#include "flarb_msgs/WaypointVector.h"
 #include "flarb_controller/cController.h"
-#include "flarb_controller/WaypointVector.h"
 #include "flarb_controller/controllers/cSegmentStart.h"
 #include "flarb_controller/controllers/cSegmentFollow.h"
 #include "flarb_controller/controllers/cSegmentFind.h"
@@ -160,7 +160,7 @@ void cController::MapCallback( cMap &map)
 
 	// We have a filled message by now, publish it
 	// msg struct, which we'll be sending
-	flarb_controller::WaypointVector msg;
+	flarb_msgs::WaypointVector msg;
 	msg.x = vector.getX();
 	msg.y = vector.getY();
 	_rosCom.PublishWaypoint( msg);*/

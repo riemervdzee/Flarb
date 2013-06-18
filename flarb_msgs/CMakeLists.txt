@@ -7,7 +7,7 @@ include($ENV{ROS_ROOT}/core/rosbuild/rosbuild.cmake)
 #  Release        : w/o debug symbols, w/ optimization
 #  RelWithDebInfo : w/ debug symbols, w/ optimization
 #  MinSizeRel     : w/o debug symbols, w/ optimization, stripped binaries
-set(ROS_BUILD_TYPE Release)
+set(ROS_BUILD_TYPE RelWithDebInfo)
 
 rosbuild_init()
 
@@ -17,7 +17,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 #uncomment if you have defined messages
-#rosbuild_genmsg()
+rosbuild_genmsg()
 #uncomment if you have defined services
 #rosbuild_gensrv()
 
@@ -29,18 +29,3 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_executable(example examples/example.cpp)
 #target_link_libraries(example ${PROJECT_NAME})
 
-rosbuild_add_executable(controller  src/main.cpp
-									src/types/tBoundingBox.cpp
-									src/types/tVector.cpp
-									src/types/tMatrix.cpp
-									src/cController.cpp
-									src/cInputString.cpp
-									src/cMap.cpp
-									src/cRosCom.cpp
-									src/controllers/cSegmentStart.cpp
-									src/controllers/cSegmentFollow.cpp
-									src/controllers/cSegmentFind.cpp
-									src/controllers/cAvoidObstacle.cpp
-									src/controllers/cPlantQuality.cpp
-									src/controllers/cFreeRun.cpp
-									)

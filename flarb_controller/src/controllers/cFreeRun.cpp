@@ -19,16 +19,14 @@ void cFreeRun::Destroy()
 // Executes the FollowSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
 enum SUBRETURN cFreeRun::Execute( tVector &output, 
-		const flarb_VDMixer::State &state, const cMap &map, bool reinit)
+		const flarb_VDMixer::State &state, cMap &map, bool reinit)
 {
 	// Just continue the current row
 	tVector direction = tVector( 0.0f, 0.5f);
-	tVector output;
-	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output);
+	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
 	// TODO here we can do stuff with the result, whether 0 or negative 
 	// return false maybe? For now, just set vector = output
-	vector = output;
 
 	return RET_SUCCESS;
 }

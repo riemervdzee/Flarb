@@ -17,7 +17,7 @@ void cPlantQuality::Destroy()
 // Passes reference of "msg", is used as output
 // Executes the FindSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
-void cPlantQuality::Execute( const cRosCom &_roscom, cMap &map);
+void cPlantQuality::Execute( const cRosCom &_roscom, cMap &map)
 {
 	// TODO everything!
 }

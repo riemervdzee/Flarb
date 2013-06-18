@@ -47,7 +47,7 @@ class cController
 {
 public:
 	// Constructor
-	cController() : _blocked( false), _state( STATE_INIT), _segmentStart( NULL), _segmentFollow( NULL),
+	cController() : _state( STATE_INIT), _blocked( false), _segmentStart( NULL), _segmentFollow( NULL),
 		_segmentFind( NULL), _avoidObstacle( NULL), _plantQuality( NULL), _freeRun( NULL) {}
 
 	// Functions executed at the beginning and end of the Application

@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "ros/ros.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_msgs/WaypointVector.h"
 #include "flarb_mapbuilder/MapList.h"
 
 #include "flarb_controller/cRosCom.h"
@@ -22,7 +22,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 	_subSmartphone = rosNode->subscribe<std_msgs::String>( "/smartphone/input", 1, &cRosCom::SmartphoneCallback, this);
 
 	// We publish to /steering/waypoint
-	_pubVector = rosNode->advertise<flarb_controller::WaypointVector>( "/steering/waypoint", 1);
+	_pubVector = rosNode->advertise<flarb_msgs::WaypointVector>( "/steering/waypoint", 1);
 
 	return 0;
 }
@@ -33,7 +33,7 @@ int cRosCom::Destroy()
 }
 
 // Publishes a WaypointVector
-void cRosCom::PublishWaypoint( const flarb_controller::WaypointVector &msg)
+void cRosCom::PublishWaypoint( const flarb_msgs::WaypointVector &msg)
 {
 	_pubVector.publish( msg);
 }

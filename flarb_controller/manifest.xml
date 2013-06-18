@@ -10,6 +10,7 @@
   <url>http://flarb.nl/</url>
   <depend package="std_msgs"/>
   <depend package="roscpp"/>
+  <depend package="flarb_msgs"/>
   <depend package="flarb_mapbuilder"/>
   <depend package="flarb_VDMixer"/>
 

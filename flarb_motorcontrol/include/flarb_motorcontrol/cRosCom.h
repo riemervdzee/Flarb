@@ -5,7 +5,7 @@
 
 #include "flarb_canbus/DualMotorSpeed.h"
 #include "flarb_canbus/DualMotorEncoder.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_msgs/WaypointVector.h"
 
 
 // Class prototype
@@ -26,7 +26,7 @@ public:
 
 private:
 	// We received a waypoint vector
-	void WVCallback( const flarb_controller::WaypointVector msg);
+	void WVCallback( const flarb_msgs::WaypointVector msg);
 	void EncoderCallback( const flarb_canbus::DualMotorEncoder msg);
 
 

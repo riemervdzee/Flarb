@@ -23,7 +23,7 @@ public:
 	// Passes reference of "vector", is used as output
 	// Executes the FollowSegment sub-controller based on the rest of the arguments
 	// TODO maybe more parameters?
-	enum SUBRETURN Execute( tVector &output, const flarb_VDMixer::State &state, const cMap &map, bool reinit);
+	enum SUBRETURN Execute( tVector &output, const flarb_VDMixer::State &state, cMap &map, bool reinit);
 };
 
 #endif // CLASS_FREERUN_H
