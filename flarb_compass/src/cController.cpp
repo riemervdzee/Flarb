@@ -19,24 +19,21 @@
 
 
 // Settings
-#define DEV_PORT		"/dev/ttyUSB0" 	//port 
-#define BAUD_RATE		B9600			//Baudrate port
+#define DEV_PORT		"/dev/ttyUSB0"  //port 
+#define BAUD_RATE		9600            //Baudrate port
 
 
 // Math extension
 #define RAD2DEG  (180 / M_PI)
 #define DEG2RAD  (M_PI / 180)
 
-
 using namespace std;
+
 
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
-#if (USE_RAW == 0)
-	ptr = 0;
-#endif
-	Openport();	
+	Openport();
 	_Compass = _rosNode.advertise<flarb_compass::Compass>("sensor/compass", 1);
 	return true;
 }
@@ -44,15 +41,12 @@ bool cController::Create()
 // Executed when the Node is exiting
 void cController::Destroy()
 {
-	_serial.Write("h", 1);
-	usleep(100);
-	_serial.Write("\n", 1);
-	usleep(100);
+	_serial.writeString("h\n");
+
 	cout << "shutdown" << endl;
-	_serial.PortClose();	
+	_serial.close();
 	//now shutdown ros
 	ros::shutdown();
-	
 }
 
 // Updates the controller obj
@@ -79,11 +73,17 @@ int cController::Openport()
 	while( ret != 0 && ros::ok())
 	{
 		cout<<"Opening port" << endl;
-		ret = _serial.PortOpen(DEV_PORT, BAUD_RATE);
-		configure();
-		sleep(1);		
-		if( ret != 0)
-			sleep(1);
+
+		try {
+			if( !_serial.isOpen())
+				_serial.open( DEV_PORT, BAUD_RATE);
+
+			_serial.setTimeout( boost::posix_time::milliseconds(100));
+
+			configure();
+			ret = 0;
+		}
+		catch(...){ sleep(1); cout<<"Reattempt opening" << endl;}
 	}
 	//make contact
 	if(ret == 0 && ros::ok()){
@@ -101,8 +101,7 @@ int cController::Openport()
 		}
 #endif
 
-		sleep(1);		
-		readDevice(1);
+		sleep(1);
 		return 0;	
 	}
 	//abort
@@ -120,22 +119,18 @@ int cController::configure()
 	cout<<"Configuring"<<endl;
 
 	// Clear read buffer
-	//_serial.Read( Buffer, sizeof(BUFFER_SIZE));
+	//_serial.read( Buffer, sizeof(BUFFER_SIZE));
 
 	//Configuring compass with delay
-	usleep(10);
-	_serial.Write("h", 1);
-	usleep(10);
-	_serial.Write("\n", 1);
-	usleep(10);
+	_serial.writeString("h\n");
 
 	// Clear read buffer
-	_serial.Read( Buffer, sizeof(BUFFER_SIZE));
+	_serial.read( Buffer, sizeof(BUFFER_SIZE));
 
 #if (USE_RAW == 0)
-	_serial.Write("go", 2);
+	_serial.write("go", 2);
 	usleep(10);
-	_serial.Write("\n", 1);
+	_serial.write("\n", 1);
 	usleep(10);
 #endif
 
@@ -150,34 +145,18 @@ int cController::configure()
 int cController::readDevice( int start)
 {
 	// Clear everything in the read buffer
-	_serial.Read( Buffer, sizeof(BUFFER_SIZE));
+	_serial.read( Buffer, sizeof(BUFFER_SIZE));
 	Buffer[0] = 0;
 
 	// Request a raw sample
-	_serial.Write("sr?\n", 4);
-	/*usleep(10);
-	_serial.Write("r", 1);
-	usleep(10);
-	_serial.Write("?", 1);
-	usleep(10);
-	_serial.Write("\r", 1);*/
-	
-	// Read response TODO wait for response?
-	int len = 0;
-	int attempts = 0;
-	do {
-		len += _serial.Read( Buffer + len, BUFFER_SIZE - len);
-		//cout << len << endl;
-		attempts++;
-	}
-	while ( ((strchr(Buffer, '$') == NULL) || strchr(Buffer, '\n') == NULL)  && 
-		len < BUFFER_SIZE && attempts < 10 && usleep(1000) == 0);
+	_serial.writeString( "sr?\n");
 
-	Buffer[len] = 0;
+	// Read response TODO wait for response?
+	string str = _serial.readStringUntil();
 
 	// Process, format: $raw,X-733Y35:E200*3C
-	char *chrX = strchr( Buffer, 'X');
-	char *chrY = strchr( Buffer, 'Y');
+	char *chrX = strchr( &str[0], 'X');
+	char *chrY = strchr( &str[0], 'Y');
 
 	// Check if the buffer is alrighty
 	if( chrX != NULL && chrY != NULL)
@@ -202,6 +181,7 @@ int cController::readDevice( int start)
 	}
 	else
 	{
+		cout << str << endl;
 		static int i = 0;
 		i++;
 		cout << "thrown away " << i << endl;
@@ -223,7 +203,7 @@ int cController::readDevice(int start)
 		ptr = 0;
 	}
 	char buffRaw[255];
-	int a = _serial.Read(buffRaw, sizeof(buffRaw));
+	int a = _serial.read(buffRaw, sizeof(buffRaw));
 	strncpy(Buffer + ptr, buffRaw, a);
 	ptr += a;
 	int b = getData(start);
@@ -360,44 +340,44 @@ int cController::Calibration()
 	{	
 	  	cout<<"Starting Calibration"<<endl;
 		sleep(3);
-		_serial.Write("h", 1);
+		_serial.write("h", 1);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("factory", 7);
+		_serial.write("factory", 7);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("ps=6", 4);
+		_serial.write("ps=6", 4);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("em=e", 4);
+		_serial.write("em=e", 4);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("et=e", 4);
+		_serial.write("et=e", 4);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("ut=c", 4);
+		_serial.write("ut=c", 4);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("sn=t", 4);
+		_serial.write("sn=t", 4);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
-		_serial.Write("mpcal=e", 7);
+		_serial.write("mpcal=e", 7);
 		usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
 		cout<<"Rotate the unit through two 360 degree circles while maintaining a level position"<<endl;
 		cout<<"The rotations should be no faster than 30 seconds each."<<endl;
 		cout<<"Press: 'Any key' when finished"<<endl;		
-		_serial.Write("go", 2);
+		_serial.write("go", 2);
 	    usleep(100);
-		_serial.Write("\n", 1);
+		_serial.write("\n", 1);
 		usleep(100);
 
 		// Wait till user input
@@ -405,13 +385,13 @@ int cController::Calibration()
 		cin.get();
 
 		usleep(100);
-		_serial.Write("h", 1);
+		_serial.write("h", 1);
 		usleep(100);
-		_serial.Write("mpcal=d", 7);
+		_serial.write("mpcal=d", 7);
 		usleep(100);
-		_serial.Write("save", 4);
+		_serial.write("save", 4);
 		usleep(100);
-		_serial.Write("go", 2);
+		_serial.write("go", 2);
 		cout<<"Config saved"<<endl;
 		return 1;
 	}

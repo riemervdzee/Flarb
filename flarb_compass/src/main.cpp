@@ -9,7 +9,7 @@ using namespace std;
 
 // Node defines
 #define NODE_NAME       "compass"  // Name of the module
-#define NODE_FREQUENCY  5          // Amount of loops per second
+#define NODE_FREQUENCY  10         // Amount of loops per second
 #define NODE_CALLBACKS  0          // 0 = false, 1 = true. use when the node has services to offer
 
 /*
