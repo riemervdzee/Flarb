@@ -104,10 +104,21 @@ void cController::SmartphoneCallback( const std::string &str)
  */
 void cController::MapCallback( cMap &map)
 {
+	// If we are in the init state, or even stopped :O, quit right away
+	if( _state == STATE_INIT || _state == STATE_STOPPED)
+		return;
+
 	// Vector
-	tVector vector;
+	tVector output;
+	flarb_msgs::State vdState;
 	// TODO grab VDMixer State
 
+	if( _state == STATE_FREERUN)
+	{
+		_freeRun->Execute( output, vdState, map, false);
+	}
+	else
+		return;
 
 	// Always execute AvoidObstacle sub-controller
 	/*bool ret = _avoidObstacle.Execute( vector, map);
@@ -155,14 +166,14 @@ void cController::MapCallback( cMap &map)
 
 		// Failsafe, set the values to 0
 		vector = tVector( 0, 0);
-	}
+	}*/
 
 
 	// We have a filled message by now, publish it
 	// msg struct, which we'll be sending
 	flarb_msgs::WaypointVector msg;
-	msg.x = vector.getX();
-	msg.y = vector.getY();
-	_rosCom.PublishWaypoint( msg);*/
+	msg.x = output.getX();
+	msg.y = output.getY();
+	_rosCom.PublishWaypoint( msg);
 }
 
