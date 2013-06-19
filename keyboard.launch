@@ -1,0 +1,4 @@
+<launch>
+	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
+	<node name="canbus"       pkg="flarb_canbus"       type="canbus" />
+</launch>

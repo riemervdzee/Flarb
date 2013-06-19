@@ -1,7 +1,7 @@
 <launch>
-	<node name="LMS100"       pkg="LMS100"             type="LMS100" />
+	<node name="simulation"   pkg="flarb_simulation"   type="simulation" />
 	<node name="mapbuilder"   pkg="flarb_mapbuilder"   type="mapbuilder" />
 	<node name="controller"   pkg="flarb_controller"   type="controller" />
 	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
-	<node name="canbus"       pkg="flarb_canbus"       type="canbus" />
+	<node name="VDMixer"      pkg="flarb_VDMixer"      type="VDMixer" />
 </launch>
