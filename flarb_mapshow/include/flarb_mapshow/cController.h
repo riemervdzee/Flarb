@@ -5,8 +5,8 @@
 
 
 #include "sensor_msgs/LaserScan.h"
-#include "flarb_mapbuilder/MapList.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_msgs/MapList.h"
+#include "flarb_msgs/WaypointVector.h"
 
 
 // Maximum distance between points before considered separate objects
@@ -29,10 +29,10 @@ public:
 
 private:
 	// Callbacks
-	void MapbuildCallback ( const flarb_mapbuilder::MapList msg);
+	void MapbuildCallback ( const flarb_msgs::MapList msg);
 	void RawCallback      ( const sensor_msgs::LaserScan msg);
 	void FilterCallback   ( const sensor_msgs::LaserScan msg);
-	void WaypointCallback ( const flarb_controller::WaypointVector msg);
+	void WaypointCallback ( const flarb_msgs::WaypointVector msg);
 
 	// Helper functions
 	void Draw();
@@ -45,10 +45,10 @@ private:
 	bool DrawFilter;
 
 	// Copy of the last few messages
-	flarb_mapbuilder::MapList  _lastMap;
+	flarb_msgs::MapList        _lastMap;
 	sensor_msgs::LaserScan     _lastLaserRaw;
 	sensor_msgs::LaserScan     _lastLaserFiltered;
-	flarb_controller::WaypointVector _lastVector;
+	flarb_msgs::WaypointVector _lastVector;
 
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;

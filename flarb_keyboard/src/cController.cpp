@@ -4,7 +4,7 @@
 #include <cmath>
 
 #include "ros/ros.h"
-#include "flarb_controller/WaypointVector.h"
+#include "flarb_msgs/WaypointVector.h"
 
 #include "flarb_keyboard/Graphics.h"
 #include "flarb_keyboard/cController.h"
@@ -17,7 +17,7 @@ bool cController::Create()
 	window_create( "FLARB - Keyboard input");
 
 	// We publish to /steering/waypoint
-	_pubVector = _rosNode.advertise<flarb_controller::WaypointVector>( "/steering/waypoint", 1);
+	_pubVector = _rosNode.advertise<flarb_msgs::WaypointVector>( "/steering/waypoint", 1);
 
 	return true;
 }
@@ -60,7 +60,7 @@ void cController::Update()
 	drawLine( 0, 0, x, y);
 
 	// Send it
-	flarb_controller::WaypointVector msg;
+	flarb_msgs::WaypointVector msg;
 	msg.x = x;
 	msg.y = y;
 	_pubVector.publish( msg);

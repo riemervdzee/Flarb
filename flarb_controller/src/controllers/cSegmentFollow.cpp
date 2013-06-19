@@ -19,7 +19,7 @@ void cSegmentFollow::Destroy()
 // Executes the FollowSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
 enum SUBRETURN cSegmentFollow::Execute( tVector &output, 
-		const flarb_VDMixer::State &state, cMap &map, bool reinit)
+		const flarb_msgs::State &state, cMap &map, bool reinit)
 {
 	// First check if there is room at both sides
 	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.8f));

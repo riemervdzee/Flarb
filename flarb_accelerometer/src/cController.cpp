@@ -5,14 +5,14 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
+#include "flarb_msgs/Accelerometer.h"
 #include "flarb_accelerometer/cController.h"
-#include "flarb_accelerometer/Accelerometer.h"
 
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
 	//Create publisher
-	_Accelerometer = _rosNode.advertise<flarb_accelerometer::Accelerometer>("sensor/accelerometer", 100);
+	_Accelerometer = _rosNode.advertise<flarb_msgs::Accelerometer>("sensor/accelerometer", 100);
 	return true;
 }
 
@@ -27,7 +27,7 @@ void cController::Destroy()
 void cController::Update()
 {
 	//send random data
-	flarb_accelerometer::Accelerometer msg;
+	flarb_msgs::Accelerometer msg;
 	msg.Speed = 25;
 	_Accelerometer.publish(msg);
 }

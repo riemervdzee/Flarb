@@ -18,7 +18,7 @@ void cSegmentStart::Destroy()
 // Executes the FindSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
 enum SUBRETURN cSegmentStart::Execute( tVector &output, 
-		const flarb_VDMixer::State &state, cMap &map, bool reinit)
+		const flarb_msgs::State &state, cMap &map, bool reinit)
 {
 	return RET_SUCCESS;
 }

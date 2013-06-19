@@ -2,10 +2,11 @@
 #define CLASS_CONTROLLER_H
 
 #include "ros/ros.h"
+#include "flarb_msgs/GGA.h"
+#include "flarb_msgs/VTG.h"
+#include "flarb_msgs/RMC.h"
 #include "flarb_gps/cSerial.h"
-#include "flarb_gps/GGA.h"
-#include "flarb_gps/VTG.h"
-#include "flarb_gps/RMC.h"
+
 /*
 * Main controller class of the example node
 */
@@ -30,8 +31,8 @@ private:
 	// We are publishing shizzle
 	ros::Publisher _GGA;
 	ros::Publisher _RMC;
-	flarb_gps::GGA gga;
-	flarb_gps::RMC rmc;	
+	flarb_msgs::GGA gga;
+	flarb_msgs::RMC rmc;	
 
 	//Open port
 	int Openport();

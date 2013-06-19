@@ -12,13 +12,13 @@ using namespace std;
 bool cController::Create()
 {
 	// Subscribe to topics
-	_subMap      = _rosNode.subscribe<flarb_mapbuilder::MapList>
+	_subMap      = _rosNode.subscribe<flarb_msgs::MapList>
 					( "/map", 1, &cController::MapbuildCallback, this);
 	_subRaw      = _rosNode.subscribe<sensor_msgs::LaserScan>
 					( "/sick/scan", 1, &cController::RawCallback, this);
 	_subFiltered = _rosNode.subscribe<sensor_msgs::LaserScan>
 					( "/sick/scan_filtered", 1, &cController::FilterCallback, this);
-	_subWaypoint = _rosNode.subscribe<flarb_controller::WaypointVector>
+	_subWaypoint = _rosNode.subscribe<flarb_msgs::WaypointVector>
 					( "steering/waypoint", 1, &cController::WaypointCallback, this);
 
 	// Init video
@@ -66,7 +66,7 @@ void cController::Draw()
 		drawSetColor( gBlack);
 		for( unsigned int i = 0; i < _lastMap.list.size(); i++)
 		{
-			flarb_mapbuilder::Object obj = _lastMap.list[i];
+			flarb_msgs::Object obj = _lastMap.list[i];
 			drawCircle( obj.x, obj.y, obj.radius, 8);
 		}
 	}
@@ -138,7 +138,7 @@ void cController::DrawLaserScan( const sensor_msgs::LaserScan &msg)
 	}
 }
 
-void cController::MapbuildCallback( const flarb_mapbuilder::MapList msg)
+void cController::MapbuildCallback( const flarb_msgs::MapList msg)
 {
 	_lastMap = msg;
 	Draw();
@@ -157,7 +157,7 @@ void cController::RawCallback( const sensor_msgs::LaserScan msg)
 }
 
 
-void cController::WaypointCallback( const flarb_controller::WaypointVector msg)
+void cController::WaypointCallback( const flarb_msgs::WaypointVector msg)
 {
 	_lastVector = msg;
 }

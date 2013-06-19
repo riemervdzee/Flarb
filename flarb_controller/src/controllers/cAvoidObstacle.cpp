@@ -18,7 +18,7 @@ void cAvoidObstacle::Destroy()
 // Executes the AvoidObstacle sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
 enum SUBRETURN cAvoidObstacle::Execute( tVector &output, 
-		const flarb_VDMixer::State &state, cMap &map, bool reinit)
+		const flarb_msgs::State &state, cMap &map, bool reinit)
 {
 	return RET_BLOCKED;
 }

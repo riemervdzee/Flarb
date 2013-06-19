@@ -3,9 +3,9 @@
 
 #include <list>
 #include <vector>
+#include "flarb_msgs/MapList.h"
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tBoundingBox.h"
-#include "flarb_mapbuilder/MapList.h"
 
 // One of the possible return options of FindFreePath, tells there is no solution
 #define FREEPATH_NO_SOLUTION -5.0f
@@ -20,7 +20,7 @@ public:
 	/*
 	 * Sets the map list to use for the upcoming functions
 	 */
-	void setMapList( const flarb_mapbuilder::MapList &map);
+	void setMapList( const flarb_msgs::MapList &map);
 
 
 	/************************
@@ -80,7 +80,7 @@ private:
 	std::vector<unsigned int> _ObjectsCollided;
 
 	// Set by setMapList, used by algorithms
-	const flarb_mapbuilder::MapList *_map;
+	const flarb_msgs::MapList *_map;
 };
 
 #endif // CLASS_MAP_H

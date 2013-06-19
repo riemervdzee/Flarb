@@ -46,6 +46,7 @@ flarb_mapbuilder/src/flarb_mapbuilder/
 flarb_mapshow/src/flarb_mapshow/
 flarb_mobile/src/flarb_mobile/
 flarb_motorcontrol/src/flarb_motorcontrol/
+flarb_msgs/src/flarb_msgs/
 flarb_plantquality/src/flarb_plantquality/
 flarb_simulation/src/flarb_simulation/
 flarb_VDMixer/src/flarb_VDMixer/

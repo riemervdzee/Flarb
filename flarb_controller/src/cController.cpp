@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_VDMixer/State.h"
+#include "flarb_msgs/State.h"
 #include "flarb_msgs/WaypointVector.h"
 #include "flarb_controller/cController.h"
 #include "flarb_controller/controllers/cSegmentStart.h"

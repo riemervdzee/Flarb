@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
-#include "flarb_canbus/DualMotorSpeed.h"
+#include "flarb_msgs/DualMotorSpeed.h"
 #include "flarb_simulation/cMap.h"
 
 // forward declaration of cController
@@ -26,7 +26,7 @@ public:
 private:
 	// We received a map
 	//void MapbuildCallback( const flarb_mapbuilder::MapList msg);
-	void SpeedCallback( const flarb_canbus::DualMotorSpeed msg);
+	void SpeedCallback( const flarb_msgs::DualMotorSpeed msg);
 
 
 	// msg cache

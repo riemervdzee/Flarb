@@ -4,7 +4,7 @@
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
-#include "flarb_inclination/Axis.h"
+#include "flarb_msgs/Axis.h"
 #include "flarb_inclination/cController.h"
 #include "flarb_inclination/cSerial.h"
 
@@ -27,7 +27,7 @@ using namespace std;
 int cController::Create()
 {
 	// Topic name / buffer
-	_data = _rosNode.advertise<flarb_inclination::Axis>("sensor/inclination", 100);
+	_data = _rosNode.advertise<flarb_msgs::Axis>("sensor/inclination", 100);
 
 	//open ttys1
 	Openport();
@@ -54,7 +54,7 @@ void cController::Update()
 	//if axis updated
 	if( getPackage() == 1){
 		//create message
-		flarb_inclination::Axis msg;
+		flarb_msgs::Axis msg;
 		//fill message
 		msg.x = xaxis;
 		msg.y = yaxis;

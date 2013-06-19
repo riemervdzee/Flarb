@@ -4,12 +4,12 @@
 #include "ros/ros.h"
 #include "flarb_VDMixer/cController.h"
 
-#include "flarb_VDMixer/State.h"
-#include "flarb_inclination/Axis.h"
-#include "flarb_compass/Compass.h"
-#include "flarb_motorcontrol/Encoder.h"
-#include "flarb_gps/GGA.h"
-#include "flarb_gps/RMC.h"
+#include "flarb_msgs/State.h"
+#include "flarb_msgs/Axis.h"
+#include "flarb_msgs/Compass.h"
+#include "flarb_msgs/Encoder.h"
+#include "flarb_msgs/GGA.h"
+#include "flarb_msgs/RMC.h"
 using namespace std;
 
 /*
@@ -29,7 +29,7 @@ public:
     void Update();
 
 	// State callback
-	bool StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMixer::State::Response &res);
+	bool StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res);
 
 private:
 	// Reference to the ros node handle
@@ -46,21 +46,21 @@ private:
 	ros::Subscriber RMC;
 
 	// Saved messages
-	flarb_inclination::Axis     message_axis;
-	flarb_compass::Compass      message_compass;
-	flarb_motorcontrol::Encoder message_encoder;
-	flarb_gps::GGA              message_gga;
-	flarb_gps::RMC              message_rmc;
+	flarb_msgs::Axis    message_axis;
+	flarb_msgs::Compass message_compass;
+	flarb_msgs::Encoder message_encoder;
+	flarb_msgs::GGA     message_gga;
+	flarb_msgs::RMC     message_rmc;
 
 	//
 	float distance;
 
 	// Callbacks
-	void axismsg    (const flarb_inclination::Axis msgr);
-	void compassmsg (const flarb_compass::Compass msgr);
-	void encodermsg (const flarb_motorcontrol::Encoder msgr);
-	void GGAmsg     (const flarb_gps::GGA msgr);
-	void RMCmsg     (const flarb_gps::RMC msgr);
+	void axismsg    (const flarb_msgs::Axis msgr);
+	void compassmsg (const flarb_msgs::Compass msgr);
+	void encodermsg (const flarb_msgs::Encoder msgr);
+	void GGAmsg     (const flarb_msgs::GGA msgr);
+	void RMCmsg     (const flarb_msgs::RMC msgr);
 };
 
 #endif // CLASS_CONTROLLER_H

@@ -2,7 +2,7 @@
 #define CLASS_CONTROLLER_H
 
 #include "ros/ros.h"
-#include "flarb_compass/Compass.h"
+#include "flarb_msgs/Compass.h"
 #include "flarb_compass/cSerial.h"
 
 // Program options
@@ -32,7 +32,7 @@ private:
 
 	// We are publishing shizzle
 	ros::Publisher _Compass;
-	flarb_compass::Compass msg;
+	flarb_msgs::Compass msg;
 	cSerial _serial;
 	int Openport();
 	int configure();

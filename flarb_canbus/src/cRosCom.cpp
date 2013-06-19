@@ -40,10 +40,10 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 	_rosNode = rosNode;
 
 	// Subscribe to /canbus/speed
-	_subSpeed = _rosNode->subscribe<flarb_canbus::DualMotorSpeedPtr>( "/canbus/speed", 1, &cRosCom::SendSpeed, this);
+	_subSpeed = _rosNode->subscribe<flarb_msgs::DualMotorSpeedPtr>( "/canbus/speed", 1, &cRosCom::SendSpeed, this);
 
 	// We publish at /canbus/encoder
-	_pubEncoder = _rosNode->advertise<flarb_canbus::DualMotorEncoder>( "/canbus/encoder", 1);
+	_pubEncoder = _rosNode->advertise<flarb_msgs::DualMotorEncoder>( "/canbus/encoder", 1);
 
 	// return success
 	return 0;
@@ -132,7 +132,7 @@ void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
 		// We received an encoder message
 		case dual_motor_driver_opcodes::OP_SET_ENCODER:
 		{
-			flarb_canbus::DualMotorEncoder msg;
+			flarb_msgs::DualMotorEncoder msg;
 			mix_t val;
 
 			val.c[0] = canmessage.data[1];
@@ -160,7 +160,7 @@ void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
 /**
  * Puts an speed message on the Canbus
  */
-void cRosCom::SendSpeed( const flarb_canbus::DualMotorSpeedPtr msg)
+void cRosCom::SendSpeed( const flarb_msgs::DualMotorSpeedPtr msg)
 {
 	if( _devSpeedID == -1)
 	{

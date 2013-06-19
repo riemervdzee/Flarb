@@ -7,7 +7,6 @@
 
 #include "flarb_compass/cController.h"
 #include "flarb_compass/cSerial.h"
-#include "flarb_compass/Compass.h"
 
 #include <stdio.h>   					// Standard input/output definitions
 #include <string.h>  					// String function definitions 
@@ -34,7 +33,7 @@ using namespace std;
 bool cController::Create()
 {
 	Openport();
-	_Compass = _rosNode.advertise<flarb_compass::Compass>("sensor/compass", 1);
+	_Compass = _rosNode.advertise<flarb_msgs::Compass>("sensor/compass", 1);
 	return true;
 }
 

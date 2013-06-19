@@ -3,9 +3,9 @@
 
 #include "ros/ros.h"
 
+#include "flarb_msgs/Encoder.h"
 #include "flarb_motorcontrol/cRosCom.h"
 #include "flarb_motorcontrol/cController.h"
-#include "flarb_motorcontrol/Encoder.h"
 using namespace std;
 
 /*
@@ -33,10 +33,10 @@ union mix_t {
 int cRosCom::Create( ros::NodeHandle *rosNode)
 {
 	// Init Subscribers and publishers
-	_subWaypoint = rosNode->subscribe<flarb_msgs::WaypointVector>( "/steering/waypoint", 1, &cRosCom::WVCallback, this);
-	_subEncoder  = rosNode->subscribe<flarb_canbus::DualMotorEncoder>  ( "/canbus/encoder", 1, &cRosCom::EncoderCallback, this);
-	_pubSpeed    = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/canbus/speed", 1);
-	_pubEncoder  = rosNode->advertise<flarb_canbus::DualMotorSpeed>    ( "/steering/encoder", 1);
+	_subWaypoint = rosNode->subscribe<flarb_msgs::WaypointVector>  ( "/steering/waypoint", 1, &cRosCom::WVCallback, this);
+	_subEncoder  = rosNode->subscribe<flarb_msgs::DualMotorEncoder>( "/canbus/encoder", 1, &cRosCom::EncoderCallback, this);
+	_pubSpeed    = rosNode->advertise<flarb_msgs::DualMotorSpeed>  ( "/canbus/speed", 1);
+	_pubEncoder  = rosNode->advertise<flarb_msgs::DualMotorSpeed>  ( "/steering/encoder", 1);
 
 	return 0;
 }
@@ -53,7 +53,7 @@ int cRosCom::Destroy()
 void cRosCom::MotorBrake()
 {
 	// Canbus message
-	flarb_canbus::DualMotorSpeed msg;
+	flarb_msgs::DualMotorSpeed msg;
 	msg.speed_right = 0;
 	msg.speed_left  = 0;
 
@@ -95,7 +95,7 @@ void cRosCom::WVCallback( const flarb_msgs::WaypointVector msg)
 	int _inputLeft     = (int)(L * SpeedFactor);
 
 	// Canbus message
-	flarb_canbus::DualMotorSpeed motormsg;
+	flarb_msgs::DualMotorSpeed motormsg;
 	motormsg.speed_right = (int16_t) _inputRight;
 	motormsg.speed_left  = (int16_t) _inputLeft;
 	motormsg.flags       = 0;
@@ -107,9 +107,9 @@ void cRosCom::WVCallback( const flarb_msgs::WaypointVector msg)
 #endif
 }
 
-void cRosCom::EncoderCallback( const flarb_canbus::DualMotorEncoder msg)
+void cRosCom::EncoderCallback( const flarb_msgs::DualMotorEncoder msg)
 {
-	flarb_motorcontrol::Encoder newMsg;
+	flarb_msgs::Encoder newMsg;
 
 	newMsg.speed_left  = msg.speed_left  * PULSE2METER;
 	newMsg.speed_right = msg.speed_right * PULSE2METER;

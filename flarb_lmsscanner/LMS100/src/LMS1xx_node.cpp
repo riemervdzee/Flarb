@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <LMS1xx.h>
 #include "ros/ros.h"
-#include "LMS100/LMSConfig.h"
+#include "flarb_msgs/LMSConfig.h"
 #include "sensor_msgs/LaserScan.h"
 #include "filters/filters.h"
 using namespace std;
@@ -22,7 +22,7 @@ int  FilterSelect = 2; // Median filter is standard
 /**
  * Config service handler
  */
-bool ConfigCallback( LMS100::LMSConfig::Request  &req, LMS100::LMSConfig::Response &res)
+bool ConfigCallback( flarb_msgs::LMSConfig::Request  &req, flarb_msgs::LMSConfig::Response &res)
 {
 	// Check for out-of-range
 	if(req.FilterSelect < 0 && req.FilterSelect > 3)

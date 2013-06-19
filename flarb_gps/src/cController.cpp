@@ -3,11 +3,7 @@
 #include <sstream>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
-#include "flarb_gps/GGA.h"
-#include "flarb_gps/RMC.h"
 #include "flarb_gps/cController.h"
-#include "flarb_gps/cSerial.h"
 
 #include <stdio.h>   					// Standard input/output definitions
 #include <string.h>  					// String function definitions 
@@ -30,8 +26,8 @@ int cController::Create()
 {
 	ptrb = 0;
 	// Topic name / buffer
-	_GGA = _rosNode.advertise<flarb_gps::GGA>("NMEA/GGA", 1);
-	_RMC = _rosNode.advertise<flarb_gps::RMC>("NMEA/RMC", 1);
+	_GGA = _rosNode.advertise<flarb_msgs::GGA>("NMEA/GGA", 1);
+	_RMC = _rosNode.advertise<flarb_msgs::RMC>("NMEA/RMC", 1);
 	Openport();
 	
 	return 0;

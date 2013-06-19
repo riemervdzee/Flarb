@@ -11,7 +11,7 @@
   <depend package="libLMS1xx"/>
   <depend package="roscpp"/>
   <depend package="sensor_msgs"/>
-
+  <depend package="flarb_msgs"/>
 </package>
 
 

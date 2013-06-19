@@ -17,7 +17,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, cCar *ca
 
 	// Subscribers and publishers
 	_pubSick  = rosNode->advertise<sensor_msgs::LaserScan>( "/sick/scan_filtered/", 1);
-	_subSpeed = rosNode->subscribe<flarb_canbus::DualMotorSpeed>( "/canbus/speed/", 1, &cRosCom::SpeedCallback, this);
+	_subSpeed = rosNode->subscribe<flarb_msgs::DualMotorSpeed>( "/canbus/speed/", 1, &cRosCom::SpeedCallback, this);
 	
 	// Init LaserScan packet
 	_msg.header.frame_id = "laser";
@@ -71,7 +71,7 @@ void cRosCom::PublishLaserScan( const cMap &map)
 	_pubSick.publish(_msg);
 }
 
-void cRosCom::SpeedCallback( const flarb_canbus::DualMotorSpeed msg)
+void cRosCom::SpeedCallback( const flarb_msgs::DualMotorSpeed msg)
 {
 	_car->goal = msg;
 }

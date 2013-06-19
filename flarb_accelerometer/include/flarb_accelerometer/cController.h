@@ -2,7 +2,7 @@
 #define CLASS_CONTROLLER_H
 
 #include "ros/ros.h"
-#include "flarb_accelerometer/Accelerometer.h"
+#include "flarb_msgs/Accelerometer.h"
 
 /*
 * Main controller class of the example node

@@ -18,11 +18,11 @@ bool cController::Create()
 	StateService = _rosNode.advertiseService<cController>( "/vdmixer/state", &cController::StateCallback, this);
 
 	//Subscriber for data 
-	Inclino = _rosNode.subscribe<flarb_inclination::Axis>("sensor/inclination", 1, &cController::axismsg, this);
-	Compass = _rosNode.subscribe<flarb_compass::Compass>("sensor/compass", 1, &cController::compassmsg, this);
-	Encoder = _rosNode.subscribe<flarb_motorcontrol::Encoder>("steering/encoder", 1, &cController::encodermsg, this);
-	GGA     = _rosNode.subscribe<flarb_gps::GGA>("NMEA/GGA",1, &cController::GGAmsg, this);
-	RMC     = _rosNode.subscribe<flarb_gps::RMC>("NMEA/RMC",1, &cController::RMCmsg, this);
+	Inclino = _rosNode.subscribe<flarb_msgs::Axis>("sensor/inclination", 1, &cController::axismsg, this);
+	Compass = _rosNode.subscribe<flarb_msgs::Compass>("sensor/compass", 1, &cController::compassmsg, this);
+	Encoder = _rosNode.subscribe<flarb_msgs::Encoder>("steering/encoder", 1, &cController::encodermsg, this);
+	GGA     = _rosNode.subscribe<flarb_msgs::GGA>("NMEA/GGA",1, &cController::GGAmsg, this);
+	RMC     = _rosNode.subscribe<flarb_msgs::RMC>("NMEA/RMC",1, &cController::RMCmsg, this);
 	return 0;
 }
 
@@ -43,7 +43,7 @@ void cController::Update()
 /**
  * Service handler
  */
-bool cController::StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMixer::State::Response &res)
+bool cController::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res)
 {
 	// Fill values
 	//res.positionX
@@ -59,17 +59,17 @@ bool cController::StateCallback( flarb_VDMixer::State::Request &req, flarb_VDMix
 /*
  *	Callbacks
  */
-void cController::axismsg(const flarb_inclination::Axis msgr)
+void cController::axismsg(const flarb_msgs::Axis msgr)
 {
 	message_axis = msgr;
 }
 
-void cController::compassmsg(const flarb_compass::Compass msgr)
+void cController::compassmsg(const flarb_msgs::Compass msgr)
 {
 	message_compass = msgr;
 }
 
-void cController::encodermsg(const flarb_motorcontrol::Encoder msgr)
+void cController::encodermsg(const flarb_msgs::Encoder msgr)
 {
 	message_encoder = msgr;
 
@@ -77,12 +77,12 @@ void cController::encodermsg(const flarb_motorcontrol::Encoder msgr)
 	distance += ((msgr.speed_left + msgr.speed_right) * 0.5f);
 }
 
-void cController::GGAmsg(const flarb_gps::GGA msgr)
+void cController::GGAmsg(const flarb_msgs::GGA msgr)
 {
 	message_gga = msgr;
 }
 
-void cController::RMCmsg(const flarb_gps::RMC msgr)
+void cController::RMCmsg(const flarb_msgs::RMC msgr)
 {
 	message_rmc = msgr;
 }

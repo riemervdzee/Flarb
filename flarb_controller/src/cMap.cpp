@@ -8,7 +8,7 @@ using namespace std;
 /*
  * Sets the map list to use for the upcoming functions
  */
-void cMap::setMapList( const flarb_mapbuilder::MapList &map)
+void cMap::setMapList( const flarb_msgs::MapList &map)
 {
 	_map = &map;
 }
@@ -68,7 +68,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 		// Go through all objects, check for collisions
 		for( unsigned int i = 0; i < _map->list.size(); i++)
 		{
-			flarb_mapbuilder::Object obj = _map->list[i];
+			flarb_msgs::Object obj = _map->list[i];
 			tVector c = tVector( obj.x, obj.y);
 			float r = (obj.radius + protection_margin);
 			tVector p1;
@@ -157,7 +157,7 @@ bool cMap::CheckIntersectionRegion( const tBoundingBox region)
 	// Go through all objects, check for collisions
 	for( unsigned int i = 0; i < _map->list.size(); i++)
 	{
-		flarb_mapbuilder::Object obj = _map->list[i];
+		flarb_msgs::Object obj = _map->list[i];
 		tVector c = tVector( obj.x, obj.y);
 		float r   = obj.radius;
 

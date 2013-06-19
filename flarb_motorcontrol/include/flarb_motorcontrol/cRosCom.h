@@ -3,8 +3,8 @@
 
 #include "ros/ros.h"
 
-#include "flarb_canbus/DualMotorSpeed.h"
-#include "flarb_canbus/DualMotorEncoder.h"
+#include "flarb_msgs/DualMotorSpeed.h"
+#include "flarb_msgs/DualMotorEncoder.h"
 #include "flarb_msgs/WaypointVector.h"
 
 
@@ -27,7 +27,7 @@ public:
 private:
 	// We received a waypoint vector
 	void WVCallback( const flarb_msgs::WaypointVector msg);
-	void EncoderCallback( const flarb_canbus::DualMotorEncoder msg);
+	void EncoderCallback( const flarb_msgs::DualMotorEncoder msg);
 
 
 	// Our subscribers and publishers

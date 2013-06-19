@@ -5,8 +5,8 @@
 
 #include "std_msgs/String.h"
 #include "flarb_msgs/WaypointVector.h"
+#include "flarb_msgs/MapList.h"
 #include "flarb_controller/cMap.h"
-#include "flarb_mapbuilder/MapList.h"
 
 
 // forward declaration of cController
@@ -28,7 +28,7 @@ public:
 
 private:
 	// We received a map
-	void MapCallback( const flarb_mapbuilder::MapList msg);
+	void MapCallback( const flarb_msgs::MapList msg);
 
 	// We received orders from the smartphone
 	void SmartphoneCallback( const std_msgs::String msg);

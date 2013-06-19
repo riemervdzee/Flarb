@@ -12,7 +12,6 @@
 #include "flarb_mobile/cServer.h"
 #include "flarb_mobile/cController.h"
 #include "flarb_mobile/commands.pb.h"
-#include "flarb_inclination/Axis.h" 
 #include "sensor_msgs/LaserScan.h"
 
 int port = 1337;
@@ -21,7 +20,7 @@ using namespace std;
 /*
  *	Callback receiving message from MEAS Inclino
  */
-void cController::axismsg(const flarb_inclination::AxisConstPtr& msgr)
+void cController::axismsg(const flarb_msgs::AxisConstPtr& msgr)
 {
 	message_axis = *msgr;
 	cout<< message_axis.x <<endl; 
@@ -57,7 +56,7 @@ bool cController::Create()
 	//int sockfd, newsockfd, portno, clilen, n;
 
 	//Listener of a message Arg1: message Arg2: buffer of messages Arg3: method called when package arrive 	
-	_ax = _rosNode.subscribe<flarb_inclination::Axis>("Inclino_Axis", 1, &cController::axismsg, this);
+	_ax = _rosNode.subscribe<flarb_msgs::Axis>("Inclino_Axis", 1, &cController::axismsg, this);
 	_LMS = _rosNode.subscribe<sensor_msgs::LaserScan>("scan", 5, &cController::LMSmsg, this);
 	//TODO implement more callbacks so we can send data to our mobile device
 	

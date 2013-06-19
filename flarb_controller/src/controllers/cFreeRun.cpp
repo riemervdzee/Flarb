@@ -19,7 +19,7 @@ void cFreeRun::Destroy()
 // Executes the FollowSegment sub-controller based on the rest of the arguments
 // TODO maybe more parameters?
 enum SUBRETURN cFreeRun::Execute( tVector &output, 
-		const flarb_VDMixer::State &state, cMap &map, bool reinit)
+		const flarb_msgs::State &state, cMap &map, bool reinit)
 {
 	// Just continue the current row
 	tVector direction = tVector( 0.0f, 0.5f);

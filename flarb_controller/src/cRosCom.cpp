@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 #include "flarb_msgs/WaypointVector.h"
-#include "flarb_mapbuilder/MapList.h"
+#include "flarb_msgs/MapList.h"
 
 #include "flarb_controller/cRosCom.h"
 #include "flarb_controller/cController.h"
@@ -16,7 +16,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 	_controller = controller;
 
 	// Subscribe to map
-	_subMap = rosNode->subscribe<flarb_mapbuilder::MapList>( "/map", 1, &cRosCom::MapCallback, this);
+	_subMap = rosNode->subscribe<flarb_msgs::MapList>( "/map", 1, &cRosCom::MapCallback, this);
 	
 	// Subscribe to our smartphone input
 	_subSmartphone = rosNode->subscribe<std_msgs::String>( "/smartphone/input", 1, &cRosCom::SmartphoneCallback, this);
@@ -39,7 +39,7 @@ void cRosCom::PublishWaypoint( const flarb_msgs::WaypointVector &msg)
 }
 
 // We received a map
-void cRosCom::MapCallback( const flarb_mapbuilder::MapList msg)
+void cRosCom::MapCallback( const flarb_msgs::MapList msg)
 {
 	// Pass the message to the main-controller
 	_map.setMapList( msg);

@@ -10,10 +10,7 @@
   <url>http://flarb.nl/</url>
   <depend package="std_msgs"/>
   <depend package="roscpp"/>
-  <depend package="flarb_inclination"/>
-  <depend package="flarb_compass"/>
-  <depend package="flarb_motorcontrol"/>
-  <depend package="flarb_gps"/>
+  <depend package="flarb_msgs"/>
 </package>
 
 

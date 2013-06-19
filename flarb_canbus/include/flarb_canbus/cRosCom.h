@@ -6,8 +6,8 @@
 #include "ros/ros.h"
 
 // msgs
-#include "flarb_canbus/DualMotorEncoder.h"
-#include "flarb_canbus/DualMotorSpeed.h"
+#include "flarb_msgs/DualMotorEncoder.h"
+#include "flarb_msgs/DualMotorSpeed.h"
 
 // Canbus protocol
 #include "flarb_canbus/protocol/protocol.h"
@@ -35,7 +35,7 @@ public:
 
 private:
 	// Puts a speed message on the Canbus
-	void SendSpeed( const flarb_canbus::DualMotorSpeedPtr msg);
+	void SendSpeed( const flarb_msgs::DualMotorSpeedPtr msg);
 	
 	// Process functions
 	void ProcessHelloMessage( const struct CanMessage &canmessage);

@@ -2,7 +2,7 @@
 #define CLASS_CAR_H
 
 #include "flarb_simulation/config.h"
-#include "flarb_canbus/DualMotorSpeed.h"
+#include "flarb_msgs/DualMotorSpeed.h"
 
 // Gain of both engines per step
 #define MOTOR_GAIN 0.2f
@@ -32,7 +32,7 @@ public:
 	float motor_r;
 
 	//
-	flarb_canbus::DualMotorSpeed goal;
+	flarb_msgs::DualMotorSpeed goal;
 };
 
 #endif // CLASS_CAR_H

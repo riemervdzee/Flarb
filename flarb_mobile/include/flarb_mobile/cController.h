@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 #include "flarb_mobile/cServer.h"
-#include "flarb_inclination/Axis.h"
+#include "flarb_msgs/Axis.h"
 #include "sensor_msgs/LaserScan.h"
 #include <tf/transform_listener.h>
 
@@ -33,13 +33,13 @@ private:
 	// We are publishing shizzle
 	ros::Publisher _rosTopic;
 	//Subscriber Message
-	flarb_inclination::Axis message_axis;
+	flarb_msgs::Axis message_axis;
 	sensor_msgs::LaserScan lms;
 	//Actual Subscriber
 	ros::Subscriber _ax;
 	ros::Subscriber _LMS;
 	//Callback method
-	void axismsg(const flarb_inclination::AxisConstPtr &msgr);
+	void axismsg(const flarb_msgs::AxisConstPtr &msgr);
 	void LMSmsg(const sensor_msgs::LaserScan::ConstPtr& scan);
 	void packageReadout();	
 	int _count;
