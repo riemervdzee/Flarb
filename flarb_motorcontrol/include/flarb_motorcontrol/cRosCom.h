@@ -18,7 +18,7 @@ class cRosCom
 {
 public:
 	// Functions executed at the beginning and end of the Application
-	int Create( ros::NodeHandle *rosNode);
+	int Create( cController *controller, ros::NodeHandle *rosNode);
 	int Destroy();
 
 	// Tells whether to brake, to be called by the controller
@@ -29,6 +29,9 @@ private:
 	void WVCallback( const flarb_msgs::WaypointVector msg);
 	void EncoderCallback( const flarb_msgs::DualMotorEncoder msg);
 
+
+	// Ref to the controler
+	cController *_controller;
 
 	// Our subscribers and publishers
 	ros::Subscriber _subWaypoint;  //  "/steering/waypoint"

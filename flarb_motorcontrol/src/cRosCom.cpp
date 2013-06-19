@@ -30,8 +30,11 @@ union mix_t {
 
 
 
-int cRosCom::Create( ros::NodeHandle *rosNode)
+int cRosCom::Create( cController *controller, ros::NodeHandle *rosNode)
 {
+	// Set ref
+	_controller = controller;
+
 	// Init Subscribers and publishers
 	_subWaypoint = rosNode->subscribe<flarb_msgs::WaypointVector>  ( "/steering/waypoint", 1, &cRosCom::WVCallback, this);
 	_subEncoder  = rosNode->subscribe<flarb_msgs::DualMotorEncoder>( "/canbus/encoder", 1, &cRosCom::EncoderCallback, this);
@@ -71,6 +74,9 @@ void cRosCom::MotorBrake()
  */
 void cRosCom::WVCallback( const flarb_msgs::WaypointVector msg)
 {
+	// Tell the controller we received something
+	_controller->WaypointReceived();
+
 	// Msg X/Y
 	float x = msg.x;
 	float y = msg.y;

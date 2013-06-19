@@ -8,11 +8,11 @@ using namespace std;
 // Functions executed at the beginning and end of the Node
 bool cController::Create( int hz)
 {
-	// TODO now we just wait 1 sec before braking, maybe use other number?
+	// TODO now we just wait 2 sec before braking, maybe use other number?
 	_framesToWait = hz;
 
 	// RosCom
-	_roscom.Create( &_rosNode);
+	_roscom.Create( this, &_rosNode);
 	return true;
 }
 
