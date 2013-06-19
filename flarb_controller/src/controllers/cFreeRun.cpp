@@ -28,8 +28,8 @@ enum SUBRETURN cFreeRun::Execute( tVector &output,
 
 	if( result > 0.25f)
 	{
-		if(output.Length() > 0.5f)
-			output.setLength( 0.5f);
+		if(output.Length() > 0.4f)
+			output.setLength( 0.4f);
 		return RET_SUCCESS;
 	}
 
@@ -39,8 +39,8 @@ enum SUBRETURN cFreeRun::Execute( tVector &output,
 
 	if( result > 0.25f)
 	{
-		if(output.Length() > 0.5f)
-			output.setLength( 0.5f);
+		if(output.Length() > 0.4f)
+			output.setLength( 0.4f);
 		return RET_SUCCESS;
 	}
 
@@ -50,8 +50,8 @@ enum SUBRETURN cFreeRun::Execute( tVector &output,
 
 	if( result > 0.25f)
 	{
-		if(output.Length() > 0.5f)
-			output.setLength( 0.5f);
+		if(output.Length() > 0.4f)
+			output.setLength( 0.4f);
 		return RET_SUCCESS;
 	}
 
