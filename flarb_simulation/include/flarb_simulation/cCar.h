@@ -11,7 +11,7 @@ class cCar
 {
 public:
 	// C-tor
-	cCar() : x( CAR_POS_X), y( CAR_POS_Y), direction( CAR_DIR), motor_l( 0), motor_r( 0) {}
+	cCar() : x( CAR_POS_X), y( CAR_POS_Y), direction( CAR_DIR), distance( 0), motor_l( 0), motor_r( 0) {}
 
 	// Functions executed at the begining and end of the Application
 	//bool Create();
@@ -26,6 +26,9 @@ public:
 	// Vars
 	float x, y;
 	float direction; // In radians
+
+	//
+	float distance;
 
 	// Current strengths of the motor
 	float motor_l;

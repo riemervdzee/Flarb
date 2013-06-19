@@ -3,5 +3,4 @@
 	<node name="mapbuilder"   pkg="flarb_mapbuilder"   type="mapbuilder" />
 	<node name="controller"   pkg="flarb_controller"   type="controller" />
 	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
-	<node name="VDMixer"      pkg="flarb_VDMixer"      type="VDMixer" />
 </launch>

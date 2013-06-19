@@ -4,6 +4,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "flarb_msgs/DualMotorSpeed.h"
+#include "flarb_msgs/State.h"
 #include "flarb_simulation/cMap.h"
 
 // forward declaration of cController
@@ -28,6 +29,9 @@ private:
 	//void MapbuildCallback( const flarb_mapbuilder::MapList msg);
 	void SpeedCallback( const flarb_msgs::DualMotorSpeed msg);
 
+	// State callback
+	bool StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res);
+
 
 	// msg cache
 	sensor_msgs::LaserScan _msg;
@@ -41,6 +45,9 @@ private:
 	// Subscribers and publishers
 	ros::Publisher  _pubSick;   //  "/sick/scan_filtered/"
 	ros::Subscriber _subSpeed;  //  "/canbus/speed/"
+
+	// Service handle
+	ros::ServiceServer _StateService;
 };
 
 #endif // CLASS_FRAME_H
