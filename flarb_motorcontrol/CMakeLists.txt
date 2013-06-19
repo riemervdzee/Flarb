@@ -31,5 +31,4 @@ rosbuild_genmsg()
 
 rosbuild_add_executable(motorcontrol src/main.cpp
                                      src/cController.cpp
-                                     src/cPID.cpp
                                      src/cRosCom.cpp)
