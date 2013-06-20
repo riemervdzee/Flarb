@@ -14,11 +14,22 @@ void cSegmentFind::Destroy()
 
 }
 
-// Passes reference of "msg", is used as output
-// Executes the FindSegment sub-controller based on the rest of the arguments
-// TODO maybe more parameters?
-enum SUBRETURN cSegmentFind::Execute( tVector &output, 
-		const flarb_msgs::State &state, cMap &map, bool reinit)
+// Gets called when we switch to the SegmentFind controller
+void cSegmentFind::Reinit( const flarb_msgs::State &state, const cInputString &str)
 {
+	_direction = state.response.axisZ;
+
+	// 0 <= _direction <= 2xPI
+	if( _direction > (2*M_PI))
+		_direction -= (2*M_PI);
+	else if( _direction < 0)
+		_direction += (2*M_PI);
+}
+
+// Passes reference of "msg", is used as output
+// Executes the SegmentFind sub-controller based on the rest of the arguments
+enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
+{
+	output = tVector();
 	return RET_SUCCESS;
 }

@@ -25,9 +25,9 @@ enum STATES {
 	STATE_INIT,            // Init-state, we should check if everything is online
 	STATE_STOPPED,         // We stopped doing anything
 	STATE_FREERUN,         // We should execute: cFreerun
-	STATE_FOLLOW_SEGMENT,  // cFollowSegment
-	STATE_FIND_SEGMENT,    // cFindSegment
-	STATE_AVOID_OBSTACLE,  // cAvoidObstacle
+	STATE_SEGMENT_START,   // cSegmentStart
+	STATE_SEGMENT_FOLLOW,  // cSegmentFollow
+	STATE_SEGMENT_FIND,    // cSegmentFind
 };
 
 /*
@@ -47,11 +47,7 @@ class cController
 {
 public:
 	// Constructor
-	// TODO, we should start in STATE_INIT
-	//cController() : _state( STATE_INIT), _blocked( false), _segmentStart( NULL), _segmentFollow( NULL),
-	//	_segmentFind( NULL), _avoidObstacle( NULL), _plantQuality( NULL), _freeRun( NULL) {}
-
-	cController() : _state( STATE_FREERUN), _blocked( false), _segmentStart( NULL), _segmentFollow( NULL),
+	cController() : _state( STATE_INIT), _blocked( false), _segmentStart( NULL), _segmentFollow( NULL),
 		_segmentFind( NULL), _avoidObstacle( NULL), _plantQuality( NULL), _freeRun( NULL) {}
 
 	// Functions executed at the beginning and end of the Application

@@ -11,21 +11,29 @@
 
 
 /*
- * Main controller class of the example node
+ * AvoidObstacle sub-controller
  */
 class cAvoidObstacle
 {
 public:
+	// C-tor
+	cAvoidObstacle() : _StopCount( 0), _direction(0.0f) {}
+
 	// Functions executed at the beginning and end of the Application
 	bool Create();
 	void Destroy();
 
+	// Gets called when we switch to the AvoidObstacle controller
+	void Reinit( const flarb_msgs::State &state);
+
 	// Passes reference of "vector", is used as output
 	// Executes the AvoidObstacle sub-controller based on the rest of the arguments
-	// TODO maybe more parameters?
-	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map, bool reinit);
+	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map);
 
 private:
+	// Our private vars, see source for info
+	int _StopCount;
+	float _direction;
 };
 
 #endif // CLASS_AVOID_OBSTACLE_H

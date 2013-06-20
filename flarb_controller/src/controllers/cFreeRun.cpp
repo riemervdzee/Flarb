@@ -15,12 +15,17 @@ void cFreeRun::Destroy()
 
 }
 
+// Gets called when we switch to the FreeRun controller
+void cFreeRun::Reinit( const flarb_msgs::State &state)
+{
+
+}
+
 // Passes reference of "output", which will be the WayPoint if the sub-controller succeeded
 // Executes the FreeRun sub-controller based on the rest of the arguments
 // State is the VDMixer state, map is the laserscan map, 
 // reinit tells whether it is the first time in a series the sub-controller is executed
-enum SUBRETURN cFreeRun::Execute( tVector &output, 
-		const flarb_msgs::State &state, cMap &map, bool reinit)
+enum SUBRETURN cFreeRun::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
 {
 	// Try to drive straight ahead
 	tVector direction = tVector( 0.0f, 1.0f);
@@ -34,7 +39,7 @@ enum SUBRETURN cFreeRun::Execute( tVector &output,
 	}
 
 	// Try to drive Right
-	direction = tVector( 1.0f, 0.0f);
+	direction = tVector( 0.707f, 0.707f);
 	result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
 	if( result > 0.25f)
@@ -45,7 +50,7 @@ enum SUBRETURN cFreeRun::Execute( tVector &output,
 	}
 
 	// Try to drive Left
-	direction = tVector( -1.0f, 0.0f);
+	direction = tVector( -0.707f, 0.707f);
 	result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
 	if( result > 0.25f)

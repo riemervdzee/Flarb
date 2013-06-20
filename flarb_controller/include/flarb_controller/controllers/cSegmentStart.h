@@ -11,7 +11,7 @@
 
 
 /*
- * Main controller class of the example node
+ * Our starter sub-controller, tries to drive straight ahead into a row
  */
 class cSegmentStart
 {
@@ -20,10 +20,12 @@ public:
 	bool Create();
 	void Destroy();
 
+	// Gets called when we switch to the SegmentStart controller
+	void Reinit( const flarb_msgs::State &state);
+
 	// Passes reference of "vector", is used as output
 	// Executes the FollowSegment sub-controller based on the rest of the arguments
-	// TODO maybe more parameters?
-	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map, bool reinit);
+	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map);
 };
 
 #endif // CLASS_SEGMENT_START_H

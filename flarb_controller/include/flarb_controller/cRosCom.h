@@ -6,6 +6,7 @@
 #include "std_msgs/String.h"
 #include "flarb_msgs/WaypointVector.h"
 #include "flarb_msgs/MapList.h"
+#include "flarb_msgs/State.h"
 #include "flarb_controller/cMap.h"
 
 
@@ -26,6 +27,9 @@ public:
 	// Publishes a WaypointVector
 	void PublishWaypoint( const flarb_msgs::WaypointVector &msg);
 
+	// Calls the VD service and returns the response
+	void GetVDState( flarb_msgs::State &data);
+
 private:
 	// We received a map
 	void MapCallback( const flarb_msgs::MapList msg);
@@ -44,6 +48,9 @@ private:
 	ros::Subscriber _subMap;         //  "/map"
 	ros::Subscriber _subSmartphone;  //  "/smartphone/input"
 	ros::Publisher  _pubVector;      //  "/steering/waypoint/"
+
+	// The vdmixer service client
+	ros::ServiceClient _vdmixer;
 };
 
 #endif // CLASS_FRAME_H

@@ -14,9 +14,14 @@ void cPlantQuality::Destroy()
 
 }
 
-// Passes reference of "msg", is used as output
-// Executes the FindSegment sub-controller based on the rest of the arguments
-// TODO maybe more parameters?
+// Gets called when we switch to the SegmentFollow controller
+void cPlantQuality::Reinit( const flarb_msgs::State &state)
+{
+
+}
+
+// This is a stripped Execute function, as we only need to know the surrounding
+// The sub-controller doesn't influence the surrounding at all..
 void cPlantQuality::Execute( const cRosCom &_roscom, cMap &map)
 {
 	// TODO everything!

@@ -4,7 +4,9 @@
 using namespace std;
 
 /*
- * Example input: S - 3L - 0 - 2L - 2R - 1R - 5L - F
+ * Example inputs:
+ * S - 1L - 1R - 1L - 1R - 1L - 1R - F
+ * S - 3L - 0 - 2L - 2R - 1R - 5L - F
  */
 cInputString::cInputString( const string &str)
 {
@@ -65,7 +67,7 @@ cInputString::cInputString( const string &str)
 	}
 
 	// DEBUG
-#if 1
+#if 0
 	for(int i = 0; i < segments.size(); i++)
 	{
 		sSegment seg = segments[i];

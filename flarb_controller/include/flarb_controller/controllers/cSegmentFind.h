@@ -11,21 +11,29 @@
 
 
 /*
- * Main controller class of the example node
+ * Finds the next segment
  */
 class cSegmentFind
 {
 public:
+	// C-tor
+	cSegmentFind(): _direction(0) {}
+
 	// Functions executed at the beginning and end of the Application
 	bool Create();
 	void Destroy();
 
+	// Gets called when we switch to the SegmentFind controller
+	void Reinit( const flarb_msgs::State &state, const cInputString &str);
+
 	// Passes reference of "vector", is used as output
 	// Executes the FindSegment sub-controller based on the rest of the arguments
-	// TODO maybe more parameters?
-	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map, bool reinit);
+	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map);
 
 private:
+	//
+	float    _direction;
+	sSegment _segment;
 };
 
 #endif // CLASS_SEGMENT_FIND_H

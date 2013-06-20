@@ -85,7 +85,7 @@ void cController::SmartphoneCallback( const std::string &str)
 	if( str[0] == 'S')
 	{
 		_inputString = cInputString( str);
-		_state = STATE_FIND_SEGMENT;
+		_state = STATE_SEGMENT_START;
 	}
 	// We start in freerun mode
 	else if( str[0] == 'F')
@@ -108,17 +108,90 @@ void cController::MapCallback( cMap &map)
 	if( _state == STATE_INIT || _state == STATE_STOPPED)
 		return;
 
-	// Vector
+	// Vars
 	tVector output;
 	flarb_msgs::State vdState;
-	// TODO grab VDMixer State
+	enum SUBRETURN ret;
+	bool exec = false;
+	int tries = 0;
 
-	if( _state == STATE_FREERUN)
+	_rosCom.GetVDState( vdState);
+
+	//
+	while( !exec && tries < 5)
 	{
-		_freeRun->Execute( output, vdState, map, false);
+		tries++;
+
+		// TODO AvoidObstacle first
+
+		// Execute the current sub-controller
+		switch( _state)
+		{
+			// TODO implement AvoidObstacle
+			case STATE_FREERUN:
+				_freeRun->Execute( output, vdState, map);
+				exec = true;
+				break;
+
+
+			case STATE_SEGMENT_START:
+				ret = _segmentStart->Execute( output, vdState, map);
+
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else
+				{
+					cout << "[controller] Switching to segment follow" << endl;
+					_segmentFollow->Reinit( vdState);
+					_state = STATE_SEGMENT_FOLLOW;
+				}
+				break;
+
+
+			case STATE_SEGMENT_FOLLOW:
+				ret = _segmentFollow->Execute( output, vdState, map);
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else if ( ret == RET_NEXT)
+				{
+					cout << "[controller] Switching to segment find" << endl;
+					_segmentFind->Reinit( vdState, _inputString);
+					_state = STATE_SEGMENT_FIND;
+				}
+				else
+				{
+					cout << "[controller] SegFollow: Path is blocked!" << endl;
+					_avoidObstacle->Reinit( vdState);
+					_blocked = true;
+				}
+				break;
+
+
+			case STATE_SEGMENT_FIND:
+				ret = _segmentFollow->Execute( output, vdState, map);
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else if ( ret == RET_NEXT)
+				{
+					cout << "[controller] Switching to segment follow" << endl;
+					_segmentFollow->Reinit( vdState);
+					_inputString.currentSegment++;
+					_state = STATE_SEGMENT_FOLLOW;
+				}
+				else
+				{
+					cout << "[controller] ERROR!! SegFind: Path is blocked!" << endl;
+					exec = true;
+				}
+
+				break;
+
+			default:
+				cout << "[controller] ERROR!! Unknown state" << endl;
+				exec = true;
+				break;
+		}
 	}
-	else
-		return;
 
 	// Always execute AvoidObstacle sub-controller
 	/*bool ret = _avoidObstacle.Execute( vector, map);

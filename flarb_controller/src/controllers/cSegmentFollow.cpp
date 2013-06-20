@@ -15,18 +15,20 @@ void cSegmentFollow::Destroy()
 
 }
 
+void cSegmentFollow::Reinit( const flarb_msgs::State &state)
+{
+
+}
+
 // Passes reference of "vector", is used as output
-// Executes the FollowSegment sub-controller based on the rest of the arguments
-// TODO maybe more parameters?
-enum SUBRETURN cSegmentFollow::Execute( tVector &output, 
-		const flarb_msgs::State &state, cMap &map, bool reinit)
+// Executes the SegmentFollow sub-controller based on the rest of the arguments
+enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
 {
 	// First check if there is room at both sides
-	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.8f));
-	if(map.CheckIntersectionRegion( b))
+	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.2f));
+	if(!map.CheckIntersectionRegion( b))
 	{
-		cout << "FollowSegment exiting" << endl;
-		return RET_BLOCKED;
+		return RET_NEXT;
 	}
 
 	// Just continue the current row

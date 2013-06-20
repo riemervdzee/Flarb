@@ -10,7 +10,8 @@
 
 
 /*
- * Main controller class of the example node
+ * PlantQuality Controller, signals whether we see a new object at both sides
+ * Gets called when in the same state as SegmentFollow
  */
 class cPlantQuality
 {
@@ -19,9 +20,11 @@ public:
 	bool Create();
 	void Destroy();
 
-	// Passes reference of "vector", is used as output
-	// Executes the FindSegment sub-controller based on the rest of the arguments
-	// TODO maybe more parameters?
+	// Gets called when we switch to the SegmentFollow controller
+	void Reinit( const flarb_msgs::State &state);
+
+	// This is a stripped Execute function, as we only need to know the surrounding
+	// The sub-controller doesn't influence the surrounding at all..
 	void Execute( const cRosCom &_roscom, cMap &map);
 
 private:

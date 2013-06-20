@@ -2,9 +2,6 @@
 #include <iostream>
 
 #include "ros/ros.h"
-#include "flarb_msgs/WaypointVector.h"
-#include "flarb_msgs/MapList.h"
-
 #include "flarb_controller/cRosCom.h"
 #include "flarb_controller/cController.h"
 using namespace std;
@@ -24,6 +21,9 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 	// We publish to /steering/waypoint
 	_pubVector = rosNode->advertise<flarb_msgs::WaypointVector>( "/steering/waypoint", 1);
 
+	// Our vdmixer
+	_vdmixer = rosNode->serviceClient<flarb_msgs::State>("/vdmixer/state");
+
 	return 0;
 }
 
@@ -36,6 +36,12 @@ int cRosCom::Destroy()
 void cRosCom::PublishWaypoint( const flarb_msgs::WaypointVector &msg)
 {
 	_pubVector.publish( msg);
+}
+
+// Calls the vd state service
+void cRosCom::GetVDState( flarb_msgs::State &data)
+{
+	_vdmixer.call( data);
 }
 
 // We received a map
