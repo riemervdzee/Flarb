@@ -92,13 +92,30 @@ void cRosCom::WVCallback( const flarb_msgs::WaypointVector msg)
 		y *= L;
 	}*/
 
-	// Calculate 
-	float AlphaRadians = atan2( y, x);
-	float SpeedFactor  = sqrt(x*x + y*y*4) * VECTOR2MOTOR;
-	float R            = AlphaRadians / M_PI;
-	float L	           = (AlphaRadians < 0) ? (-1 - R) : (1-R);
-	int _inputRight    = (int)(R * SpeedFactor);
-	int _inputLeft     = (int)(L * SpeedFactor);
+	// Calculate
+	int _inputRight, _inputLeft;
+
+	// Should we turn around the axle?
+	if( msg.QuickTurn)
+	{
+		float SpeedFactor = sqrt(x*x) * VECTOR2MOTOR;
+
+		if( x > 0)
+			_inputRight = (int)-SpeedFactor;
+		else
+			_inputRight = (int)+SpeedFactor;
+
+		_inputLeft = -_inputRight;
+	}
+	else
+	{
+		float AlphaRadians = atan2( y, x);
+		float SpeedFactor  = sqrt(x*x + y*y*4) * VECTOR2MOTOR;
+		float R            = AlphaRadians / M_PI;
+		float L            = (AlphaRadians < 0) ? (-1 - R) : (1-R);
+		_inputRight        = (int)(R * SpeedFactor);
+		_inputLeft         = (int)(L * SpeedFactor);
+	}
 
 	// Canbus message
 	flarb_msgs::DualMotorSpeed motormsg;
