@@ -7,6 +7,14 @@
 #include "flarb_mapbuilder/cFrame.h"
 using namespace std;
 
+#define SICK_LASER_UPSIDEDOWN 1
+
+#define CALCU_COSSIN 1
+#define USE_MATRIX   0
+
+#if (CALCU_COSSIN + USE_MATRIX) != 1
+#error Only select one of the following: CALCU_COSSIN or USE_MATRIX!
+#endif
 
 /*
  * Standard info
@@ -24,20 +32,28 @@ using namespace std;
  */
 void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 {
-#if CACHE_COSSIN
-	// If the cartesian_cache is still empty, fill it
-	if( _cartesian_cache.size() == 0)
-		PreCache( msg.ranges.size(), msg.angle_min, msg.angle_increment);
+#if SICK_LASER_UPSIDEDOWN
+	#if CALCU_COSSIN
+		// Vars
+		float angle = msg.angle_max;
 
-#elif CALCU_COSSIN
-	// Vars
-	float angle = msg.angle_min;
+	#elif USE_MATRIX
+		// Vars
+		tMatrix angle( msg.angle_max);
+		tMatrix increment( -msg.angle_increment);
 
-#elif USE_MATRIX
-	// Vars
-	tMatrix angle( msg.angle_min);
-	tMatrix increment( msg.angle_increment);
+	#endif
+#else
+	#if CALCU_COSSIN
+		// Vars
+		float angle = msg.angle_min;
 
+	#elif USE_MATRIX
+		// Vars
+		tMatrix angle( msg.angle_min);
+		tMatrix increment( msg.angle_increment);
+
+	#endif
 #endif
 
 	// Reserve space for datapoints if it is the first time for this cFrame obj
@@ -58,7 +74,11 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 		if( range < msg.range_min || range > msg.range_max)
 		{
 #if CALCU_COSSIN
+	#if SICK_LASER_UPSIDEDOWN
+		angle -= msg.angle_increment;
+	#else
 		angle += msg.angle_increment;
+	#endif
 
 #elif USE_MATRIX
 		angle *= increment;
@@ -68,12 +88,15 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 
 		// Convert polar coordinates to cartesian, and add it
 		// TODO use inclination/gyro to get rid of any ground info, plus correct X/Y
-#if CACHE_COSSIN
-		tVector p = _cartesian_cache[i].getVector( range);
 
-#elif CALCU_COSSIN
+#if CALCU_COSSIN
 		tVector p( cos( angle) * range, sin( angle) * range);
+
+	#if SICK_LASER_UPSIDEDOWN
+		angle -= msg.angle_increment;
+	#else
 		angle += msg.angle_increment;
+	#endif
 
 #elif USE_MATRIX
 		tVector p = angle.getVector( range);
@@ -83,21 +106,4 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 		_dataPoints.push_back( p);
 	}
 }
-
-#if CACHE_COSSIN
-/*
- *
- */
-std::vector<tMatrix> cFrame::_cartesian_cache;
-void cFrame::PreCache( unsigned int size, float angle, float AngleIncrement)
-{
-	_cartesian_cache.reserve( size);
-
-	for( unsigned int i = 0; i < size; i++, angle += AngleIncrement)
-	{
-		tMatrix mat( angle);
-		_cartesian_cache.push_back( mat);
-	}
-}
-#endif
 
