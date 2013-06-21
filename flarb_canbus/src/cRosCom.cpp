@@ -140,8 +140,8 @@ void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
 			val.c[2] = canmessage.data[3];
 			val.c[3] = canmessage.data[4];
 
-			msg.speed_right = val.s16.hi;
-			msg.speed_left  = val.s16.lo;
+			msg.speed_left  = val.s16.hi;
+			msg.speed_right = val.s16.lo;
 
 			_pubEncoder.publish( msg);
 
@@ -175,8 +175,8 @@ void cRosCom::SendSpeed( const flarb_msgs::DualMotorSpeedPtr msg)
 
 	//
 	mix_t val;
-	val.s16.hi = msg->speed_right;
-	val.s16.lo = msg->speed_left;
+	val.s16.hi = msg->speed_left;
+	val.s16.lo = msg->speed_right;
 
 	// Copy data
 	canmessage.data[0] = dual_motor_driver_opcodes::OP_SET_SPEED;
