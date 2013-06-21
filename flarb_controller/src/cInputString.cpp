@@ -6,9 +6,10 @@ using namespace std;
 /*
  * Example inputs:
  * S - 1L - 1R - 1L - 1R - 1L - 1R - F
+ * S - 1R - 1L - 1R - 1L - 1R - 1L - F
  * S - 3L - 0 - 2L - 2R - 1R - 5L - F
  */
-cInputString::cInputString( const string &str)
+cInputString::cInputString( const string &str) : currentSegment( 0)
 {
 	stringstream ss( str);
 	string       buf;

@@ -30,7 +30,7 @@ class cInputString
 {
 public:
 	// Constructors
-	cInputString(){}
+	cInputString() : currentSegment( 0){}
 	cInputString( const std::string &str);
 
 	// The data
