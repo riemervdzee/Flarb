@@ -1,6 +1,6 @@
 #include "filters.h"
 
-#define MEDIAN_SIZE 5
+#define MEDIAN_SIZE 3
 
 static int *buffer   = NULL;
 static int  position = 0;
@@ -40,7 +40,6 @@ void ExecuteFilterMedian ( const scanData &data, sensor_msgs::LaserScan &msg)
 				temp[j] = buffer[offset_start + j];
 			}
 			std::sort (temp.begin(), temp.begin()+MEDIAN_SIZE); 
-			
 
 			msg.ranges[i] = (float)temp[median]  * 0.001f;
 		}
