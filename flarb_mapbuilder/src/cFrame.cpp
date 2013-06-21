@@ -7,11 +7,19 @@
 #include "flarb_mapbuilder/cFrame.h"
 using namespace std;
 
+// Should we only use the 180 part of the sick laser?
+#define USE_180      0
+
+// Should we calculate the point via cos/sin, or via matrices?
 #define CALCU_COSSIN 1
 #define USE_MATRIX   0
 
-#if (CALCU_COSSIN + USE_MATRIX) != 1
+#if CALCU_COSSIN && USE_MATRIX
 #error Only select one of the following: CALCU_COSSIN or USE_MATRIX!
+#endif
+
+#if USE_MATRIX && USE_180
+#error USE_MATRIX does not support USE_180 filtering!
 #endif
 
 /*
@@ -53,9 +61,16 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 #if CALCU_COSSIN
 	for( unsigned int i = 0; i < msg.ranges.size(); i++, angle += msg.angle_increment)
 #elif USE_MATRIX
-	for( unsigned int i = 0; i < msg.ranges.size(); i++, angle *= increment;)
+	for( unsigned int i = 0; i < msg.ranges.size(); i++, angle *= increment)
 #endif
 	{
+#if USE_180 && CALCU_COSSIN
+		if( angle < 0)
+			continue;
+		if( angle > M_PI)
+			continue;
+#endif
+
 		// Get the range
 		const float range = msg.ranges.at( i);
 
