@@ -122,15 +122,30 @@ void cController::MapCallback( cMap &map)
 	{
 		tries++;
 
-		// TODO AvoidObstacle first
+		// AvoidObstacle first
+		if( _blocked == true)
+		{
+			ret = _avoidObstacle->Execute( output, vdState, map);
+			if( ret == RET_SUCCESS)
+				exec = true;
+			else // Avoidance is completed
+				_blocked = false;
+			continue;
+		}
 
 		// Execute the current sub-controller
 		switch( _state)
 		{
-			// TODO implement AvoidObstacle
 			case STATE_FREERUN:
-				_freeRun->Execute( output, vdState, map);
-				exec = true;
+				ret = _freeRun->Execute( output, vdState, map);
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else
+				{
+					cout << "[controller] FreeRun: Path is blocked!" << endl;
+					_avoidObstacle->Reinit( vdState);
+					_blocked = true;
+				}
 				break;
 
 
@@ -180,11 +195,12 @@ void cController::MapCallback( cMap &map)
 				}
 				else
 				{
-					cout << "[controller] ERROR!! SegFind: Path is blocked!" << endl;
-					exec = true;
+					cout << "[controller] SegFind: 180 degree turning" << endl;
+					_avoidObstacle->Reinit( vdState);
+					_blocked = true;
 				}
-
 				break;
+
 
 			default:
 				cout << "[controller] ERROR!! Unknown state" << endl;
@@ -193,60 +209,14 @@ void cController::MapCallback( cMap &map)
 		}
 	}
 
-	// Always execute AvoidObstacle sub-controller
-	/*bool ret = _avoidObstacle.Execute( vector, map);
-
-	// Did AvoidObstacle return true, and we ain't in AvoidObstacle mode? Save state
-	if( ret == true && _state != STATE_AVOID_OBSTACLE)
-	{
-		_statePrevious = _state;
-		_state = STATE_AVOID_OBSTACLE;
-	}
-	// If we are in state AvoidObstacle but it failed, reset State to previous
-	else if( ret == false && _state == STATE_AVOID_OBSTACLE)
-		_state = _statePrevious;
-
-
-	// If AvoidObstacle hasn't found anything, try Find/Follow-segment twice
-	int turns = 2;
-	for(; ret == false && turns > 0; turns--)
-	{
-		switch( _state)
-		{
-			case STATE_FOLLOW_SEGMENT:
-				ret = _followSegment.Execute( vector, map);
-				if( ret == false)
-					_state = STATE_FIND_SEGMENT;
-				break;
-
-			case STATE_FIND_SEGMENT:
-				ret = _findSegment.Execute( vector, map);
-				if( ret == false)
-					_state = STATE_FOLLOW_SEGMENT;
-				break;
-
-			default:
-				cout << "cController: This should never happen!!" << endl;
-				ret = true;
-				break;
-		}
-	}
-
-	// Find/Follow-segment controllers couldn't come up with a solution. We are stuck now!
-	if( turns == 0 && ret == false)
-	{
-		cout << "cController: We are bloody stuck :(" << endl;
-
-		// Failsafe, set the values to 0
-		vector = tVector( 0, 0);
-	}*/
-
+	// TODO tries
 
 	// We have a filled message by now, publish it
 	// msg struct, which we'll be sending
 	flarb_msgs::WaypointVector msg;
 	msg.x = output.getX();
 	msg.y = output.getY();
+	msg.QuickTurn = _blocked;
 	_rosCom.PublishWaypoint( msg);
 }
 

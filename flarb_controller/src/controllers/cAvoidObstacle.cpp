@@ -44,7 +44,7 @@ enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::State
 	else
 	{
 		// Check if we are near our goal
-		if( state.response.axisZ > (_direction - 0.005) && state.response.axisZ < (_direction + 0.005))
+		if( state.response.axisZ > (_direction - 0.09) && state.response.axisZ < (_direction + 0.09))
 		{
 			output = tVector();
 			return RET_NEXT;
@@ -52,6 +52,7 @@ enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::State
 		else
 		{
 			// Here is where we turn badly
+			// TODO check if things are free?
 			output = tVector(0.3f, 0);
 			return RET_SUCCESS;
 		}

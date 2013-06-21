@@ -9,6 +9,13 @@
 #include "flarb_controller/cMap.h"
 #include "flarb_controller/cController.h"
 
+enum SEGFIND_STATES {
+	SEGFIND_TURN1,
+	SEGFIND_DRIVESTRAIGHT,
+	SEGFIND_TURN2,
+	SEGFIND_TURNAXIS1,
+	SEGFIND_TURNAXIS2
+};
 
 /*
  * Finds the next segment
@@ -17,7 +24,7 @@ class cSegmentFind
 {
 public:
 	// C-tor
-	cSegmentFind(): _direction(0) {}
+	cSegmentFind(): _GoalDir(0) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -32,8 +39,17 @@ public:
 
 private:
 	//
-	float    _direction;
+	enum SUBRETURN Turn    ( tVector &output, const flarb_msgs::State &state, cMap &map);
+	enum SUBRETURN Straight( tVector &output, const flarb_msgs::State &state, cMap &map);
+
+	// The segment we execute
 	sSegment _segment;
+
+	// Current state in solving the segment
+	enum SEGFIND_STATES _state;
+
+	// The goaldir, meaning depends on state
+	float _GoalDir;
 };
 
 #endif // CLASS_SEGMENT_FIND_H

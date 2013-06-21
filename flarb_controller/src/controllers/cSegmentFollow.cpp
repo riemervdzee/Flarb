@@ -33,7 +33,7 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::State
 
 	// Just continue the current row
 	tVector direction = tVector( 0.0f, 0.5f);
-	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
+	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
 	// TODO here we can do stuff with the result, whether 0 or negative 
 	// return false maybe? For now, just set vector = output
