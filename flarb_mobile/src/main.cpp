@@ -9,8 +9,8 @@ using namespace std;
 
 // Node defines
 #define NODE_NAME       "mobile"  // Name of the module
-#define NODE_FREQUENCY  10         // Amount of loops per second
-#define NODE_CALLBACKS  0          // 0 = false, 1 = true. use when the node has services to offer
+#define NODE_FREQUENCY  30         // Amount of loops per second
+#define NODE_CALLBACKS  1          // 0 = false, 1 = true. use when the node has services to offer
 
 /*
  * Main entry of the example node
