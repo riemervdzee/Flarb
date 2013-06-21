@@ -51,7 +51,7 @@ bool cController::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::St
 	res.distance = distance;
 	res.axisX = message_axis.x * DEG2RAD;
 	res.axisY = message_axis.y * DEG2RAD;
-	res.axisZ = message_compass.north_angle * DEG2RAD;
+	res.axisZ = (2*M_PI)-(message_compass.angle * DEG2RAD);
 
 	return true;
 }

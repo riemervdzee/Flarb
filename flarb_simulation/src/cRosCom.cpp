@@ -1,4 +1,5 @@
 // Include order: cppstd, ROS, Boost, own-module includes
+#include <cmath>
 #include <iostream>
 
 #include "ros/ros.h"
@@ -86,7 +87,7 @@ bool cRosCom::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State:
 	res.distance  = _car->distance;
 	res.axisX = 0;
 	res.axisY = 0;
-	res.axisZ = _car->direction;
+	res.axisZ = _car->direction - (M_PI/2);
 
 	return true;
 }

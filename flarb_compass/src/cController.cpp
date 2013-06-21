@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include "ros/ros.h"
-#include "std_msgs/String.h"
+#include "flarb_msgs/Compass.h"
 
 #include "flarb_compass/cController.h"
 #include "flarb_compass/cSerial.h"
@@ -18,7 +18,7 @@
 
 
 // Settings
-#define DEV_PORT		"/dev/ttyS2"    //port
+#define DEV_PORT		"/dev/ttyUSB0"    //port
 #define BAUD_RATE		9600            //Baudrate port
 
 
@@ -51,10 +51,11 @@ void cController::Destroy()
 // Updates the controller obj
 void cController::Update()
 {
-	//cout<<"Update"<<endl;
-	int res = readDevice(0);
-	if(res == 0)	
-		_Compass.publish(msg);
+	try {
+		//cout<<"Update"<<endl;
+		readDevice();
+	}
+	catch(...){}
 }
 
 /*
@@ -79,7 +80,7 @@ int cController::Openport()
 				_serial.open( DEV_PORT, BAUD_RATE);
 
 			// Timeout for reads
-			_serial.setTimeout( boost::posix_time::milliseconds(100));
+			_serial.setTimeout( boost::posix_time::milliseconds(200));
 
 			configure();
 
@@ -118,34 +119,65 @@ int cController::Openport()
  * Configure compass for right data output
  */
 int cController::configure()
-{
-	cout<<"Configuring"<<endl;
-
-	// Clear read buffer
-	//_serial.read( Buffer, sizeof(BUFFER_SIZE));
-
-	//Configuring compass with delay
+{;
+	// Tell the compass to stop writing, if any
 	_serial.writeString("h\n");
 
-	// Clear read buffer
-	_serial.read( Buffer, sizeof(BUFFER_SIZE));
-
-#if (USE_RAW == 0)
-	_serial.write("go", 2);
-	usleep(10);
-	_serial.write("\n", 1);
-	usleep(10);
+#if USE_CALIBRATED
+	// When using calibrated data, the compass sends a string X times
+	_serial.writeString("go\n");
 #endif
 
 	return 0;
 }
 
-#if USE_RAW
 
+#if USE_CALIBRATED
 /* 
- *	For Reading device, Riemers way = raw
+ *	For Reading device, the calibrated way
  */	
-int cController::readDevice( int start)
+int cController::readDevice()
+{
+	// Read till we got a response (ended with \n)
+	string str = _serial.readStringUntil();
+
+	// Process, format: $C269.64X-0.007394Y1.175806T24.8*1B
+	char *chrC = strchr( &str[0], 'C');
+	char *chrX = strchr( &str[0], 'X');
+	char *chrY = strchr( &str[0], 'Y');
+
+	// Check if the buffer is alrighty
+	if( chrC != NULL && chrX != NULL && chrY != NULL)
+	{
+		float c = atof( chrC + 1);
+		float x = atof( chrX + 1);
+		float y = atof( chrY + 1);
+
+		flarb_msgs::Compass msg;
+		msg.angle = c;
+		msg.x     = x;
+		msg.y     = y;
+		_Compass.publish(msg);
+
+		//cout << str << endl;
+		//cout << x << ", " << y << endl;
+		//cout << msg.north_angle << endl;
+	}
+	else
+	{
+		static int i = 0;
+		i++;
+		cout << "thrown away " << i << endl;
+	}
+
+	return 0;
+}
+
+#else
+/* 
+ *	For Reading device, the raw output
+ */	
+int cController::readDevice()
 {
 	// Clear everything in the read buffer
 	_serial.read( Buffer, sizeof(BUFFER_SIZE));
@@ -154,7 +186,7 @@ int cController::readDevice( int start)
 	// Request a raw sample
 	_serial.writeString( "sr?\n");
 
-	// Read response TODO wait for response?
+	// Read till we got a response (ended with \n)
 	string str = _serial.readStringUntil();
 
 	// Process, format: $raw,X-733Y35:E200*3C
@@ -167,24 +199,24 @@ int cController::readDevice( int start)
 		float x = atoi( chrX + 1);
 		float y = atoi( chrY + 1);
 
-		msg.north_angle = (atan2(y,x)* RAD2DEG);
+		flarb_msgs::Compass msg;
+		msg.angle = -(atan2(y,x)* RAD2DEG);
 
-		if( msg.north_angle < 0)
-			msg.north_angle += 360;
-		else if( msg.north_angle > 360)
-			msg.north_angle -= 360;
+		if( msg.angle < 0)
+			msg.angle += 360;
+		else if( msg.angle > 360)
+			msg.angle -= 360;
 
 		msg.x = x;
 		msg.y = y;
-		//msg.heading = heading;
+		_Compass.publish(msg);
 
-		//cout << Buffer << endl;
+		//cout << str << endl;
 		//cout << x << ", " << y << endl;
 		//cout << msg.north_angle << endl;
 	}
 	else
 	{
-		cout << str << endl;
 		static int i = 0;
 		i++;
 		cout << "thrown away " << i << endl;
@@ -193,7 +225,10 @@ int cController::readDevice( int start)
 	return 0;
 }
 
-#else
+#endif
+
+
+#if 0
 
 /* 
  *	For Reading device, Daniels way (calibrated and all)
@@ -333,7 +368,6 @@ int cController::checksum(char *s) {
  
     return c;
 }
-#endif
 
 /*
  *	Calibration Mode
@@ -399,3 +433,5 @@ int cController::Calibration()
 		return 1;
 	}
 }
+#endif
+

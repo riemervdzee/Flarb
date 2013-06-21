@@ -2,14 +2,13 @@
 #define CLASS_CONTROLLER_H
 
 #include "ros/ros.h"
-#include "flarb_msgs/Compass.h"
 #include "flarb_compass/cSerial.h"
 
 // Program options
-#define USE_RAW 1
+#define USE_CALIBRATED 1
 
 // Class define
-#define BUFFER_SIZE 1024
+#define BUFFER_SIZE 512
 
 
 /*
@@ -30,22 +29,25 @@ private:
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;
 
-	// We are publishing shizzle
+	// We are publishing
 	ros::Publisher _Compass;
-	flarb_msgs::Compass msg;
+
+	// Serial obj
 	cSerial _serial;
+
+	// Functions called when opening
 	int Openport();
 	int configure();
-	int Calibration();
 
-	int readDevice(int status);
+	// Actual reads data from the port
+	int readDevice();
 
-#if (USE_RAW == 0)
-	int getData(int status);
-	int checksum(char *s);
-	int ptr;
-#endif
+	// Only used in raw mode, to clear unwanted data
+#if !USE_CALIBRATED
 	char Buffer[ BUFFER_SIZE];
+#endif
+
+	//int Calibration();
 };
 
 #endif // CLASS_CONTROLLER_H
