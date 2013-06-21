@@ -25,7 +25,7 @@ void cSegmentFollow::Reinit( const flarb_msgs::State &state)
 enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
 {
 	// First check if there is room at both sides
-	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.2f));
+	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.4f));
 	if(!map.CheckIntersectionRegion( b))
 	{
 		return RET_NEXT;
