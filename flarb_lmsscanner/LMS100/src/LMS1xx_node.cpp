@@ -16,7 +16,8 @@ using namespace std;
 
 // Options setable via ROS service
 bool EnableRawOutput = false;
-int  FilterSelect = 2; // Median filter is standard
+bool UpsideDown      = true;
+int  FilterSelect    = 2; // Median filter is standard
 
 
 /**
@@ -25,12 +26,13 @@ int  FilterSelect = 2; // Median filter is standard
 bool ConfigCallback( flarb_msgs::LMSConfig::Request  &req, flarb_msgs::LMSConfig::Response &res)
 {
 	// Check for out-of-range
-	if(req.FilterSelect < 0 && req.FilterSelect > 3)
+	if(req.FilterSelect < 0 && req.FilterSelect > 2)
 		return false;
 
 	// Set data and return true
 	EnableRawOutput = req.EnableRawOutput;
 	FilterSelect    = req.FilterSelect;
+	UpsideDown      = req.UpsideDown;
 
 	return true;
 }
@@ -86,9 +88,9 @@ int main(int argc, char **argv)
 
 	scan_msg.scan_time = 100.0/cfg.scaningFrequency;
 
-	scan_msg.angle_increment = (double)cfg.angleResolution/10000.0 * DEG2RAD;
-	scan_msg.angle_min = (double)cfg.startAngle/10000.0 * DEG2RAD;
-	scan_msg.angle_max = (double)cfg.stopAngle/10000.0 * DEG2RAD;
+	float angle_incr = (double)cfg.angleResolution/10000.0 * DEG2RAD;
+	float angle_min  = (double)cfg.startAngle/10000.0 * DEG2RAD;
+	float angle_max  = (double)cfg.stopAngle /10000.0 * DEG2RAD;
 
 	cout << "resolution : " << (double)cfg.angleResolution/10000.0 << " deg " << endl;
 	cout << "frequency : " << (double)cfg.scaningFrequency/100.0 << " Hz " << endl;
@@ -112,7 +114,6 @@ int main(int argc, char **argv)
 	InitFilterNone    ( num_values);
 	InitFilterAverage ( num_values);
 	InitFilterMedian  ( num_values);
-	InitFilterKalman  ( num_values);
 
 	// Set some scan_msg defaults
 	scan_msg.time_increment = scan_msg.scan_time/num_values;
@@ -157,6 +158,19 @@ int main(int argc, char **argv)
 
 		laser.getData(data);
 
+		if( UpsideDown)
+		{
+			scan_msg.angle_increment = -angle_incr;
+			scan_msg.angle_min = angle_max;
+			scan_msg.angle_max = angle_min;
+		}
+		else
+		{
+			scan_msg.angle_increment = angle_incr;
+			scan_msg.angle_min = angle_min;
+			scan_msg.angle_max = angle_max;
+		}
+
 #if SEND_INTENSITIES
 		for (int i = 0; i < data.rssi_len1; i++)
 		{
@@ -185,11 +199,6 @@ int main(int argc, char **argv)
 				ExecuteFilterMedian( data, scan_msg);
 				break;
 
-			// TODO wait till implemented
-			/*case 3:
-				ExecuteFilterKalman( data, scan_msg);
-				break;*/
-
 			default:
 				ExecuteFilterNone( data, scan_msg);
 				break;
@@ -204,7 +213,6 @@ int main(int argc, char **argv)
 	DestroyFilterNone();
 	DestroyFilterAverage();
 	DestroyFilterMedian();
-	DestroyFilterKalman();
 
 	laser.scanContinous(0);
 	laser.stopMeas();

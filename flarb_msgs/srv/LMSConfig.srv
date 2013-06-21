@@ -2,9 +2,11 @@
 bool EnableRawOutput
 
 ## Which filter to select
-##   0 = Noone
+##   0 = None
 ##   1 = Averaging
 ##   2 = Median filter
-##   3 = Kalman filter
 int8 FilterSelect
+
+## Is the SICK scanner upside down?
+bool UpsideDown
 ---

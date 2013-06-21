@@ -19,5 +19,4 @@ rosbuild_add_executable(LMS100
 						src/filters/filterNone.cpp
 						src/filters/filterAverage.cpp
 						src/filters/filterMedian.cpp
-						src/filters/filterKalman.cpp
 )
