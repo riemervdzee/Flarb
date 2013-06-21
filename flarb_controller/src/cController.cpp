@@ -183,7 +183,7 @@ void cController::MapCallback( cMap &map)
 
 
 			case STATE_SEGMENT_FIND:
-				ret = _segmentFollow->Execute( output, vdState, map);
+				ret = _segmentFind->Execute( output, vdState, map);
 				if( ret == RET_SUCCESS)
 					exec = true;
 				else if ( ret == RET_NEXT)
