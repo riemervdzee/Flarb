@@ -61,14 +61,14 @@ void cRosCom::PublishLaserScan( const cMap &map)
 	// Set starts
 	// angle = car dir - 1/4PI (due min angle) - 1/2PI due the fact ROS wants
 	// 0 radians to be poining upwards instead of to the right. bloody idiots
-	float angle = _car->direction - 2.35619449;
+	float angle = _car->direction + 2.35619449;
 	tVector pos = tVector( _car->x, _car->y);
 
 	// Fill the ranges array
 	for (int i = 0; i < 1081; i++)
 	{
 		_msg.ranges[i] = map.TestRayDistance( pos, angle);
-		angle+= 0.00436332f;
+		angle-= 0.00436332f;
 	}
 
 	_pubSick.publish(_msg);
