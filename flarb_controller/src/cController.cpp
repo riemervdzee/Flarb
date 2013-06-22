@@ -164,12 +164,13 @@ void cController::MapCallback( cMap &map)
 				else
 				{
 					cout << "[controller] DEBUG_FIND done" << endl;
+					exec   = true;
 					_state = STATE_STOPPED;
 				}
 				break;
 
 
-			case STATE_DEBUG_AVOID: // If we reach this, avoidObstacle is already completed
+			case STATE_DEBUG_AVOID: // If we reach this, AvoidObstacle is already completed
 				exec = true;
 				cout << "[controller] DEBUG_AVOID done" << endl;
 				_state = STATE_STOPPED;
@@ -209,9 +210,18 @@ void cController::MapCallback( cMap &map)
 					exec = true;
 				else if ( ret == RET_NEXT)
 				{
-					cout << "[controller] Switching to segment find" << endl;
-					_segmentFind->Reinit( vdState, _inputString);
-					_state = STATE_SEGMENT_FIND;
+					if( _inputString.IsNextSegment())
+					{
+						cout << "[controller] Switching to segment find" << endl;
+						_segmentFind->Reinit( vdState, _inputString);
+						_state = STATE_SEGMENT_FIND;
+					}
+					else
+					{
+						cout << "[controller] Assignment complete!" << endl;
+						exec   = true;
+						_state = STATE_STOPPED;
+					}
 				}
 				else
 				{

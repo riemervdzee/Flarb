@@ -22,7 +22,7 @@ void cAvoidObstacle::Reinit( const flarb_msgs::State &state)
 	// If this is the first time the sub-controller gets executed in a series
 	// Set the _count to a constant
 	// TODO we need the axisZ to be quite reliable here..
-	_StopCount = 30 * 3;
+	_StopCount = 30 * FLARB_AVOID_WAITTIME;
 	_direction = state.response.axisZ + M_PI;
 
 	// 0 <= _direction <= 2xPI
@@ -44,7 +44,8 @@ enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::State
 	else
 	{
 		// Check if we are near our goal
-		if( state.response.axisZ > (_direction - 0.09) && state.response.axisZ < (_direction + 0.09))
+		if( state.response.axisZ > (_direction - FLARB_AVOID_GOALANGLE) &&
+			state.response.axisZ < (_direction + FLARB_AVOID_GOALANGLE))
 		{
 			output = tVector();
 			return RET_NEXT;
@@ -53,7 +54,7 @@ enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::State
 		{
 			// Here is where we turn badly
 			// TODO check if things are free?
-			output = tVector(0.3f, 0);
+			output = tVector( FLARB_AVOID_SPEED, 0);
 			return RET_SUCCESS;
 		}
 	}

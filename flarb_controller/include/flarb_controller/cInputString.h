@@ -33,6 +33,9 @@ public:
 	cInputString() : currentSegment( 0){}
 	cInputString( const std::string &str);
 
+	// Tells whether there is still a segment to complete
+	bool IsNextSegment();
+
 	// The data
 	std::vector<sSegment> segments;  // List of all Segments
 	int   currentSegment;            // The index of the current Segment we are in
