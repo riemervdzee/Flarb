@@ -28,6 +28,8 @@ enum STATES {
 	STATE_SEGMENT_START,   // cSegmentStart
 	STATE_SEGMENT_FOLLOW,  // cSegmentFollow
 	STATE_SEGMENT_FIND,    // cSegmentFind
+	STATE_DEBUG_FIND,
+	STATE_DEBUG_AVOID,
 };
 
 /*
@@ -37,6 +39,7 @@ enum SUBRETURN {
 	RET_SUCCESS,
 	RET_NEXT,
 	RET_BLOCKED,
+	RET_STOP,
 };
 
 

@@ -81,16 +81,37 @@ void cController::Update()
  */
 void cController::SmartphoneCallback( const std::string &str)
 {
+	// Get VDState
+	flarb_msgs::State vdState;
+	_rosCom.GetVDState( vdState);
+
+
 	// We received a correct string, create a new cInputString obj
 	if( str[0] == 'S')
 	{
 		_inputString = cInputString( str);
-		_state = STATE_SEGMENT_START;
+		_state       = STATE_SEGMENT_START;
+		_segmentFollow->Reinit( vdState);
 	}
 	// We start in freerun mode
 	else if( str[0] == 'F')
 	{
 		_state = STATE_FREERUN;
+		_freeRun->Reinit( vdState);
+	}
+	// Debug STATE_DEBUG_FIND
+	else if( str[0] == 'G')
+	{
+		_inputString = cInputString( "S - 1L - F");
+		_state       = STATE_DEBUG_FIND;
+		_segmentFind->Reinit( vdState, _inputString);
+	}
+	// Debug STATE_DEBUG_AVOID
+	else if( str[0] == 'H')
+	{
+		_blocked = true;
+		_state   = STATE_DEBUG_AVOID;
+		_avoidObstacle->Reinit( vdState);
 	}
 	// Invalid format
 	else
@@ -136,6 +157,25 @@ void cController::MapCallback( cMap &map)
 		// Execute the current sub-controller
 		switch( _state)
 		{
+			case STATE_DEBUG_FIND:
+				ret = _segmentFind->Execute( output, vdState, map);
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else
+				{
+					cout << "[controller] DEBUG_FIND done" << endl;
+					_state = STATE_STOPPED;
+				}
+				break;
+
+
+			case STATE_DEBUG_AVOID: // If we reach this, avoidObstacle is already completed
+				exec = true;
+				cout << "[controller] DEBUG_AVOID done" << endl;
+				_state = STATE_STOPPED;
+				break;
+
+
 			case STATE_FREERUN:
 				ret = _freeRun->Execute( output, vdState, map);
 				if( ret == RET_SUCCESS)
@@ -203,16 +243,21 @@ void cController::MapCallback( cMap &map)
 
 
 			default:
-				cout << "[controller] ERROR!! Unknown state" << endl;
+				cerr << "[controller] ERROR!! Unknown state" << endl;
 				exec = true;
 				break;
 		}
 	}
 
-	// TODO tries
+	// Tries reached 5, oh dear..
+	if( tries >= 5)
+	{
+		cerr << "[controller] While-looped exceeded 5 loops, oh dear.." << endl;
+		_state = STATE_STOPPED;
+		return;
+	}
 
 	// We have a filled message by now, publish it
-	// msg struct, which we'll be sending
 	flarb_msgs::WaypointVector msg;
 	msg.x = output.getX();
 	msg.y = output.getY();

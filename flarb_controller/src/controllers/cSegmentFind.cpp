@@ -56,7 +56,7 @@ void cSegmentFind::Reinit( const flarb_msgs::State &state, const cInputString &s
 enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
 {
 	//
-	enum SUBRETURN ret;
+	enum SUBRETURN ret = RET_BLOCKED;;
 	bool exec = false;
 	int tries = 0;
 	output = tVector();
@@ -114,6 +114,13 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::State &
 				}
 				break;
 		}
+	}
+
+	// Tries reached 5, oh dear..
+	if( tries >= 5)
+	{
+		cerr << "[SegmentFind] While-looped exceeded 5 loops, oh dear.." << endl;
+		ret = RET_BLOCKED;
 	}
 
 	return ret;
