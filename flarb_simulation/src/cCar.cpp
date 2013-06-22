@@ -52,4 +52,10 @@ void cCar::Update()
 	x += s * cos( direction);
 	y += s * sin( direction);
 	direction -= w; // TODO incorrect
+
+	// 0 <= _direction <= 2xPI
+	if( direction > (2*M_PI))
+		direction -= (2*M_PI);
+	else if( direction < 0)
+		direction += (2*M_PI);
 }

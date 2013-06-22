@@ -5,7 +5,7 @@
 #include "flarb_msgs/DualMotorSpeed.h"
 
 // Gain of both engines per step
-#define MOTOR_GAIN 0.2f
+#define MOTOR_GAIN 0.4f
 
 class cCar
 {
