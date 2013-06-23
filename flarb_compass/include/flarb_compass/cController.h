@@ -4,8 +4,6 @@
 #include "ros/ros.h"
 #include "flarb_compass/cSerial.h"
 
-// Program options
-#define USE_CALIBRATED 1
 
 // Class define
 #define BUFFER_SIZE 512
@@ -17,6 +15,8 @@
 class cController
 {
 public:
+	// C-tor
+	cController() : UseCalibrated( true) {}
 
     // Functions executed at the beginning and end of the Application
     bool Create();
@@ -40,12 +40,14 @@ private:
 	int configure();
 
 	// Actual reads data from the port
-	int readDevice();
+	int readDeviceCal();
+	int readDeviceRaw();
 
 	// Only used in raw mode, to clear unwanted data
-#if !USE_CALIBRATED
 	char Buffer[ BUFFER_SIZE];
-#endif
+
+	//
+	bool UseCalibrated;
 
 	//int Calibration();
 };

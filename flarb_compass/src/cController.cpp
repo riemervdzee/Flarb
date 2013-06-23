@@ -32,8 +32,15 @@ using namespace std;
 // Functions executed at the beginning and end of the Node
 bool cController::Create()
 {
-	Openport();
+	//
+	ros::NodeHandle n("~");
+	n.param<bool>( "UseCalibrated", UseCalibrated, true);
+	cout << "UseCalibrated set to " << UseCalibrated << endl;
+
+	// Open compass
 	_Compass = _rosNode.advertise<flarb_msgs::Compass>("sensor/compass", 1);
+	Openport();
+
 	return true;
 }
 
@@ -53,7 +60,10 @@ void cController::Update()
 {
 	try {
 		//cout<<"Update"<<endl;
-		readDevice();
+		if( UseCalibrated)
+			readDeviceCal();
+		else
+			readDeviceRaw();
 	}
 	catch(...){}
 }
@@ -123,20 +133,18 @@ int cController::configure()
 	// Tell the compass to stop writing, if any
 	_serial.writeString("h\n");
 
-#if USE_CALIBRATED
 	// When using calibrated data, the compass sends a string X times
-	_serial.writeString("go\n");
-#endif
+	if( UseCalibrated)
+		_serial.writeString("go\n");
 
 	return 0;
 }
 
 
-#if USE_CALIBRATED
 /* 
  *	For Reading device, the calibrated way
  */	
-int cController::readDevice()
+int cController::readDeviceCal()
 {
 	// Read till we got a response (ended with \n)
 	string str = _serial.readStringUntil();
@@ -173,11 +181,11 @@ int cController::readDevice()
 	return 0;
 }
 
-#else
+
 /* 
  *	For Reading device, the raw output
  */	
-int cController::readDevice()
+int cController::readDeviceRaw()
 {
 	// Clear everything in the read buffer
 	_serial.read( Buffer, sizeof(BUFFER_SIZE));
@@ -224,8 +232,6 @@ int cController::readDevice()
 
 	return 0;
 }
-
-#endif
 
 
 #if 0
