@@ -35,10 +35,12 @@ void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString 
 
 		case DIR_LEFT:
 			_GoalDir += (M_PI/2);
+			_bb = tBoundingBox( tVector( -0.5f, 0.0f), tVector( 0.0f, 0.1f));
 			break;
 
 		case DIR_RIGHT:
 			_GoalDir -= (M_PI/2);
+			_bb = tBoundingBox( tVector( 0.0f, 0.0f), tVector( 0.5f, 0.1f));
 			break;
 	}
 
@@ -50,6 +52,9 @@ void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString 
 
 	// We need to turn first
 	_state = SEGFIND_TURN1;
+
+	// The amount of rows we need to skip
+	_skip = _segment.row_count - 1;
 }
 
 
@@ -84,6 +89,7 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState
 				}
 				else
 				{
+					_previous = map.CheckIntersectionRegion( _bb);
 					_state = SEGFIND_DRIVESTRAIGHT;
 					cout << "[SegmentFind] Turn1 completed" << endl;
 				}
@@ -186,31 +192,55 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 // Drive straight routine, skipping any rows when neccesary
 enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
-	// TODO skip rows
-	_state = SEGFIND_TURN2;
-
-	// Depending on the direction, set the goal dir
-	switch( _segment.rowdir)
+	// Do we need to skip? check if we can skip one right now
+	if( _skip > 0)
 	{
-		case DIR_LEFT:
-			_GoalDir += (M_PI/2);
-			break;
-
-		case DIR_RIGHT:
-			_GoalDir -= (M_PI/2);
-			break;
-
-		default:
-			cout << "[ERROR] cSegmentFind-straight error 1" << endl;
+		bool current = map.CheckIntersectionRegion( _bb);
+		if (current != _previous)
+		{
+			if(!current)
+				_skip--;
+			_previous = current;
+		}
 	}
 
-	// Clamp: 0 <= _direction <= 2xPI
-	if( _GoalDir > (2*M_PI))
-		_GoalDir -= (2*M_PI);
-	else if( _GoalDir < 0)
-		_GoalDir += (2*M_PI);
+	// Do we still need to skip? drive straight ahead
+	if( _skip > 0)
+	{
+		// Just drive straight ahead
+		tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
+		map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
+		return RET_SUCCESS;
+	}
+	// All rows skipped, We can turn now
+	else
+	{
 
-	return RET_NEXT;
+		// We need to turn again
+		// Depending on the direction, set the goal dir
+		switch( _segment.rowdir)
+		{
+			case DIR_LEFT:
+				_GoalDir += (M_PI/2);
+				break;
+
+			case DIR_RIGHT:
+				_GoalDir -= (M_PI/2);
+				break;
+
+			default:
+				cout << "[ERROR] cSegmentFind-straight error 1" << endl;
+		}
+
+		// Clamp: 0 <= _direction <= 2xPI
+		if( _GoalDir > (2*M_PI))
+			_GoalDir -= (2*M_PI);
+		else if( _GoalDir < 0)
+			_GoalDir += (2*M_PI);
+
+		_state = SEGFIND_TURN2;
+		return RET_NEXT;
+	}
 }
 
 
@@ -226,8 +256,6 @@ enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDStat
 
 	// Just drive straight ahead
 	tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
-
-	// Attempt to find a path with an extra big radius
 	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
 	return RET_SUCCESS;

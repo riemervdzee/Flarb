@@ -3,6 +3,7 @@
 
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
+#include "flarb_controller/types/tBoundingBox.h"
 
 #include "flarb_msgs/VDState.h"
 #include "flarb_controller/Config.h"
@@ -52,6 +53,11 @@ private:
 
 	// The goaldir, meaning depends on state
 	float _GoalDir;
+
+	// For skipping rows
+	int          _skip;     // Amount we still need to skip
+	bool         _previous; // Whether the previous frame was blocked or not
+	tBoundingBox _bb;       // BoundingBox where we need to check at
 };
 
 #endif // CLASS_SEGMENT_FIND_H
