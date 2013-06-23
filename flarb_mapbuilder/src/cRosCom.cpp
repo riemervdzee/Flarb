@@ -11,6 +11,10 @@ using namespace std;
 
 int cRosCom::Create( ros::NodeHandle *rosNode)
 {
+	// Create a private nodehandle, pass it to pointCloud (for parameters)
+	ros::NodeHandle n("~");
+	_pointCloud.Create( &n);
+
 	// Init publisher obj
 	_pubMap = rosNode->advertise<flarb_msgs::MapList>( "map", 1);
 

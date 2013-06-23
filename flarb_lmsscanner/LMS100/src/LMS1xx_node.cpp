@@ -2,7 +2,6 @@
 #include <cstdio>
 #include <LMS1xx.h>
 #include "ros/ros.h"
-#include "flarb_msgs/LMSConfig.h"
 #include "sensor_msgs/LaserScan.h"
 #include "filters/filters.h"
 using namespace std;
@@ -18,24 +17,6 @@ using namespace std;
 bool EnableRawOutput = false;
 bool UpsideDown      = true;
 int  FilterSelect    = 2; // Median filter is standard
-
-
-/**
- * Config service handler
- */
-bool ConfigCallback( flarb_msgs::LMSConfig::Request  &req, flarb_msgs::LMSConfig::Response &res)
-{
-	// Check for out-of-range
-	if(req.FilterSelect < 0 && req.FilterSelect > 2)
-		return false;
-
-	// Set data and return true
-	EnableRawOutput = req.EnableRawOutput;
-	FilterSelect    = req.FilterSelect;
-	UpsideDown      = req.UpsideDown;
-
-	return true;
-}
 
 
 /**
@@ -62,11 +43,13 @@ int main(int argc, char **argv)
 	ros::NodeHandle n("~");
 	ros::Publisher scan_pub = nh.advertise<sensor_msgs::LaserScan>("/sick/scan", 1);
 	ros::Publisher scanfil_pub = nh.advertise<sensor_msgs::LaserScan>("/sick/scan_filtered", 1);
-	
-	ros::ServiceServer LMSConfig = nh.advertiseService( "/sick/config", ConfigCallback);
 
 	n.param<string>("host", host, "192.168.1.2");
 	n.param<string>("frame_id", frame_id, "laser");
+
+	n.param<bool>( "EnableRawOutput", EnableRawOutput, false);
+	n.param<bool>(      "UpsideDown",      UpsideDown,  true);
+	n.param< int>(    "FilterSelect",    FilterSelect,     2); // Median filter is standard
 
 	// initialize hardware
 	ROS_INFO("connecting to laser at : %s", host.c_str());	

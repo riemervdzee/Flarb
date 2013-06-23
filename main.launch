@@ -1,7 +1,15 @@
 <launch>
-	<node name="LMS100"       pkg="LMS100"             type="LMS100" />
-	<node name="mapbuilder"   pkg="flarb_mapbuilder"   type="mapbuilder" />
-	<node name="controller"   pkg="flarb_controller"   type="controller" />
-	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
-	<node name="canbus"       pkg="flarb_canbus"       type="canbus" />
+	<node name="LMS100" pkg="LMS100" type="LMS100" respawn="true" >
+		<param name="EnableRawOutput" value="false" />
+		<param name="UpsideDown"      value="true" />
+		<param name="FilterSelect"    value="2" />
+	</node>
+
+	<node name="mapbuilder" pkg="flarb_mapbuilder" type="mapbuilder" respawn="true" >
+		<param name="UseHalf" value="false" />
+	</node>
+
+	<node name="controller"   pkg="flarb_controller"   type="controller"   respawn="true" />
+	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true" />
+	<node name="canbus"       pkg="flarb_canbus"       type="canbus"       respawn="true" />
 </launch>

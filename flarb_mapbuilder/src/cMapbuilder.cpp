@@ -1,5 +1,6 @@
 #include "flarb_mapbuilder/cMapbuilder.h"
 
+// Builds a map from a pointcloud
 void cMapbuilder::Build( const cPointCloud &pc, flarb_msgs::MapList &msg)
 {
 	const std::vector<tVector> points  = pc.getVectorPoints();

@@ -8,9 +8,14 @@ using namespace std;
 
 
 // Functions executed at the beginning and end of the Application
-int cPointCloud::Create()
+int cPointCloud::Create( ros::NodeHandle *rosNode)
 {
+	// Reserve obj
 	_objects.reserve( OBJECT_AMOUNT_RESERVE);
+
+	// Pass rosnode
+	_frame.Create( rosNode);
+
 	return 0;
 }
 int cPointCloud::Destroy() { return 0;}

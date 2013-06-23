@@ -33,7 +33,7 @@ class cPointCloud
 {
 public:
 	// Functions executed at the beginning and end of the Application
-	int Create();
+	int Create( ros::NodeHandle *rosNode);
 	int Destroy();
 
 	// Processes a LaserScan message
