@@ -12,8 +12,12 @@
 	<node name="controller"   pkg="flarb_controller"   type="controller"   respawn="true" />
 	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true" />
 	<node name="canbus"       pkg="flarb_canbus"       type="canbus"       respawn="true" />
+	<node name="mobile"       pkg="flarb_mobile"       type="mobile"       respawn="true" />
 
 	<node name="compass" pkg="flarb_compass" type="compass" respawn="true" >
 		<param name="UseCalibrated" value="true" />
 	</node>
+	<node name="NMEA"        pkg="flarb_gps"         type="NMEA"        respawn="true" />
+	<node name="inclination" pkg="flarb_inclination" type="inclination" respawn="true" />
+	<node name="VDMixer"     pkg="flarb_VDMixer"     type="VDMixer"     respawn="true" />
 </launch>

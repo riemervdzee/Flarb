@@ -1,6 +1,7 @@
 <launch>
-	<node name="simulation"   pkg="flarb_simulation"   type="simulation" />
-	<node name="mapbuilder"   pkg="flarb_mapbuilder"   type="mapbuilder" />
-	<node name="controller"   pkg="flarb_controller"   type="controller" />
-	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
+	<node name="simulation"   pkg="flarb_simulation"   type="simulation"   respawn="true" args="map2.xml" />
+	<node name="mapbuilder"   pkg="flarb_mapbuilder"   type="mapbuilder"   respawn="true" />
+	<node name="mapshow"      pkg="flarb_mapshow"      type="mapshow"      respawn="true" />
+	<node name="controller"   pkg="flarb_controller"   type="controller"   respawn="true" />
+	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true" />
 </launch>
