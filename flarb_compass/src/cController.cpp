@@ -18,7 +18,7 @@
 
 
 // Settings
-#define DEV_PORT		"/dev/ttyUSB0"    //port
+#define DEV_PORT		"/dev/ttyS2"    //port
 #define BAUD_RATE		9600            //Baudrate port
 
 
