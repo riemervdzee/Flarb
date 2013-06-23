@@ -1,7 +1,6 @@
 #ifndef CLASS_CAR_H
 #define CLASS_CAR_H
 
-#include "flarb_simulation/config.h"
 #include "flarb_msgs/DualMotorSpeed.h"
 
 // Gain of both engines per step

@@ -4,7 +4,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_simulation/config.h"
+#include "flarb_simulation/Config.h"
 #include "flarb_simulation/cController.h"
 #include "flarb_simulation/Graphics.h"
 using namespace std;

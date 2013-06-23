@@ -4,7 +4,7 @@
 #include <GL/gl.h>
 #include "ros/ros.h"
 
-#include "flarb_simulation/config.h"
+#include "flarb_simulation/Config.h"
 #include "flarb_simulation/Graphics.h"
 #include "flarb_simulation/cCar.h"
 using namespace std;

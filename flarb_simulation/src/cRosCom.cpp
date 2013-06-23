@@ -5,6 +5,7 @@
 #include "ros/ros.h"
 #include "std_msgs/String.h"
 
+#include "flarb_simulation/Config.h"
 #include "flarb_simulation/cRosCom.h"
 #include "flarb_simulation/cController.h"
 using namespace std;
@@ -77,8 +78,9 @@ void cRosCom::PublishLaserScan( const cMap &map)
 	// Set starts
 	// angle = car dir - 1/4PI (due min angle) - 1/2PI due the fact ROS wants
 	// 0 radians to be poining upwards instead of to the right. bloody idiots
-	float angle = _car->getDirection() - 2.35619449;
-	tVector pos = tVector( _car->getX(), _car->getY());
+	float a     = _car->getDirection();
+	float angle = a - 2.35619449;
+	tVector pos = tVector( _car->getX() + (cos(a) * CAR_HEIGHT/2), _car->getY() + (sin(a) * CAR_HEIGHT/2));
 
 	// Fill the ranges array
 	for (int i = 0; i < 1081; i++)
