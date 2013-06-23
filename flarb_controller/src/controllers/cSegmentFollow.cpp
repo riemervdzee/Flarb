@@ -27,7 +27,7 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	// After _GoalDistance is crossed, check if we are at the end of the segment
 	if( state.response.distance > _GoalDistance)
 	{
-		tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.4f));
+		tBoundingBox b( tVector( -0.5f, -0.2f), tVector( 0.5f, 0.4f));
 		if(!map.CheckIntersectionRegion( b))
 		{
 			return RET_NEXT;
@@ -38,7 +38,7 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
 
 	// Attempt to find a path with an extra big radius
-	float result = map.FindFreePath( FLARB_EXTRA_RADIUS + FLARB_FOLLOW_EXTRA, direction, output, false);
+	float result = map.FindFreePath( FLARB_EXTRA_RADIUS + FLARB_FOLLOW_EXTRA, direction, output, true);
 
 	// Try it again but with the standard car-radius
 	// TODO this is getting quite crappy..
