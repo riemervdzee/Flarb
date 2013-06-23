@@ -4,7 +4,7 @@
 #include <cmath>
 
 // The width of the actual plant
-#define MAP_PLANT_WIDTH   0.06f
+#define MAP_PLANT_WIDTH   0.05f
 
 //#define PLAYER_POSITION   
 #define CAR_WIDTH   0.4f
