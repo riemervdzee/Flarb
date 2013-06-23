@@ -41,7 +41,7 @@ void cCar::Update()
 	float Vr = motor_r * 0.001f;
 
 	// Calc distance travelled
-	distance += (Vl + Vr) * 0.5;
+	distance += ((Vl + Vr) * 0.5) * factor;
 
 	// Calculate the difference in direction and the speed (scalar)
 	float w = (CAR_WHEEL_R / CAR_WHEEL_L) * ( Vl - Vr);

@@ -1,6 +1,7 @@
 #ifndef CLASS_ROSCOM_H
 #define CLASS_ROSCOM_H
 
+#include <string>
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "flarb_msgs/DualMotorSpeed.h"
@@ -18,8 +19,11 @@ class cRosCom
 {
 public:
 	// Functions executed at the beginning and end of the Application
-	int Create( ros::NodeHandle *rosNode, cController *controller, cCar *car, int hz);
+	int Create( ros::NodeHandle *rosNode, cController *controller, cCar *car, int hz, std::string str);
 	int Destroy();
+
+	// Resends the ActionString
+	void Reset();
 
 	// Publishes a WaypointVector
 	void PublishLaserScan( const cMap &map);
@@ -33,6 +37,9 @@ private:
 	bool StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res);
 
 
+	// The actionstring we send to the controller
+	std::string _str;
+	
 	// msg cache
 	sensor_msgs::LaserScan _msg;
 
@@ -44,6 +51,7 @@ private:
 
 	// Subscribers and publishers
 	ros::Publisher  _pubSick;   //  "/sick/scan_filtered/"
+	ros::Publisher  _pubSmart;  //  "/smartphone/input"
 	ros::Subscriber _subSpeed;  //  "/canbus/speed/"
 
 	// Service handle

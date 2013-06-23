@@ -5,6 +5,7 @@
 		<y>-0.5</y>
 		<direction>1.570796327</direction>
 	</car>
+	<factor>1</factor>
 	<string>S - 1R - 1L - 1R - 1L - 1R - 1L - F</string>
 	<plants_group>
 		<plant>0.10 00.00</plant>

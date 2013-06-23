@@ -11,9 +11,9 @@ class cCar
 {
 public:
 	// C-tor
-	cCar( float _x, float _y, float _dir) : x( _x), y( _y), direction( _dir),
-		start_x( _x), start_y( _y), start_direction( _dir), distance( 0),
-		motor_l( 0), motor_r( 0) {}
+	cCar( float _x, float _y, float _dir, float _factor) : x( _x), y( _y), 
+		direction( _dir), factor( _factor), start_x( _x), start_y( _y), 
+		start_direction( _dir), distance( 0), motor_l( 0), motor_r( 0) {}
 
 	// Empty C-tor, which leaves the car unitialized..
 	cCar(){}
@@ -35,11 +35,13 @@ public:
 	inline float getY()         { return y;}
 	inline float getDirection() { return direction;}
 	inline float getDistance()  { return distance;}
+	inline float getFactor()    { return factor;}
 
 private:
 	// Vars
 	float x, y;
 	float direction; // In radians
+	float factor;
 
 	// Saved values
 	float start_x, start_y, start_direction;

@@ -3,24 +3,32 @@
 #include <iostream>
 
 #include "ros/ros.h"
+#include "std_msgs/String.h"
 
 #include "flarb_simulation/cRosCom.h"
 #include "flarb_simulation/cController.h"
 using namespace std;
 
 
-int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, cCar *car, int hz)
+int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, cCar *car, int hz, string str)
 {
 	// Set pointers
 	_controller = controller;
 	_car        = car;
 
 	// Subscribers and publishers
-	_pubSick  = rosNode->advertise<sensor_msgs::LaserScan>( "/sick/scan_filtered/", 1);
+	_pubSick  = rosNode->advertise<sensor_msgs::LaserScan>    ( "/sick/scan_filtered/", 1);
+	_pubSmart = rosNode->advertise<std_msgs::String>          ( "/smartphone/input", 1);
 	_subSpeed = rosNode->subscribe<flarb_msgs::DualMotorSpeed>( "/canbus/speed/", 1, &cRosCom::SpeedCallback, this);
 
 	// Set up service
 	_StateService = rosNode->advertiseService<cRosCom>( "/vdmixer/state", &cRosCom::StateCallback, this);
+
+	// Publish ActionString
+	_str = str;
+	std_msgs::String msg;
+	msg.data = str;
+	_pubSmart.publish( msg);
 	
 	// Init LaserScan packet
 	_msg.header.frame_id = "laser";
@@ -39,6 +47,14 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, cCar *ca
 int cRosCom::Destroy()
 {
 	return 0;
+}
+
+// Resends the ActionString
+void cRosCom::Reset()
+{
+	std_msgs::String msg;
+	msg.data = _str;
+	_pubSmart.publish( msg);
 }
 
 /*
@@ -88,8 +104,8 @@ bool cRosCom::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State:
 	else if( direction < 0)
 		direction += (2*M_PI);
 
-	res.positionX = _car->getX();
-	res.positionY = _car->getY();
+	res.positionX = _car->getX() * _car->getFactor();
+	res.positionY = _car->getY() * _car->getFactor();
 	res.distance  = _car->getDistance();
 	res.axisX = 0;
 	res.axisY = 0;

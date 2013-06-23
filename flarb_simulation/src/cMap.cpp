@@ -55,23 +55,23 @@ float cMap::TestRayDistance( tVector l1, float angle) const
 	tVector l2 = tVector( (l1.getX() + cos( angle)), (l1.getY() + sin( angle)));
 
 	float result  = 22.0f;
-	//float result2 = result*result;
+	float result2 = result*result;
 	for(unsigned int i = 0; i < _plants.size(); i++)
 	{
 		const Plant   s    = _plants[i];
 		const tVector sVec = tVector(s.x, s.y);
 		float res;
-		//if( (sVec - l1).LengthSquared() < result2)
-		//{
+		if( (sVec - l1).LengthSquared() < result2)
+		{
 			if( IntersectCircle( l1, l2, sVec, MAP_PLANT_WIDTH, res))
 			{
 				if (res < result)
 				{
 					result  = res;
-		//			result2 = result*result;
+					result2 = result*result;
 				}
 			}
-		//}
+		}
 	}
 
 	return result;

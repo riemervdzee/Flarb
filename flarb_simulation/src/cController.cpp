@@ -13,23 +13,21 @@
 using namespace std;
 
 // Functions executed at the beginning and end of the Node
-bool cController::Create( int hz)
+bool cController::Create( int hz, std::string packpath, std::string xml)
 {
 	// Init video
 	window_create( "Simulator");
 
 	// Read XML
 	boost::property_tree::ptree pt;
-	read_xml( "maps/map1.xml", pt);
+	read_xml( packpath + "maps/" + xml, pt);
 
-	//
+	// Get the values
 	float carX = pt.get<float> ("map.car.x");
 	float carY = pt.get<float> ("map.car.y");
 	float carD = pt.get<float> ("map.car.direction");
 	string str = pt.get<string>("map.string");
-
-	// TODO do something with the str
-	cout << str << endl;
+	float fact = pt.get<float> ("map.factor");
 
 	// Init map
 	_map.Create();
@@ -38,10 +36,10 @@ bool cController::Create( int hz)
 		_map.Add( v.second.data());
 
 	// Init car
-	_car = cCar( carX, carY, carD);
+	_car = cCar( carX, carY, carD, fact);
 
 	// Get the roscommunication going
-	_roscom.Create( &_rosNode, this, &_car, hz);
+	_roscom.Create( &_rosNode, this, &_car, hz, str);
 
 	return true;
 }
@@ -59,8 +57,10 @@ void cController::Update()
 	InputUpdate();
 	if( INPUT_STOP)      // Quit on X click
 		ros::shutdown();
-	if( INPUT_R)         // Reset sim
+	if( INPUT_R) {       // Reset sim
 		_car.Reset();
+		_roscom.Reset();
+	}
 
 	// Update childs
 	_car.Update();

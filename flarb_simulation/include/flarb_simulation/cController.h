@@ -2,6 +2,7 @@
 #define CLASS_CONTROLLER_H
 
 #include <ros/ros.h>
+#include <string>
 #include "flarb_simulation/cRosCom.h"
 #include "flarb_simulation/cMap.h"
 #include "flarb_simulation/cCar.h"
@@ -13,7 +14,7 @@ class cController
 {
 public:
 	// Functions executed at the beginning and end of the Application
-	bool Create( int hz);
+	bool Create( int hz, std::string packpath, std::string xml);
 	void Destroy();
 
 	// Update/draw function of the controller
