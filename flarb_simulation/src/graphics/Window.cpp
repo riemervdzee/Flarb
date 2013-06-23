@@ -59,7 +59,7 @@ bool window_create( const char* Caption)
 		glViewport( 0, 0, 800, 600);
 		glMatrixMode( GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho( -1, 4, -1, 4, -1, 1);
+		glOrtho( -3, 3, -3, 3, -1, 1);
 		glMatrixMode( GL_MODELVIEW);
 		glLoadIdentity();
 

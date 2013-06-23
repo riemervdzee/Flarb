@@ -2,6 +2,7 @@
 #define CLASS_MAP_H
 
 #include <vector>
+#include <string>
 #include "flarb_simulation/types/tVector.h"
 
 struct Plant {
@@ -14,6 +15,10 @@ public:
 	// Functions executed at the begining and end of the Application
 	bool Create();
 	void Destroy();
+
+	// Add a single plant (note this is a string, with an X and a Y
+	// part seperated with a space)
+	void Add( std::string str);
 
 	// Draws the map via Graphics extension
 	void Draw() const;

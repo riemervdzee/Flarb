@@ -9,7 +9,6 @@
 using namespace std;
 
 
-
 int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller, cCar *car, int hz)
 {
 	// Set pointers
@@ -62,8 +61,8 @@ void cRosCom::PublishLaserScan( const cMap &map)
 	// Set starts
 	// angle = car dir - 1/4PI (due min angle) - 1/2PI due the fact ROS wants
 	// 0 radians to be poining upwards instead of to the right. bloody idiots
-	float angle = _car->direction - 2.35619449;
-	tVector pos = tVector( _car->x, _car->y);
+	float angle = _car->getDirection() - 2.35619449;
+	tVector pos = tVector( _car->getX(), _car->getY());
 
 	// Fill the ranges array
 	for (int i = 0; i < 1081; i++)
@@ -77,17 +76,24 @@ void cRosCom::PublishLaserScan( const cMap &map)
 
 void cRosCom::SpeedCallback( const flarb_msgs::DualMotorSpeed msg)
 {
-	_car->goal = msg;
+	_car->setGoal( msg);
 }
 
 bool cRosCom::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res)
 {
-	res.positionX = _car->x;
-	res.positionY = _car->y;
-	res.distance  = _car->distance;
+	// 0 <= _direction <= 2xPI
+	float direction = _car->getDirection() - (M_PI/2);
+	if( direction > (2*M_PI))
+		direction -= (2*M_PI);
+	else if( direction < 0)
+		direction += (2*M_PI);
+
+	res.positionX = _car->getX();
+	res.positionY = _car->getY();
+	res.distance  = _car->getDistance();
 	res.axisX = 0;
 	res.axisY = 0;
-	res.axisZ = _car->direction - (M_PI/2);
+	res.axisZ = direction;
 
 	return true;
 }

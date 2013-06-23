@@ -37,9 +37,7 @@ enum gColor {
 
 // All handled inputs
 extern bool INPUT_STOP; // Should we stop the simulation?
-extern bool INPUT_Z;
-extern bool INPUT_X;
-extern bool INPUT_C;
+extern bool INPUT_R;
 
 // Prototypes for windowing code
 bool window_create( const char* caption);

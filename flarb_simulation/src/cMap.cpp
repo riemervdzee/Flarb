@@ -1,5 +1,6 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
+#include <sstream>
 
 #include "ros/ros.h"
 
@@ -8,24 +9,10 @@
 #include "flarb_simulation/Graphics.h"
 using namespace std;
 
-// Generates a map
+// Called when started
 bool cMap::Create()
 {
-	// Construct plant
-	float xf = 0.0f;
-	for( int x = 0; x < MAP_ROWS; x++, xf += MAP_ROW_OFFSET)
-	{
-		float yf = 0.0f;
-		for(int y = 0; y < MAP_ROW_PLANTS; y++, yf += MAP_PLANT_OFFSET)
-		{
-			Plant s;
-			s.x = xf;
-			s.y = yf;
-
-			_plants.push_back( s);
-		}
-	}
-	
+	srand (time(NULL));
 	return true;
 }
 
@@ -33,6 +20,23 @@ bool cMap::Create()
 void cMap::Destroy()
 {
 
+}
+
+// Adds a single plant, note it adds a small random val
+void cMap::Add( std::string str)
+{
+	stringstream s;
+	Plant p;
+
+	s << str;
+	s >> p.x;
+	s >> p.y;
+
+	// Adds a (+-2cm max) difference on the pos given
+	p.x += ((float)rand() / ((float)RAND_MAX*25) - 0.02f);
+	p.y += ((float)rand() / ((float)RAND_MAX*25) - 0.02f);
+
+	_plants.push_back( p);
 }
 
 // Draws the map obj
@@ -50,16 +54,24 @@ float cMap::TestRayDistance( tVector l1, float angle) const
 {
 	tVector l2 = tVector( (l1.getX() + cos( angle)), (l1.getY() + sin( angle)));
 
-	float result = 22.0f;
+	float result  = 22.0f;
+	//float result2 = result*result;
 	for(unsigned int i = 0; i < _plants.size(); i++)
 	{
-		const Plant s = _plants[i];
+		const Plant   s    = _plants[i];
+		const tVector sVec = tVector(s.x, s.y);
 		float res;
-		if( IntersectCircle( l1, l2, tVector(s.x, s.y), MAP_PLANT_WIDTH, res))
-		{
-			if (res < result)
-				result = res;
-		}
+		//if( (sVec - l1).LengthSquared() < result2)
+		//{
+			if( IntersectCircle( l1, l2, sVec, MAP_PLANT_WIDTH, res))
+			{
+				if (res < result)
+				{
+					result  = res;
+		//			result2 = result*result;
+				}
+			}
+		//}
 	}
 
 	return result;

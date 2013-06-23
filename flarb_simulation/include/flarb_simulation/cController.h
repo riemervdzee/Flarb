@@ -12,12 +12,13 @@
 class cController
 {
 public:
-    // Functions executed at the beginning and end of the Application
-    bool Create( int hz);
-    void Destroy();
+	// Functions executed at the beginning and end of the Application
+	bool Create( int hz);
+	void Destroy();
 
-    // Updates the Node
-    void Update();
+	// Update/draw function of the controller
+	void Update();
+	void Draw();
 
 private:
 

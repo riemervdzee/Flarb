@@ -29,9 +29,7 @@
 
 // All handled inputs
 bool INPUT_STOP = false; // Should we stop the simulation?
-bool INPUT_Z    = false;
-bool INPUT_X    = false;
-bool INPUT_C    = false;
+bool INPUT_R    = false;
 
 // Private event struct
 SDL_Event event;
@@ -51,9 +49,7 @@ void InputUpdate()
 			switch( event.key.keysym.sym )
 			{
 				// Toggle keys
-				case SDLK_z:   INPUT_Z  = true; break;
-				case SDLK_x:   INPUT_X  = true; break;
-				case SDLK_c:   INPUT_C  = true; break;
+				case SDLK_r:   INPUT_R  = true; break;
 
 				// Escape button
 				case SDLK_ESCAPE:	INPUT_STOP	= true; break;
@@ -62,17 +58,14 @@ void InputUpdate()
 			break;
 
 		// Case UP event
-		/*case SDL_KEYUP:
+		case SDL_KEYUP:
 			switch( event.key.keysym.sym )
 			{
 				// Toggle keys
-				case SDLK_z:   INPUT_Z  = true; break;
-				case SDLK_x:   INPUT_X  = true; break;
-				case SDLK_c:   INPUT_C  = true; break;
-
+				case SDLK_r:   INPUT_R  = false; break;
 				default:			break;
 			}
-			break;*/
+			break;
 
 		// Did we receive any stop-messages from the OS?
 		case SDL_QUIT:

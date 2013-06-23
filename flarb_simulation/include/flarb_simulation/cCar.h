@@ -11,30 +11,47 @@ class cCar
 {
 public:
 	// C-tor
-	cCar() : x( CAR_POS_X), y( CAR_POS_Y), direction( CAR_DIR), distance( 0), motor_l( 0), motor_r( 0) {}
+	cCar( float _x, float _y, float _dir) : x( _x), y( _y), direction( _dir),
+		start_x( _x), start_y( _y), start_direction( _dir), distance( 0),
+		motor_l( 0), motor_r( 0) {}
 
-	// Functions executed at the begining and end of the Application
-	//bool Create();
-	//void Destroy();
+	// Empty C-tor, which leaves the car unitialized..
+	cCar(){}
 
-	// Draws the map via Graphics extension
+	// Draws the car via the Graphics extension
 	void Draw();
 
-	//
+	// Update position
 	void Update();
 
+	// Resets the position and dir
+	void Reset();
+
+	// Sets the motor goal
+	inline void setGoal( flarb_msgs::DualMotorSpeed _goal) {goal = _goal;}
+
+	// Getters
+	inline float getX()         { return x;}
+	inline float getY()         { return y;}
+	inline float getDirection() { return direction;}
+	inline float getDistance()  { return distance;}
+
+private:
 	// Vars
 	float x, y;
 	float direction; // In radians
 
-	//
+	// Saved values
+	float start_x, start_y, start_direction;
+
+	// Distance travelled
 	float distance;
 
 	// Current strengths of the motor
 	float motor_l;
 	float motor_r;
 
-	//
+	// Goal of the engines
 	flarb_msgs::DualMotorSpeed goal;
 };
 

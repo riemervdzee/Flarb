@@ -3,13 +3,7 @@
 
 #include <cmath>
 
-// Amount of rows and the amount of plants per row
-#define MAP_ROWS        5
-#define MAP_ROW_PLANTS 10
-
-// Offsets
-#define MAP_ROW_OFFSET    0.75f
-#define MAP_PLANT_OFFSET  0.15f
+// The width of the actual plant
 #define MAP_PLANT_WIDTH   0.05f
 
 //#define PLAYER_POSITION   
