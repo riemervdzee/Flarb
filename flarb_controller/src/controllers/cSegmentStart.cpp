@@ -26,7 +26,7 @@ enum SUBRETURN cSegmentStart::Execute( tVector &output, const flarb_msgs::State 
 {
 	// First check if there ain't room at both sides
 	// TODO check both sides
-	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.2f));
+	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.1f));
 	if(map.CheckIntersectionRegion( b))
 	{
 		return RET_NEXT;

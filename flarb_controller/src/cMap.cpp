@@ -53,7 +53,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 	CompareTo = input;
 
 	// When there is no result yet, when it ain't empty or too large
-	while(!result && !_WaypointAttempts.empty() && _WaypointAttempts.size() < 50)
+	while(!result && !_WaypointAttempts.empty() && _WaypointAttempts.size() < 100)
 	{
 		// Var to tell when we got a collision, gets the attempt with the lowest score
 		bool collision_found = false;
@@ -103,7 +103,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 					}
 
 					// Something extra to prevent future collisions!
-					float radius = obj.radius + protection_margin + 0.001f;
+					float radius = obj.radius + protection_margin + 0.002f;
 					tVector p2, p3;
 
 					// Execute
@@ -134,9 +134,8 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 		output = currentAttempt;
 
 		// The return val is the dot-product/diff of the normalized vectors
-		tVector inputN  = input * (1 / inputLength);
-		tVector outputN = output;
-		outputN.Normalize();
+		tVector inputN  = input  * (1 / inputLength);
+		tVector outputN = output * (1 / inputLength);
 		return inputN.Dot( outputN);
 	}
 	// Otherwise, set the values to 0

@@ -31,12 +31,24 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::State
 		return RET_NEXT;
 	}
 
-	// Just continue the current row
-	tVector direction = tVector( 0.0f, 0.5f);
-	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
+	// Just drive straight ahead
+	tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
 
-	// TODO here we can do stuff with the result, whether 0 or negative 
-	// return false maybe? For now, just set vector = output
+	// Attempt to find a path with an extra big radius
+	float result = map.FindFreePath( FLARB_EXTRA_RADIUS + FLARB_FOLLOW_EXTRA, direction, output, true);
 
-	return RET_SUCCESS;
+	// Try it again but with the standard car-radius
+	if( result < 0.5)
+	{
+		result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
+	}
+
+	if( result < 0.1)
+	{
+		return RET_BLOCKED;
+	}
+	else
+	{
+		return RET_SUCCESS;
+	}
 }

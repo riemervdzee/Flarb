@@ -197,7 +197,7 @@ void cController::MapCallback( cMap &map)
 					exec = true;
 				else
 				{
-					cout << "[controller] Switching to segment follow" << endl;
+					cout << "[controller] Switching to segment follow1" << endl;
 					_segmentFollow->Reinit( vdState);
 					_state = STATE_SEGMENT_FOLLOW;
 				}
@@ -238,7 +238,7 @@ void cController::MapCallback( cMap &map)
 					exec = true;
 				else if ( ret == RET_NEXT)
 				{
-					cout << "[controller] Switching to segment follow" << endl;
+					cout << "[controller] Switching to segment follow2" << endl;
 					_segmentFollow->Reinit( vdState);
 					_inputString.currentSegment++;
 					_state = STATE_SEGMENT_FOLLOW;
