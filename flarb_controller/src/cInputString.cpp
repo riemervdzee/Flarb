@@ -80,5 +80,5 @@ cInputString::cInputString( const string &str) : currentSegment( 0)
 // Tells whether there is still a segment to complete
 bool cInputString::IsNextSegment()
 {
-	return currentSegment < segments.size();
+	return (unsigned int)currentSegment < segments.size();
 }
