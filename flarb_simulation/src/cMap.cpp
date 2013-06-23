@@ -109,6 +109,11 @@ bool cMap::IntersectCircle( tVector l1, tVector l2, tVector circle,
 	float div = 2 * a;
 	float t1 = (-b - dsqrt) / div;
 
-	result = t1;
-	return true;
+	if( t1 > 0)
+	{
+		result = t1;
+		return true;
+	}
+	else
+		return false;
 }
