@@ -16,6 +16,9 @@
 class cSegmentFollow
 {
 public:
+	// C-tor
+	cSegmentFollow() : _GoalDistance( 0.0f) {}
+
 	// Functions executed at the beginning and end of the Application
 	bool Create();
 	void Destroy();
@@ -26,6 +29,10 @@ public:
 	// Passes reference of "vector", is used as output
 	// Executes the SegmentFollow sub-controller based on the rest of the arguments
 	enum SUBRETURN Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map);
+
+private:
+	// We try to get atleast past this goal distance after checking for segment-end
+	float _GoalDistance;
 };
 
 #endif // CLASS_SEGMENT_FOLLOW_H

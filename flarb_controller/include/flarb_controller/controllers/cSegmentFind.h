@@ -13,8 +13,8 @@ enum SEGFIND_STATES {
 	SEGFIND_TURN1,
 	SEGFIND_DRIVESTRAIGHT,
 	SEGFIND_TURN2,
-	SEGFIND_TURNAXIS1,
-	SEGFIND_TURNAXIS2
+	SEGFIND_GETINROW,
+	SEGFIND_TURNAXIS,
 };
 
 /*
@@ -38,11 +38,13 @@ public:
 	enum SUBRETURN Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
 private:
-	//
+	// To simplify the Execute function, we have seperate func
 	enum SUBRETURN Turn    ( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 	enum SUBRETURN Straight( tVector &output, const flarb_msgs::VDState &state, cMap &map);
+	enum SUBRETURN GetInRow( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
-	// The segment we execute
+
+	// The current segment we execute
 	sSegment _segment;
 
 	// Current state in solving the segment

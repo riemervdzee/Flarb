@@ -17,6 +17,7 @@ void cSegmentFind::Destroy()
 
 }
 
+
 // Gets called when we switch to the SegmentFind controller
 void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString &str)
 {
@@ -29,7 +30,7 @@ void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString 
 	{
 		// We are cheating here, we just say it is blocked so AvoidObstacle gets called
 		case DIR_RETURN:
-			_state = SEGFIND_TURNAXIS1;
+			_state = SEGFIND_TURNAXIS;
 			return;
 
 		case DIR_LEFT:
@@ -51,15 +52,16 @@ void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString 
 	_state = SEGFIND_TURN1;
 }
 
+
 // Passes reference of "msg", is used as output
 // Executes the SegmentFind sub-controller based on the rest of the arguments
 enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
-	//
-	enum SUBRETURN ret = RET_BLOCKED;;
+	// Vars
+	enum SUBRETURN ret = RET_BLOCKED;
 	bool exec = false;
 	int tries = 0;
-	output = tVector();
+	output    = tVector();
 
 	while( !exec && tries < 5)
 	{
@@ -67,22 +69,19 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState
 
 		switch( _state)
 		{
-			case SEGFIND_TURNAXIS1:
-				_state = SEGFIND_TURNAXIS2;
+			case SEGFIND_TURNAXIS:
+				_state = SEGFIND_GETINROW;;
 				ret    = RET_BLOCKED;
 				exec   = true;
-				break;
-
-			case SEGFIND_TURNAXIS2:
-				ret  = RET_NEXT;
-				exec = true;
 				break;
 
 
 			case SEGFIND_TURN1:
 				ret = Turn( output, state, map);
 				if( ret == RET_SUCCESS)
+				{
 					exec = true;
+				}
 				else
 				{
 					_state = SEGFIND_DRIVESTRAIGHT;
@@ -94,7 +93,9 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState
 			case SEGFIND_DRIVESTRAIGHT:
 				ret = Straight( output, state, map);
 				if( ret == RET_SUCCESS)
+				{
 					exec = true;
+				}
 				else
 				{
 					_state = SEGFIND_TURN2;
@@ -106,11 +107,27 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState
 			case SEGFIND_TURN2:
 				ret = Turn( output, state, map);
 				if( ret == RET_SUCCESS)
+				{
 					exec = true;
+				}
+				else
+				{
+					_state = SEGFIND_GETINROW;
+					cout << "[SegmentFind] Turn2 completed" << endl;
+				}
+				break;
+
+
+			case SEGFIND_GETINROW:
+				ret = GetInRow( output, state, map);
+				if( ret == RET_SUCCESS)
+				{
+					exec = true;
+				}
 				else
 				{
 					exec = true;
-					cout << "[SegmentFind] Turn2 completed" << endl;
+					cout << "[SegmentFind] GetInRow completed" << endl;
 				}
 				break;
 		}
@@ -126,6 +143,8 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState
 	return ret;
 }
 
+
+// Turn 90 degrees routine
 enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// Get the difference between the goal-angle and the current angle
@@ -140,6 +159,7 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 	// Is the difference quite small? advance
 	if( difference > -FLARB_FIND_GOALANGLE && difference < FLARB_FIND_GOALANGLE)
 		return RET_NEXT;
+
 
 	// Strengthen difference, to get a better turn
 	difference *= 4;
@@ -156,11 +176,14 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 		cos( difference) * FLARB_FIND_SPEED,
 		sin( difference) * FLARB_FIND_SPEED);
 
-	float result = map.FindFreePath( FLARB_EXTRA_RADIUS, vec, output, false);
-	// TODO, do something with result
+	// TODO, do something with result?
+	//float result = map.FindFreePath( FLARB_EXTRA_RADIUS, vec, output, false);
+	map.FindFreePath( FLARB_EXTRA_RADIUS, vec, output, false);	
 	return RET_SUCCESS;
 }
 
+
+// Drive straight routine, skipping any rows when neccesary
 enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// TODO skip rows
@@ -188,4 +211,24 @@ enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDStat
 		_GoalDir += (2*M_PI);
 
 	return RET_NEXT;
+}
+
+
+// Gets into a row, so SegmentFind can easily take over
+enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDState &state, cMap &map)
+{
+	// First check if there is room at both sides
+	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.3f));
+	if(map.CheckIntersectionRegion( b))
+	{
+		return RET_NEXT;
+	}
+
+	// Just drive straight ahead
+	tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
+
+	// Attempt to find a path with an extra big radius
+	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
+
+	return RET_SUCCESS;
 }

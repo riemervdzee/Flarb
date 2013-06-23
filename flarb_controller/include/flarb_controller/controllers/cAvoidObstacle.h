@@ -22,7 +22,7 @@ class cAvoidObstacle
 {
 public:
 	// C-tor
-	cAvoidObstacle() : _StopCount( 0), _direction(0.0f) {}
+	cAvoidObstacle() : _Counter( 0), _GoalDir( 0.0f) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -36,9 +36,19 @@ public:
 	enum SUBRETURN Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
 private:
-	// Our private vars, see source for info
-	int _StopCount;
-	float _direction;
+	// To simplify the Execute function, we have seperate func
+	enum SUBRETURN Wait( tVector &output, const flarb_msgs::VDState &state, cMap &map);
+	enum SUBRETURN Turn( tVector &output, const flarb_msgs::VDState &state, cMap &map);
+
+
+	// Counter for waiting
+	int _Counter;
+
+	// Current state in solving the segment
+	enum AVOIDOBJ_STATES _state;
+
+	// The goaldir, meaning depends on state
+	float _GoalDir;
 };
 
 #endif // CLASS_AVOID_OBSTACLE_H

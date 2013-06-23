@@ -25,18 +25,18 @@ void cSegmentStart::Reinit( const flarb_msgs::VDState &state)
 enum SUBRETURN cSegmentStart::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// First check if there ain't room at both sides
-	// TODO check both sides
-	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.1f));
-	if(map.CheckIntersectionRegion( b))
+	tBoundingBox a( tVector( -0.5f, 0), tVector( 0.0f, 0.1f));
+	tBoundingBox b( tVector(  0.0f, 0), tVector( 0.5f, 0.1f));
+	if( map.CheckIntersectionRegion( a) && map.CheckIntersectionRegion( b))
 	{
 		return RET_NEXT;
 	}
 
 	tVector direction = tVector( 0.0f, 1.0f);
-	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
+	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
-	if(output.Length() > 0.4f)
-		output.setLength( 0.4f);
+	if(output.Length() > FLARB_START_SPEED)
+		output.setLength( FLARB_START_SPEED);
 
 	return RET_SUCCESS;
 }
