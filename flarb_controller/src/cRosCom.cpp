@@ -22,7 +22,7 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cController *controller)
 	_pubVector = rosNode->advertise<flarb_msgs::WaypointVector>( "/steering/waypoint", 1);
 
 	// Our vdmixer
-	_vdmixer = rosNode->serviceClient<flarb_msgs::State>("/vdmixer/state");
+	_vdmixer = rosNode->serviceClient<flarb_msgs::VDState>("/vdmixer/state");
 
 	return 0;
 }
@@ -39,7 +39,7 @@ void cRosCom::PublishWaypoint( const flarb_msgs::WaypointVector &msg)
 }
 
 // Calls the vd state service
-void cRosCom::GetVDState( flarb_msgs::State &data)
+void cRosCom::GetVDState( flarb_msgs::VDState &data)
 {
 	_vdmixer.call( data);
 }

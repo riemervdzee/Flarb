@@ -4,7 +4,7 @@
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
 
-#include "flarb_msgs/State.h"
+#include "flarb_msgs/VDState.h"
 #include "flarb_controller/Config.h"
 #include "flarb_controller/cMap.h"
 #include "flarb_controller/cController.h"
@@ -31,16 +31,16 @@ public:
 	void Destroy();
 
 	// Gets called when we switch to the SegmentFind controller
-	void Reinit( const flarb_msgs::State &state, const cInputString &str);
+	void Reinit( const flarb_msgs::VDState &state, const cInputString &str);
 
 	// Passes reference of "vector", is used as output
 	// Executes the FindSegment sub-controller based on the rest of the arguments
-	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map);
+	enum SUBRETURN Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
 private:
 	//
-	enum SUBRETURN Turn    ( tVector &output, const flarb_msgs::State &state, cMap &map);
-	enum SUBRETURN Straight( tVector &output, const flarb_msgs::State &state, cMap &map);
+	enum SUBRETURN Turn    ( tVector &output, const flarb_msgs::VDState &state, cMap &map);
+	enum SUBRETURN Straight( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
 	// The segment we execute
 	sSegment _segment;

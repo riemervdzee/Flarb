@@ -15,14 +15,14 @@ void cSegmentStart::Destroy()
 }
 
 // Gets called when we switch to the SegmentStart controller
-void cSegmentStart::Reinit( const flarb_msgs::State &state)
+void cSegmentStart::Reinit( const flarb_msgs::VDState &state)
 {
 
 }
 
 // Passes reference of "msg", is used as output
 // Executes the SegmentStart sub-controller based on the rest of the arguments
-enum SUBRETURN cSegmentStart::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cSegmentStart::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// First check if there ain't room at both sides
 	// TODO check both sides

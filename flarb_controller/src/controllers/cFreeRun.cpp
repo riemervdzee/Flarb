@@ -16,7 +16,7 @@ void cFreeRun::Destroy()
 }
 
 // Gets called when we switch to the FreeRun controller
-void cFreeRun::Reinit( const flarb_msgs::State &state)
+void cFreeRun::Reinit( const flarb_msgs::VDState &state)
 {
 
 }
@@ -25,7 +25,7 @@ void cFreeRun::Reinit( const flarb_msgs::State &state)
 // Executes the FreeRun sub-controller based on the rest of the arguments
 // State is the VDMixer state, map is the laserscan map, 
 // reinit tells whether it is the first time in a series the sub-controller is executed
-enum SUBRETURN cFreeRun::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cFreeRun::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// Try to drive straight ahead
 	tVector direction = tVector( 0.0f, 1.0f);

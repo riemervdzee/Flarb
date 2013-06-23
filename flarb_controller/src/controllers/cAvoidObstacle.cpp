@@ -17,7 +17,7 @@ void cAvoidObstacle::Destroy()
 }
 
 // Gets called when we switch to the AvoidObstacle controller
-void cAvoidObstacle::Reinit( const flarb_msgs::State &state)
+void cAvoidObstacle::Reinit( const flarb_msgs::VDState &state)
 {
 	// If this is the first time the sub-controller gets executed in a series
 	// Set the _count to a constant
@@ -32,7 +32,7 @@ void cAvoidObstacle::Reinit( const flarb_msgs::State &state)
 
 // Passes reference of "msg", is used as output
 // Executes the AvoidObstacle sub-controller based on the rest of the arguments
-enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// As long as _StopCount > 0, try to stop
 	if( _StopCount > 0)

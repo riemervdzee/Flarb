@@ -15,14 +15,14 @@ void cSegmentFollow::Destroy()
 
 }
 
-void cSegmentFollow::Reinit( const flarb_msgs::State &state)
+void cSegmentFollow::Reinit( const flarb_msgs::VDState &state)
 {
 
 }
 
 // Passes reference of "vector", is used as output
 // Executes the SegmentFollow sub-controller based on the rest of the arguments
-enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// First check if there is room at both sides
 	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.4f));

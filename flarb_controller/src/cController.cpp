@@ -3,7 +3,7 @@
 
 #include "ros/ros.h"
 
-#include "flarb_msgs/State.h"
+#include "flarb_msgs/VDState.h"
 #include "flarb_msgs/WaypointVector.h"
 #include "flarb_controller/cController.h"
 #include "flarb_controller/controllers/cSegmentStart.h"
@@ -82,7 +82,7 @@ void cController::Update()
 void cController::SmartphoneCallback( const std::string &str)
 {
 	// Get VDState
-	flarb_msgs::State vdState;
+	flarb_msgs::VDState vdState;
 	_rosCom.GetVDState( vdState);
 
 
@@ -131,7 +131,7 @@ void cController::MapCallback( cMap &map)
 
 	// Vars
 	tVector output;
-	flarb_msgs::State vdState;
+	flarb_msgs::VDState vdState;
 	enum SUBRETURN ret;
 	bool exec = false;
 	int tries = 0;

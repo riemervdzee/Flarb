@@ -4,7 +4,7 @@
 #include "ros/ros.h"
 #include "flarb_VDMixer/cController.h"
 
-#include "flarb_msgs/State.h"
+#include "flarb_msgs/VDState.h"
 #include "flarb_msgs/Axis.h"
 #include "flarb_msgs/Compass.h"
 #include "flarb_msgs/Encoder.h"
@@ -29,7 +29,7 @@ public:
     void Update();
 
 	// State callback
-	bool StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res);
+	bool StateCallback( flarb_msgs::VDState::Request &req, flarb_msgs::VDState::Response &res);
 
 private:
 	// Reference to the ros node handle

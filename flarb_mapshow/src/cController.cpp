@@ -66,7 +66,7 @@ void cController::Draw()
 		drawSetColor( gBlack);
 		for( unsigned int i = 0; i < _lastMap.list.size(); i++)
 		{
-			flarb_msgs::Object obj = _lastMap.list[i];
+			flarb_msgs::MapObject obj = _lastMap.list[i];
 			drawCircle( obj.x, obj.y, obj.radius, 8);
 		}
 	}

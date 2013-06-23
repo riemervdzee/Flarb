@@ -43,7 +43,7 @@ void cController::Update()
 /**
  * Service handler
  */
-bool cController::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res)
+bool cController::StateCallback( flarb_msgs::VDState::Request &req, flarb_msgs::VDState::Response &res)
 {
 	// Fill values
 	//res.positionX

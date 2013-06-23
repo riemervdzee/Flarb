@@ -68,7 +68,7 @@ float cMap::FindFreePath( const float protection_margin, const tVector &input, t
 		// Go through all objects, check for collisions
 		for( unsigned int i = 0; i < _map->list.size(); i++)
 		{
-			flarb_msgs::Object obj = _map->list[i];
+			flarb_msgs::MapObject obj = _map->list[i];
 			tVector c = tVector( obj.x, obj.y);
 			float r = (obj.radius + protection_margin);
 			tVector p1;
@@ -156,7 +156,7 @@ bool cMap::CheckIntersectionRegion( const tBoundingBox region)
 	// Go through all objects, check for collisions
 	for( unsigned int i = 0; i < _map->list.size(); i++)
 	{
-		flarb_msgs::Object obj = _map->list[i];
+		flarb_msgs::MapObject obj = _map->list[i];
 		tVector c = tVector( obj.x, obj.y);
 		float r   = obj.radius;
 

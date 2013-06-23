@@ -21,7 +21,7 @@ public:
 	void Destroy();
 
 	// Gets called when we switch to the SegmentFollow controller
-	void Reinit( const flarb_msgs::State &state);
+	void Reinit( const flarb_msgs::VDState &state);
 
 	// This is a stripped Execute function, as we only need to know the surrounding
 	// The sub-controller doesn't influence the surrounding at all..

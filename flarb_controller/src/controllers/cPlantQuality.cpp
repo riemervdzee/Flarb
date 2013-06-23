@@ -15,7 +15,7 @@ void cPlantQuality::Destroy()
 }
 
 // Gets called when we switch to the SegmentFollow controller
-void cPlantQuality::Reinit( const flarb_msgs::State &state)
+void cPlantQuality::Reinit( const flarb_msgs::VDState &state)
 {
 
 }

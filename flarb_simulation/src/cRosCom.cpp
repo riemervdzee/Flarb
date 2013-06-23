@@ -95,7 +95,7 @@ void cRosCom::SpeedCallback( const flarb_msgs::DualMotorSpeed msg)
 	_car->setGoal( msg);
 }
 
-bool cRosCom::StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res)
+bool cRosCom::StateCallback( flarb_msgs::VDState::Request &req, flarb_msgs::VDState::Response &res)
 {
 	// 0 <= _direction <= 2xPI
 	float direction = _car->getDirection() - (M_PI/2);

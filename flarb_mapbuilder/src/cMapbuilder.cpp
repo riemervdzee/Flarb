@@ -14,7 +14,7 @@ void cMapbuilder::Build( const cPointCloud &pc, flarb_msgs::MapList &msg)
 		// Special case: when the PC-obj has only one datapoint
 		if( obj.length == 1)
 		{
-			flarb_msgs::Object cobj;
+			flarb_msgs::MapObject cobj;
 			cobj.id     = i;
 			tVector p   = points[ obj.index];
 			cobj.x      = p.getX();
@@ -59,7 +59,7 @@ void cMapbuilder::Build( const cPointCloud &pc, flarb_msgs::MapList &msg)
 			else
 			{
 				// Construct the obj-circle for the previous points
-				flarb_msgs::Object cobj;
+				flarb_msgs::MapObject cobj;
 				cobj.id     = i;
 
 				// Depending on the count, set radius then push the result
@@ -86,7 +86,7 @@ void cMapbuilder::Build( const cPointCloud &pc, flarb_msgs::MapList &msg)
 		}
 
 		// Construct the last obj
-		flarb_msgs::Object cobj;
+		flarb_msgs::MapObject cobj;
 		cobj.id = i;
 
 		if( count == 1)

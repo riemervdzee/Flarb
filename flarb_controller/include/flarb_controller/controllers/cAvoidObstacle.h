@@ -4,11 +4,16 @@
 #include "flarb_controller/types/tVector.h"
 #include "flarb_controller/types/tMatrix.h"
 
-#include "flarb_msgs/State.h"
+#include "flarb_msgs/VDState.h"
 #include "flarb_controller/Config.h"
 #include "flarb_controller/cMap.h"
 #include "flarb_controller/cController.h"
 
+enum AVOIDOBJ_STATES {
+	AVOIDOBJ_WAIT1,
+	AVOIDOBJ_TURNAXIS,
+	AVOIDOBJ_WAIT2,
+};
 
 /*
  * AvoidObstacle sub-controller
@@ -24,11 +29,11 @@ public:
 	void Destroy();
 
 	// Gets called when we switch to the AvoidObstacle controller
-	void Reinit( const flarb_msgs::State &state);
+	void Reinit( const flarb_msgs::VDState &state);
 
 	// Passes reference of "vector", is used as output
 	// Executes the AvoidObstacle sub-controller based on the rest of the arguments
-	enum SUBRETURN Execute( tVector &output, const flarb_msgs::State &state, cMap &map);
+	enum SUBRETURN Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
 private:
 	// Our private vars, see source for info

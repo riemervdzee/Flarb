@@ -18,7 +18,7 @@ void cSegmentFind::Destroy()
 }
 
 // Gets called when we switch to the SegmentFind controller
-void cSegmentFind::Reinit( const flarb_msgs::State &state, const cInputString &str)
+void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString &str)
 {
 	// Set vars
 	_segment = str.segments[ str.currentSegment];
@@ -53,7 +53,7 @@ void cSegmentFind::Reinit( const flarb_msgs::State &state, const cInputString &s
 
 // Passes reference of "msg", is used as output
 // Executes the SegmentFind sub-controller based on the rest of the arguments
-enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	//
 	enum SUBRETURN ret = RET_BLOCKED;;
@@ -126,7 +126,7 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::State &
 	return ret;
 }
 
-enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// Get the difference between the goal-angle and the current angle
 	float difference = _GoalDir - state.response.axisZ;
@@ -161,7 +161,7 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::State &sta
 	return RET_SUCCESS;
 }
 
-enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::State &state, cMap &map)
+enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// TODO skip rows
 	_state = SEGFIND_TURN2;

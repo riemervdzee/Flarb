@@ -5,7 +5,7 @@
 #include "ros/ros.h"
 #include "sensor_msgs/LaserScan.h"
 #include "flarb_msgs/DualMotorSpeed.h"
-#include "flarb_msgs/State.h"
+#include "flarb_msgs/VDState.h"
 #include "flarb_simulation/cMap.h"
 
 // forward declaration of cController
@@ -34,7 +34,7 @@ private:
 	void SpeedCallback( const flarb_msgs::DualMotorSpeed msg);
 
 	// State callback
-	bool StateCallback( flarb_msgs::State::Request &req, flarb_msgs::State::Response &res);
+	bool StateCallback( flarb_msgs::VDState::Request &req, flarb_msgs::VDState::Response &res);
 
 
 	// The actionstring we send to the controller

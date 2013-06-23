@@ -6,7 +6,7 @@
 #include "std_msgs/String.h"
 #include "flarb_msgs/WaypointVector.h"
 #include "flarb_msgs/MapList.h"
-#include "flarb_msgs/State.h"
+#include "flarb_msgs/VDState.h"
 #include "flarb_controller/cMap.h"
 
 
@@ -28,7 +28,7 @@ public:
 	void PublishWaypoint( const flarb_msgs::WaypointVector &msg);
 
 	// Calls the VD service and returns the response
-	void GetVDState( flarb_msgs::State &data);
+	void GetVDState( flarb_msgs::VDState &data);
 
 private:
 	// We received a map
