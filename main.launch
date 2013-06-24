@@ -17,7 +17,5 @@
 	<node name="compass" pkg="flarb_compass" type="compass" respawn="true" >
 		<param name="UseCalibrated" value="true" />
 	</node>
-	<node name="NMEA"        pkg="flarb_gps"         type="NMEA"        respawn="true" />
-	<node name="inclination" pkg="flarb_inclination" type="inclination" respawn="true" />
-	<node name="VDMixer"     pkg="flarb_VDMixer"     type="VDMixer"     respawn="true" />
+	<node name="VDMixer" pkg="flarb_VDMixer" type="VDMixer" respawn="true" />
 </launch>
