@@ -1,49 +1,32 @@
-// Include order: cppstd, ROS, Boost, own-module includes
+#include "finch/net/event_loop.h"
+#include "app_server.h"
+
 #include <iostream>
 
-#include "ros/ros.h"
-#include "std_msgs/String.h"
-
-#include "flarb_mobile/cController.h"
-using namespace std;
-
-// Node defines
-#define NODE_NAME       "mobile"  // Name of the module
-#define NODE_FREQUENCY  30         // Amount of loops per second
-#define NODE_CALLBACKS  1          // 0 = false, 1 = true. use when the node has services to offer
-
-/*
- * Main entry of the example node
- */
-int main(int argc, char **argv)
+class my_server: public server
 {
-	// Pass main-arguments to ros, third argument is node-name
-	ros::init( argc, argv, NODE_NAME);
-
-	// Create a cController object
-	cController controller;
-	controller.Create();
-	
-	// Update timer
-	ros::Rate loop_rate( NODE_FREQUENCY);
-
-	// Loop
-	while (ros::ok())
+public:
+	void tour(int first_direction)
 	{
-		controller.Update();
-
-		// Only use if we have callbacks/services
-#if NODE_CALLBACKS
-		ros::spinOnce();
-#endif
-
-		// Sleep for a little while
-		loop_rate.sleep();
+		std::cout << "Tour, first = " << first_direction << std::endl;
 	}
 
-	// Destroy the controller obj
-	controller.Destroy();
+	void navigate(const std::string& directions)
+	{
+		std::cout << "Navigate, directions = " << directions << std::endl;
+	}
 
-	// return succes
-	return 0;
+	void find_damaged(int first_direction)
+	{
+		std::cout << "Find damaged, first = " << first_direction << std::endl;
+	}
+};
+
+int main(int argc, char* argv[])
+{
+    my_server serv;
+
+    finch::net::event_loop ev;
+    ev.run();
 }
+

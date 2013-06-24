@@ -27,8 +27,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 #rosbuild_add_boost_directories()
 #rosbuild_link_boost(${PROJECT_NAME} thread)
 #rosbuild_add_executable(example examples/example.cpp)
-#target_link_libraries(example ${PROJECT_NAME})
+#target_link_libraries(example ${PROJECT_NAME}) -std=c++11
 
-rosbuild_add_executable(mobile src/main.cpp src/cController.cpp src/commands.pb.cc src/cServer.cpp)
-target_link_libraries(mobile protobuf)
+rosbuild_add_executable(mobile src/main.cpp src/app_client.cpp src/commands.pb.cc)
+rosbuild_add_compile_flags(mobile -std=c++11)
+target_link_libraries(mobile ${PROJECT_SOURCE_DIR}/libfinch.a ev protobuf)
 
