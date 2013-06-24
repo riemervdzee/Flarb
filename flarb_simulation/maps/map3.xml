@@ -1,0 +1,224 @@
+<?xml version="1.0" ?>
+<map>
+	<car>
+		<x> 0.45</x>
+		<y>-0.7</y>
+		<direction>1.53</direction>
+	</car>
+	<factor>5</factor>
+	<string>S - 0 - 2L - 1L - 2L - 1R - 1L - 1R - 1R - F</string>
+	<plants_group>
+		<plant>0.10 00.00</plant>
+		<plant>0.10 00.15</plant>
+		<plant>0.10 00.30</plant>
+		<plant>0.10 00.45</plant>
+		<plant>0.10 00.60</plant>
+		<plant>0.10 00.75</plant>
+		<plant>0.10 00.90</plant>
+		<plant>0.10 01.05</plant>
+		<plant>0.10 01.20</plant>
+		<plant>0.10 01.35</plant>
+
+		<plant>0.10 01.65</plant>
+		<plant>0.10 01.80</plant>
+		<plant>0.10 01.95</plant>
+		<plant>0.10 02.10</plant>
+
+		<plant>0.10 02.40</plant>
+		<plant>0.10 02.55</plant>
+		<plant>0.10 02.70</plant>
+		<plant>0.10 02.85</plant>
+		<plant>0.10 03.00</plant>
+
+
+		<plant>0.85 00.00</plant>
+		<plant>0.85 00.15</plant>
+		<plant>0.85 00.30</plant>
+		<plant>0.85 00.45</plant>
+
+		<plant>0.85 00.75</plant>
+		<plant>0.85 00.90</plant>
+		<plant>0.85 01.05</plant>
+		<plant>0.85 01.20</plant>
+		<plant>0.85 01.35</plant>
+		<plant>0.85 01.50</plant>
+		<plant>0.85 01.65</plant>
+		<plant>0.85 01.80</plant>
+		<plant>0.85 01.95</plant>
+
+		<plant>0.85 02.25</plant>
+		<plant>0.85 02.40</plant>
+		<plant>0.85 02.55</plant>
+		<plant>0.85 02.70</plant>
+		<plant>0.85 02.85</plant>
+		<plant>0.85 03.00</plant>
+
+
+		<plant>1.60 00.00</plant>
+		<plant>1.60 00.15</plant>
+		<plant>1.60 00.30</plant>
+		<plant>1.60 00.45</plant>
+		<plant>1.60 00.60</plant>
+		<plant>1.60 00.75</plant>
+
+		<plant>1.60 01.05</plant>
+		<plant>1.60 01.20</plant>
+		<plant>1.60 01.35</plant>
+		<plant>1.60 01.50</plant>
+		<plant>1.60 01.65</plant>
+		<plant>1.60 01.80</plant>
+		<plant>1.60 01.95</plant>
+		<plant>1.60 02.10</plant>
+
+		<plant>1.60 02.40</plant>
+		<plant>1.60 02.55</plant>
+		<plant>1.60 02.70</plant>
+		<plant>1.60 02.85</plant>
+		<plant>1.60 03.00</plant>
+
+
+		<plant>2.35 00.00</plant>
+		<plant>2.35 00.15</plant>
+		<plant>2.35 00.30</plant>
+		<plant>2.35 00.45</plant>
+
+		<plant>2.35 00.75</plant>
+		<plant>2.35 00.90</plant>
+		<plant>2.35 01.05</plant>
+		<plant>2.35 01.20</plant>
+		<plant>2.35 01.35</plant>
+		<plant>2.35 01.50</plant>
+		<plant>2.35 01.65</plant>
+		<plant>2.35 01.80</plant>
+
+		<plant>2.35 02.10</plant>
+		<plant>2.35 02.25</plant>
+		<plant>2.35 02.40</plant>
+
+		<plant>2.35 02.70</plant>
+		<plant>2.35 02.85</plant>
+		<plant>2.35 03.00</plant>
+
+
+		<plant>3.10 00.00</plant>
+		<plant>3.10 00.15</plant>
+		<plant>3.10 00.30</plant>
+		<plant>3.10 00.45</plant>
+		<plant>3.10 00.60</plant>
+		<plant>3.10 00.75</plant>
+		<plant>3.10 00.90</plant>
+
+
+		<plant>3.10 01.35</plant>
+		<plant>3.10 01.50</plant>
+
+		<plant>3.10 01.80</plant>
+		<plant>3.10 01.95</plant>
+		<plant>3.10 02.10</plant>
+		<plant>3.10 02.25</plant>
+		<plant>3.10 02.40</plant>
+
+		<plant>3.10 02.70</plant>
+		<plant>3.10 02.85</plant>
+		<plant>3.10 03.00</plant>
+
+
+		<plant>3.85 00.00</plant>
+		<plant>3.85 00.15</plant>
+		<plant>3.85 00.30</plant>
+		<plant>3.85 00.45</plant>
+		<plant>3.85 00.60</plant>
+
+		<plant>3.85 00.90</plant>
+		<plant>3.85 01.05</plant>
+		<plant>3.85 01.20</plant>
+
+		<plant>3.85 01.50</plant>
+		<plant>3.85 01.65</plant>
+		<plant>3.85 01.80</plant>
+		<plant>3.85 01.95</plant>
+		<plant>3.85 02.10</plant>
+		<plant>3.85 02.25</plant>
+		<plant>3.85 02.40</plant>
+		<plant>3.85 02.55</plant>
+
+		<plant>3.85 02.85</plant>
+		<plant>3.85 03.00</plant>
+
+
+		<plant>4.60 00.00</plant>
+		<plant>4.60 00.15</plant>
+		<plant>4.60 00.30</plant>
+		<plant>4.60 00.45</plant>
+
+		<plant>4.60 00.75</plant>
+		<plant>4.60 00.90</plant>
+		<plant>4.60 01.05</plant>
+		<plant>4.60 01.20</plant>
+		<plant>4.60 01.35</plant>
+		<plant>4.60 01.50</plant>
+		<plant>4.60 01.65</plant>
+		<plant>4.60 01.80</plant>
+
+		<plant>4.60 02.10</plant>
+		<plant>4.60 02.25</plant>
+		<plant>4.60 02.40</plant>
+		<plant>4.60 02.55</plant>
+		<plant>4.60 02.70</plant>
+		<plant>4.60 02.85</plant>
+		<plant>4.60 03.00</plant>
+
+		<plant>4.70 01.05</plant>
+		<plant>4.80 01.05</plant>
+		<plant>4.90 01.05</plant>
+		<plant>5.00 01.05</plant>
+		<plant>5.10 01.05</plant>
+		<plant>5.20 01.05</plant>
+
+		<plant>5.35 00.00</plant>
+		<plant>5.35 00.15</plant>
+		<plant>5.35 00.30</plant>
+		<plant>5.35 00.45</plant>
+
+		<plant>5.35 00.75</plant>
+		<plant>5.35 00.90</plant>
+		<plant>5.35 01.05</plant>
+		<plant>5.35 01.20</plant>
+		<plant>5.35 01.35</plant>
+
+		<plant>5.35 01.65</plant>
+		<plant>5.35 01.80</plant>
+		<plant>5.35 01.95</plant>
+		<plant>5.35 02.10</plant>
+		<plant>5.35 02.25</plant>
+		<plant>5.35 02.40</plant>
+		<plant>5.35 02.55</plant>
+		<plant>5.35 02.70</plant>
+
+		<plant>5.35 03.00</plant>
+
+
+		<plant>6.10 00.00</plant>
+		<plant>6.10 00.15</plant>
+		<plant>6.10 00.30</plant>
+		<plant>6.10 00.45</plant>
+		<plant>6.10 00.60</plant>
+		<plant>6.10 00.75</plant>
+		<plant>6.10 00.90</plant>
+		<plant>6.10 01.05</plant>
+
+		<plant>6.10 01.35</plant>
+		<plant>6.10 01.50</plant>
+		<plant>6.10 01.65</plant>
+		<plant>6.10 01.80</plant>
+		<plant>6.10 01.95</plant>
+
+		<plant>6.10 02.25</plant>
+		<plant>6.10 02.40</plant>
+
+		<plant>6.10 02.70</plant>
+		<plant>6.10 02.85</plant>
+		<plant>6.10 03.00</plant>
+
+	</plants_group>
+</map>
