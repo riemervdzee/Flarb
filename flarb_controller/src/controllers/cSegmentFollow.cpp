@@ -17,7 +17,8 @@ void cSegmentFollow::Destroy()
 
 void cSegmentFollow::Reinit( const flarb_msgs::VDState &state)
 {
-	_GoalDistance = state.response.distance + FLARB_FOLLOW_OFFSET;
+	_StartDistance = state.response.distance;
+	_GoalDistance  = state.response.distance + FLARB_FOLLOW_OFFSET;
 }
 
 // Passes reference of "vector", is used as output
@@ -45,12 +46,23 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	if( result < 0.5)
 		result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
-	// Are we still stuck?
+	// Attempt again but with false, note that this might not return a solution..
 	if( result < 0.1)
 		result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
+	// Are we really stuck?
 	if( result < 0.1)
+	{
+		cout << "We are stuck, turning 180 degrees within row" << endl;
+		cout << "StartDistance " << _StartDistance << endl;
+		cout << "PrevGoalDist  " << _GoalDistance << endl;
+		cout << "CurrentDist   " << state.response.distance << endl;
+		_GoalDistance = (state.response.distance - _StartDistance) + state.response.distance - FLARB_FOLLOW_DEC_BLOCKED;
+		cout << "CurGoalDist  " << _GoalDistance << endl;
 		return RET_BLOCKED;
+	}
 	else
+	{
 		return RET_SUCCESS;
+	}
 }

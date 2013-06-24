@@ -17,7 +17,7 @@ class cSegmentFollow
 {
 public:
 	// C-tor
-	cSegmentFollow() : _GoalDistance( 0.0f) {}
+	cSegmentFollow() : _StartDistance(0.0f), _GoalDistance( 0.0f) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -32,6 +32,7 @@ public:
 
 private:
 	// We try to get atleast past this goal distance after checking for segment-end
+	float _StartDistance;
 	float _GoalDistance;
 };
 
