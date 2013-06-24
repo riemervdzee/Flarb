@@ -12,6 +12,7 @@
 // Canbus protocol
 #include "flarb_canbus/protocol/protocol.h"
 #include "flarb_canbus/protocol/protocol_dual_dc_motor_driver.h"
+#include "flarb_canbus/protocol/protocol_gpo_controller.h"
 
 // Prototype class
 struct cCanbus;
@@ -24,7 +25,7 @@ class cRosCom
 {
 public:
 	// C-tor
-	cRosCom() : _devSpeedID( -1) {}
+	cRosCom() : _devSpeedID( -1), _devGPIOID( -1), SwitchLeftRight( false), SwitchForwardBackward( false) {}
 
 	// Functions executed at the beginning and end of the Application
 	int Create( ros::NodeHandle *rosNode, cCanbus *canbus);
@@ -43,6 +44,7 @@ private:
 
 	// ID of every device we are connected to
 	int _devSpeedID;
+	int _devGPIOID;
 
 	// Handle to the rosnode __ROSCOM IS NOT THE OWNER OF THIS OBJ__
 	ros::NodeHandle* _rosNode;
@@ -55,6 +57,10 @@ private:
 
 	// Publisher to /canbus/encoder
 	ros::Publisher _pubEncoder;
+
+	// To make things Leon-proof
+	bool SwitchLeftRight;
+	bool SwitchForwardBackward;
 };
 
 #endif // CLASS_ROSCOM_H

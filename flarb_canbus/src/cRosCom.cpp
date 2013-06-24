@@ -35,6 +35,11 @@ union mix_t {
  */
 int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 {
+	// Get parameters
+	ros::NodeHandle n("~");
+	n.param<bool>(       "SwitchLeftRight",       SwitchLeftRight, false);
+	n.param<bool>( "SwitchForwardBackward", SwitchForwardBackward, false);
+
 	// Set canbus ref
 	_canbus  = canbus;
 	_rosNode = rosNode;
@@ -129,8 +134,8 @@ void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
 
 	switch( opcode)
 	{
-		// We received an encoder message
-		case dual_motor_driver_opcodes::OP_SET_ENCODER:
+		// We received a motor status message
+		case dual_motor_driver_opcodes::OP_STATUS:
 		{
 			flarb_msgs::DualMotorEncoder msg;
 			mix_t val;
@@ -139,9 +144,22 @@ void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
 			val.c[1] = canmessage.data[2];
 			val.c[2] = canmessage.data[3];
 			val.c[3] = canmessage.data[4];
+			// TODO get 5th byte, only when Leon updates firmware
 
 			msg.speed_left  = val.s16.hi;
 			msg.speed_right = val.s16.lo;
+
+			// Enter data depending on we need to switch left/right
+			if( SwitchLeftRight)
+			{
+				msg.speed_right = val.s16.hi;
+				msg.speed_left  = val.s16.lo;
+			}
+			else
+			{
+				msg.speed_left  = val.s16.hi;
+				msg.speed_right = val.s16.lo;
+			}
 
 			_pubEncoder.publish( msg);
 
@@ -173,10 +191,27 @@ void cRosCom::SendSpeed( const flarb_msgs::DualMotorSpeedPtr msg)
 	canmessage.identifier = _devSpeedID;
 	canmessage.length     = 6;
 
-	//
+	// Val
 	mix_t val;
-	val.s16.hi = msg->speed_left;
-	val.s16.lo = msg->speed_right;
+
+	// Enter data depending on we need to switch left/right
+	if( SwitchLeftRight)
+	{
+		val.s16.hi = msg->speed_right;
+		val.s16.lo = msg->speed_left;
+	}
+	else
+	{
+		val.s16.hi = msg->speed_left;
+		val.s16.lo = msg->speed_right;
+	}
+
+	// Are forward and backward switched?
+	if( SwitchForwardBackward)
+	{
+		val.s16.hi *= -1;
+		val.s16.lo *= -1;
+	}
 
 	// Copy data
 	canmessage.data[0] = dual_motor_driver_opcodes::OP_SET_SPEED;

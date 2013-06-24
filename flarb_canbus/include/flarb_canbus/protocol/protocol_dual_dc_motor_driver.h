@@ -7,7 +7,7 @@ struct dual_motor_driver_opcodes
 {
         enum {
                 OP_SET_SPEED = crisis_header::END_RESERVED + 1,
-                OP_SET_ENCODER,
+                OP_STATUS,
         };
 };
 
@@ -25,18 +25,15 @@ struct dual_motor_driver_speed
         uint8_t flags;
 
         enum {
-                FLAG_BRAKE_0 = (1 << 0),
-                FLAG_BRAKE_1 = (1 << 1),
+                FLAG_BRAKE_LEFT = (1 << 0),
+                FLAG_BRAKE_RIGHT = (1 << 1),
         };
 } PACKED;
 
-/*
- * The speed field is the most recent measured frequency of the encoder.
- */
-
-struct dual_motor_driver_encoder
+struct dual_motor_driver_status
 {
         int16_t speed[2];
+        uint8_t error;
 } PACKED;
 
 #endif /* protocol_dual_dc_motor_driver.h */
