@@ -36,7 +36,7 @@ bool cController::Create()
 	_segmentFollow->Create();
 	_segmentFind->Create();
 	_avoidObstacle->Create();
-	_plantQuality->Create();
+	_plantQuality->Create( &_rosCom);
 	_freeRun->Create();
 
 	return true;
@@ -199,6 +199,7 @@ void cController::MapCallback( cMap &map)
 				{
 					cout << "[controller] Switching to segment follow1" << endl;
 					_segmentFollow->Reinit( vdState);
+					_plantQuality->Reinit( vdState);
 					_state = STATE_SEGMENT_FOLLOW;
 				}
 				break;
@@ -207,7 +208,10 @@ void cController::MapCallback( cMap &map)
 			case STATE_SEGMENT_FOLLOW:
 				ret = _segmentFollow->Execute( output, vdState, map);
 				if( ret == RET_SUCCESS)
+				{
+					_plantQuality->Execute( map);
 					exec = true;
+				}
 				else if ( ret == RET_NEXT)
 				{
 					if( _inputString.IsNextSegment())
@@ -240,6 +244,7 @@ void cController::MapCallback( cMap &map)
 				{
 					cout << "[controller] Switching to segment follow2" << endl;
 					_segmentFollow->Reinit( vdState);
+					_plantQuality->Reinit( vdState);
 					_inputString.currentSegment++;
 					_state = STATE_SEGMENT_FOLLOW;
 				}

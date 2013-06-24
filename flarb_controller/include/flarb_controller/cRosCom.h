@@ -27,6 +27,9 @@ public:
 	// Publishes a WaypointVector
 	void PublishWaypoint( const flarb_msgs::WaypointVector &msg);
 
+	// Publishes a PlantQualityRequest
+	void PublishPlantQualityRequest( bool left, bool right);
+
 	// Calls the VD service and returns the response
 	void GetVDState( flarb_msgs::VDState &data);
 
@@ -47,7 +50,8 @@ private:
 	// Our subscribers and publishers
 	ros::Subscriber _subMap;         //  "/map"
 	ros::Subscriber _subSmartphone;  //  "/smartphone/input"
-	ros::Publisher  _pubVector;      //  "/steering/waypoint/"
+	ros::Publisher  _pubVector;      //  "/steering/waypoint"
+	ros::Publisher  _pubPQRequest;   //  "/plantquality/request"
 
 	// The vdmixer service client
 	ros::ServiceClient _vdmixer;
