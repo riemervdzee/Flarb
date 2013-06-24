@@ -47,6 +47,9 @@ int cRosCom::Create( ros::NodeHandle *rosNode, cCanbus *canbus)
 	// Subscribe to /canbus/speed
 	_subSpeed = _rosNode->subscribe<flarb_msgs::DualMotorSpeedPtr>( "/canbus/speed", 1, &cRosCom::SendSpeed, this);
 
+	// Subscribe to /canbus/signal
+	_subSignal = _rosNode->subscribe<flarb_msgs::Signal>( "/canbus/signal", 1, &cRosCom::SendSignal, this);
+
 	// We publish at /canbus/encoder
 	_pubEncoder = _rosNode->advertise<flarb_msgs::DualMotorEncoder>( "/canbus/encoder", 1);
 
@@ -107,13 +110,18 @@ void cRosCom::MessageReceived( const struct CanMessage &canmessage)
 void cRosCom::ProcessHelloMessage( const struct CanMessage &canmessage)
 {
 	uint8_t device_type = canmessage.data[1];
-	/* bytes from 2 to 5 contain the id */
 
 	switch( device_type)
 	{
 		case crisis_hello::DUAL_DC_MOTOR_DRIVER:
 			cout << "[OPCODE] Dual DC motor driver registered" << endl;
 			_devSpeedID = canmessage.identifier;
+			break;
+
+		// TODO use real value..
+		case 2:
+			cout << "[OPCODE] GPO registered" << endl;
+			_devGPIOID = canmessage.identifier;
 			break;
 
 		default:
@@ -145,9 +153,6 @@ void cRosCom::ProcessDeviceSpeedMessage( const struct CanMessage &canmessage)
 			val.c[2] = canmessage.data[3];
 			val.c[3] = canmessage.data[4];
 			// TODO get 5th byte, only when Leon updates firmware
-
-			msg.speed_left  = val.s16.hi;
-			msg.speed_right = val.s16.lo;
 
 			// Enter data depending on we need to switch left/right
 			if( SwitchLeftRight)
@@ -220,6 +225,40 @@ void cRosCom::SendSpeed( const flarb_msgs::DualMotorSpeedPtr msg)
 	canmessage.data[3] = val.c[2];
 	canmessage.data[4] = val.c[3];
 	canmessage.data[5] = msg->flags;
+
+	// Forward message to canbus
+	_canbus->PortSend( canmessage);
+}
+
+
+/**
+ * Puts a GPO message on the Canbus
+ */
+void cRosCom::SendSignal( const flarb_msgs::Signal msg)
+{
+	if( _devGPIOID == -1)
+	{
+		cout << "[ROSCOM] GPO_driver not connected!" << endl;
+		return;
+	}
+
+	// Construct a canbus message
+	struct CanMessage canmessage;
+	canmessage.identifier = _devGPIOID;
+	canmessage.length     = 2;
+
+	// TODO use correct Opcode
+	canmessage.data[0] = dual_motor_driver_opcodes::OP_SET_SPEED;
+
+	// TODO use correct flags
+	char flags = 0;
+	flags |= (1 << 0); // Sirene
+	if( msg.ResultLeft)
+		flags |= (1 << 1); // Lights left
+	if( msg.ResultRight)
+		flags |= (1 << 2); // Lights right
+
+	canmessage.data[1] = flags;
 
 	// Forward message to canbus
 	_canbus->PortSend( canmessage);
