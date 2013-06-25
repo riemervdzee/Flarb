@@ -250,13 +250,13 @@ void cRosCom::SendSignal( const flarb_msgs::Signal msg)
 	// TODO use correct Opcode
 	canmessage.data[0] = dual_motor_driver_opcodes::OP_SET_SPEED;
 
-	// TODO use correct flags
+	// Set flags
 	char flags = 0;
 	flags |= (1 << 0); // Sirene
 	if( msg.ResultLeft)
-		flags |= (1 << 1); // Lights left
+		flags |= (1 << 3); // Lights left
 	if( msg.ResultRight)
-		flags |= (1 << 2); // Lights right
+		flags |= (1 << 4); // Lights right
 
 	canmessage.data[1] = flags;
 
