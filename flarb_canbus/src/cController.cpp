@@ -27,7 +27,12 @@ bool cController::Create()
 	_roscom.Create( &_rosNode, &_canbus);
 
 	// Init Canbus object
-	_canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, CANBUS_SPEED, &_roscom, true);
+	int ret = -1;
+	while (ret != 0 && ros::ok())
+	{
+		ret = _canbus.PortOpen( SERIAL_PORT, SERIAL_BAUD, CANBUS_SPEED, &_roscom, true);
+		sleep( 1);
+	}
 
 	return true;
 }
