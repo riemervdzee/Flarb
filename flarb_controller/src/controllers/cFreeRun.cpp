@@ -33,8 +33,8 @@ enum SUBRETURN cFreeRun::Execute( tVector &output, const flarb_msgs::VDState &st
 
 	if( result > 0.25f)
 	{
-		if(output.Length() > 0.4f)
-			output.setLength( 0.4f);
+		if(output.Length() > 0.2f)
+			output.setLength( 0.2f);
 		return RET_SUCCESS;
 	}
 
@@ -44,8 +44,8 @@ enum SUBRETURN cFreeRun::Execute( tVector &output, const flarb_msgs::VDState &st
 
 	if( result > 0.25f)
 	{
-		if(output.Length() > 0.4f)
-			output.setLength( 0.4f);
+		if(output.Length() > 0.2f)
+			output.setLength( 0.2f);
 		return RET_SUCCESS;
 	}
 
@@ -55,8 +55,8 @@ enum SUBRETURN cFreeRun::Execute( tVector &output, const flarb_msgs::VDState &st
 
 	if( result > 0.25f)
 	{
-		if(output.Length() > 0.4f)
-			output.setLength( 0.4f);
+		if(output.Length() > 0.2f)
+			output.setLength( 0.2f);
 		return RET_SUCCESS;
 	}
 
