@@ -24,6 +24,13 @@ public:
 
     // Updates the Node
     void Update();
+    
+    // Functions called when opening
+	int Openport();
+	int configure();
+
+	// Calibrate
+	int Calibration();
 
 private:
 	// Reference to the ros node handle
@@ -35,10 +42,6 @@ private:
 	// Serial obj
 	cSerial _serial;
 
-	// Functions called when opening
-	int Openport();
-	int configure();
-
 	// Actual reads data from the port
 	int readDeviceCal();
 	int readDeviceRaw();
@@ -48,9 +51,6 @@ private:
 
 	// Whether to use calibrated or raw
 	bool UseCalibrated;
-
-	//
-	int Calibration();
 };
 
 #endif // CLASS_CONTROLLER_H

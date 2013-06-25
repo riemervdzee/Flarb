@@ -32,3 +32,5 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 rosbuild_add_executable(compass src/main.cpp src/cController.cpp src/cSerial.cpp)
 
+rosbuild_add_executable(calibrate src/main_calibrate.cpp src/cController.cpp src/cSerial.cpp)
+
