@@ -1,4 +1,8 @@
 <launch>
 	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
-	<node name="canbus"       pkg="flarb_canbus"       type="canbus" />
+
+	<node name="canbus" pkg="flarb_canbus" type="canbus" respawn="true" >
+		<param name="SwitchLeftRight"       value="false" />
+		<param name="SwitchForwardBackward" value="true" />
+	</node>
 </launch>
