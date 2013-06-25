@@ -16,6 +16,8 @@
 #define FLARB_FOLLOW_SPEED        0.15f // Speed
 #define FLARB_FOLLOW_OFFSET      12.00f // The M we need to cross before we start looking for segment-ends
 #define FLARB_FOLLOW_DEC_BLOCKED  2.00f
+#define FLARB_FOLLOW_APPLY_COR_X      0 // Apply the correction-value greater
+#define FLARB_FOLLOW_CORRECT_X    1.00f
 
 // cSegmentFind
 #define FLARB_FIND_SPEED          0.10f

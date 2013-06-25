@@ -63,6 +63,10 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	}
 	else
 	{
+		// Add a correction vector
+#if FLARB_FOLLOW_APPLY_COR_X
+		result.setX( result.getX() * FLARB_FOLLOW_CORRECT_X);
+#endif
 		return RET_SUCCESS;
 	}
 }
