@@ -46,10 +46,11 @@ private:
 	// Only used in raw mode, to clear unwanted data
 	char Buffer[ BUFFER_SIZE];
 
-	//
+	// Whether to use calibrated or raw
 	bool UseCalibrated;
 
-	//int Calibration();
+	//
+	int Calibration();
 };
 
 #endif // CLASS_CONTROLLER_H

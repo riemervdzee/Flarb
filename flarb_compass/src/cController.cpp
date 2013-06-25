@@ -375,6 +375,8 @@ int cController::checksum(char *s) {
     return c;
 }
 
+#endif
+
 /*
  *	Calibration Mode
  */
@@ -383,61 +385,42 @@ int cController::Calibration()
 	{	
 	  	cout<<"Starting Calibration"<<endl;
 		sleep(3);
-		_serial.write("h", 1);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("factory", 7);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("ps=6", 4);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("em=e", 4);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("et=e", 4);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("ut=c", 4);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("sn=t", 4);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
-		_serial.write("mpcal=e", 7);
-		usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
+		_serial.writeString("h\n");
+
+		_serial.writeString("factory\n");
+
+		_serial.writeString("ps=6\n");
+
+		_serial.writeString("em=e\n");
+
+		_serial.writeString("et=e\n");
+
+		_serial.writeString("ut=c\n");
+
+		_serial.writeString("sn=t\n");
+
+		_serial.writeString("mpcal=e\n");
+
 		cout<<"Rotate the unit through two 360 degree circles while maintaining a level position"<<endl;
 		cout<<"The rotations should be no faster than 30 seconds each."<<endl;
 		cout<<"Press: 'Any key' when finished"<<endl;		
-		_serial.write("go", 2);
-	    usleep(100);
-		_serial.write("\n", 1);
-		usleep(100);
+		_serial.writeString("go\n");
 
 		// Wait till user input
 		cin.ignore();
 		cin.get();
 
 		usleep(100);
-		_serial.write("h", 1);
+		_serial.writeString("h\n");
 		usleep(100);
-		_serial.write("mpcal=d", 7);
+		_serial.writeString("mpcal=d\n");
 		usleep(100);
-		_serial.write("save", 4);
+		_serial.writeString("save\n");
 		usleep(100);
-		_serial.write("go", 2);
+		_serial.writeString("go\n");
 		cout<<"Config saved"<<endl;
 		return 1;
 	}
 }
-#endif
+
 
