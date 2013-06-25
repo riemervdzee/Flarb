@@ -44,9 +44,9 @@ void cController::Update()
 
 	// Put a limit of the vector at 0.5
 	float size = sqrt(x*x + y*y);
-	if(size > 0.5f)
+	if(size > 0.2f)
 	{
-		float L = 0.5f / size;
+		float L = 0.2f / size;
 		x *= L;
 		y *= L;
 	}
