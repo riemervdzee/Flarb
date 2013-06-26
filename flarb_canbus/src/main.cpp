@@ -9,7 +9,7 @@ using namespace std;
 
 // Node defines
 #define NODE_NAME       "canbus"   // Name of the module
-#define NODE_FREQUENCY  30         // Amount of loops per second
+#define NODE_FREQUENCY  40         // Amount of loops per second
 #define NODE_CALLBACKS  1          // 0 = false, 1 = true. use when the node has services to offer
 
 /*

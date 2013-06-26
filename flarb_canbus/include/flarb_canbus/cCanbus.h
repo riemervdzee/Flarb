@@ -6,8 +6,6 @@
 // Class prototypes
 class cRosCom;
 
-#define CANBUS_READBUFFER_SIZE    128
-
 
 /*
  * Canbus message struct
@@ -25,9 +23,6 @@ struct CanMessage {
 class cCanbus
 {
 public:
-	// Constructor and deconstructor
-	cCanbus();
-	~cCanbus();
 
 	// Functions executed at the beginning and end of the Application
 	int PortOpen( const char* device, int baudrate, int canSpeed, cRosCom* roscom, bool printSuccess);
@@ -50,22 +45,12 @@ public:
 	inline const char* GetSerial()  { return _devSerial;}
 
 private:
-	// Helper functions
-	int ClearReadCache();
-	int SendCommand( const char* string, int length, int charPositionRight = 0, int charPositionFalse = 0);
-	int ReadPackage( int retries, bool skipFirst = false);
-
-	// Forbid copy constructor
-	cCanbus( const cCanbus&);
 
 	// Serial object
 	cSerial _serial;
 
 	// RosCom object __CANBUS IS NOT THE OWNER OF THIS OBJ__
 	cRosCom* _roscom;
-
-	// Read buffer
-	char* _canbus_readbuffer;
 
 	// Serial and version number of the Lawicel usb2can device
 	char _devSerial [6];

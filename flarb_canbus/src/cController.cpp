@@ -1,7 +1,6 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
 #include <sstream>
-#include <termios.h>
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
@@ -12,7 +11,7 @@ using namespace std;
 
 // Canbus settings
 #define SERIAL_PORT   "/dev/ttyUSB0"   // Device filename used in linux
-#define SERIAL_BAUD   B9600            // baudrate used, Lawicel has auto-baud
+#define SERIAL_BAUD   9600             // baudrate used, Lawicel has auto-baud
 #define CANBUS_SPEED  4                // Canbus speed, see the Lawicel docs
 
 // Tells whether we should reopen the canbus on error
