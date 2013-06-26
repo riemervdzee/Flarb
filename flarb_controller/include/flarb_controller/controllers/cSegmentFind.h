@@ -25,7 +25,9 @@ class cSegmentFind
 {
 public:
 	// C-tor
-	cSegmentFind(): _GoalDir(0) {}
+	cSegmentFind( float Speed, float SpeedAngle, float GoalAngle):
+		_ParamSpeed( Speed), _ParamSpeedAngle( SpeedAngle),
+		_ParamGoalAngle( GoalAngle), _GoalDir(0) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -44,6 +46,11 @@ private:
 	enum SUBRETURN Straight( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 	enum SUBRETURN GetInRow( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
+
+	// Parameterized values
+	float _ParamSpeed;
+	float _ParamSpeedAngle;
+	float _ParamGoalAngle;
 
 	// The current segment we execute
 	sSegment _segment;

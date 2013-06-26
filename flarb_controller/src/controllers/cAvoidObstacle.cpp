@@ -22,7 +22,7 @@ void cAvoidObstacle::Reinit( const flarb_msgs::VDState &state)
 {
 	// If this is the first time the sub-controller gets executed in a series
 	// Set the _count to a constant
-	_Counter = 30 * FLARB_AVOID_WAITTIME;
+	_Counter = 30 * _ParamWaitTime;
 	_GoalDir = state.response.axisZ + M_PI;
 	_state   = AVOIDOBJ_WAIT1;
 
@@ -71,7 +71,7 @@ enum SUBRETURN cAvoidObstacle::Execute( tVector &output, const flarb_msgs::VDSta
 				else if( ret == RET_NEXT)
 				{
 					_state   = AVOIDOBJ_WAIT2;
-					_Counter = 30 * FLARB_AVOID_WAITTIME;
+					_Counter = 30 * _ParamWaitTime;
 					cout << "[AvoidObstacle] Turn completed" << endl;
 				}
 				break;
@@ -130,7 +130,7 @@ enum SUBRETURN cAvoidObstacle::Turn( tVector &output, const flarb_msgs::VDState 
 	}
 
 	// Is the difference quite small?
-	if( difference > -FLARB_AVOID_GOALANGLE && difference < FLARB_AVOID_GOALANGLE)
+	if( difference > -_ParamGoalAngle && difference < _ParamGoalAngle)
 	{
 		output = tVector();
 		return RET_NEXT;
@@ -139,7 +139,7 @@ enum SUBRETURN cAvoidObstacle::Turn( tVector &output, const flarb_msgs::VDState 
 	{
 		// Here is where we turn badly
 		// TODO Base strength on difference?
-		output = tVector( FLARB_AVOID_SPEED, 0);
+		output = tVector( _ParamSpeed, 0);
 		return RET_SUCCESS;
 	}
 }

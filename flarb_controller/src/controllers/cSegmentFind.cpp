@@ -163,7 +163,7 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 		difference += (2*M_PI);
 
 	// Is the difference quite small? advance
-	if( difference > -FLARB_FIND_GOALANGLE && difference < FLARB_FIND_GOALANGLE)
+	if( difference > -_ParamGoalAngle && difference < _ParamGoalAngle)
 		return RET_NEXT;
 
 
@@ -171,16 +171,16 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 	difference *= 4;
 
 	// The max difference we turn is 50 degrees
-	if( difference > FLARB_FIND_SPEEDANGLE)
-		difference = FLARB_FIND_SPEEDANGLE;
-	else if( difference < -FLARB_FIND_SPEEDANGLE)
-		difference = -FLARB_FIND_SPEEDANGLE;
+	if( difference > _ParamSpeedAngle)
+		difference = _ParamSpeedAngle;
+	else if( difference < -_ParamSpeedAngle)
+		difference = -_ParamSpeedAngle;
 
 	// Add quarter turn to the left, so the dir points straight ahead-ish
 	difference += (M_PI/2);
 	tVector vec (
-		cos( difference) * FLARB_FIND_SPEED,
-		sin( difference) * FLARB_FIND_SPEED);
+		cos( difference) * _ParamSpeed,
+		sin( difference) * _ParamSpeed);
 
 	// TODO, do something with result?
 	//float result = map.FindFreePath( FLARB_EXTRA_RADIUS, vec, output, false);

@@ -22,7 +22,9 @@ class cAvoidObstacle
 {
 public:
 	// C-tor
-	cAvoidObstacle() : _Counter( 0), _GoalDir( 0.0f) {}
+	cAvoidObstacle( float WaitTime, float Speed, float GoalAngle) :
+		_ParamWaitTime( WaitTime), _ParamSpeed( Speed),
+		_ParamGoalAngle( GoalAngle), _Counter( 0), _GoalDir( 0.0f) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -40,6 +42,11 @@ private:
 	enum SUBRETURN Wait( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 	enum SUBRETURN Turn( tVector &output, const flarb_msgs::VDState &state, cMap &map);
 
+
+	// Initialized with launchscript
+	float _ParamWaitTime;
+	float _ParamSpeed;
+	float _ParamGoalAngle;
 
 	// Counter for waiting
 	int _Counter;

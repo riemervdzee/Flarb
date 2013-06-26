@@ -32,11 +32,11 @@ enum SUBRETURN cSegmentStart::Execute( tVector &output, const flarb_msgs::VDStat
 		return RET_NEXT;
 	}
 
-	tVector direction = tVector( 0.0f, 1.0f);
+	tVector direction = tVector( 0.0f, _ParamCheckRange);
 	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
-	if(output.Length() > FLARB_START_SPEED)
-		output.setLength( FLARB_START_SPEED);
+	if(output.Length() > _ParamSpeed)
+		output.setLength( _ParamSpeed);
 
 	return RET_SUCCESS;
 }

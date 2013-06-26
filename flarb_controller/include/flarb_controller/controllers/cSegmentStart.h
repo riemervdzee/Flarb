@@ -16,6 +16,10 @@
 class cSegmentStart
 {
 public:
+	// C-tor
+	cSegmentStart( float CheckRange, float Speed) :
+		_ParamCheckRange( CheckRange), _ParamSpeed( Speed) {}
+
 	// Functions executed at the beginning and end of the Application
 	bool Create();
 	void Destroy();
@@ -26,6 +30,10 @@ public:
 	// Passes reference of "vector", is used as output
 	// Executes the FollowSegment sub-controller based on the rest of the arguments
 	enum SUBRETURN Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map);
+
+private:
+	float _ParamCheckRange;
+	float _ParamSpeed;
 };
 
 #endif // CLASS_SEGMENT_START_H

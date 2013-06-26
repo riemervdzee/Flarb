@@ -18,7 +18,7 @@ void cSegmentFollow::Destroy()
 void cSegmentFollow::Reinit( const flarb_msgs::VDState &state)
 {
 	_StartDistance = state.response.distance;
-	_GoalDistance  = state.response.distance + FLARB_FOLLOW_OFFSET;
+	_GoalDistance  = state.response.distance + _ParamOffset;
 }
 
 // Passes reference of "vector", is used as output
@@ -36,37 +36,37 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	}
 
 	// Just drive straight ahead
-	tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
+	tVector direction = tVector( 0.0f, _ParamSpeed);
 
 	// Attempt to find a path with an extra big radius
-	float result = map.FindFreePath( FLARB_EXTRA_RADIUS + FLARB_FOLLOW_EXTRA, direction, output, true);
+	float result = map.FindFreePath( FLARB_EXTRA_RADIUS + _ParamExtraRadius, direction, output, true);
 
 	// Try it again but with the standard car-radius
 	// TODO this is getting quite crappy..
-	if( result < 0.5)
+	if( result < 0.7)
 		result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
 	// Attempt again but with false, note that this might not return a solution..
-	if( result < 0.1)
+	if( result < 0.3)
 		result = map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 
 	// Are we really stuck?
-	if( result < 0.1)
+	if( result < 0.3)
 	{
 		cout << "We are stuck, turning 180 degrees within row" << endl;
 		cout << "StartDistance " << _StartDistance << endl;
 		cout << "PrevGoalDist  " << _GoalDistance << endl;
 		cout << "CurrentDist   " << state.response.distance << endl;
-		_GoalDistance = (state.response.distance - _StartDistance) + state.response.distance - FLARB_FOLLOW_DEC_BLOCKED;
+		_GoalDistance = (state.response.distance - _StartDistance) + state.response.distance - _ParamDecBlocked;
 		cout << "CurGoalDist  " << _GoalDistance << endl;
 		return RET_BLOCKED;
 	}
 	else
 	{
 		// Add a correction vector
-#if FLARB_FOLLOW_APPLY_COR_X
-		result.setX( result.getX() * FLARB_FOLLOW_CORRECT_X);
-#endif
+//#if FLARB_FOLLOW_APPLY_COR_X
+//		result.setX( result.getX() * FLARB_FOLLOW_CORRECT_X);
+//#endif
 		return RET_SUCCESS;
 	}
 }
