@@ -15,19 +15,21 @@
 		<param name="UseAvoidObstacle"  value="false" />
 		<param name="FollowVersionTwo"  value="true" />
 		<param name="FollowVTRecheck"   value="true" />
+		<param name="FindVersionTwo"    value="true" />
 
 		<param name="StartCheckRange"   value="0.50" />
-		<param name="StartSpeed"        value="0.30" />
+		<param name="StartSpeed"        value="0.38" />
 		<param name="FollowExtraRadius" value="0.02" />
-		<param name="FollowSpeed"       value="0.30" />
-		<param name="FollowOffset"      value="12.0" />
-		<param name="FollowDecBlocked"  value="3.00" />
-		<param name="FindSpeed"         value="0.25" />
+		<param name="FollowSpeed"       value="0.38" />
+		<param name="FollowOffset"      value="3.00" />
+		<param name="FollowDecBlocked"  value="2.00" />
+		<param name="FindSpeed"         value="0.30" />
 		<param name="FindSpeedAngle"    value="1.05" />
 		<param name="FindGoalAngle"     value="0.15" />
 		<param name="FindSpeedFollow"   value="0.17" />
+		<param name="FindSeen"          value="4"    />
 		<param name="AvoidWaitTime"     value="2.00" />
-		<param name="AvoidSpeed"        value="0.20" />
+		<param name="AvoidSpeed"        value="0.25" />
 		<param name="AvoidGoalAngle"    value="0.18" />
 	</node>
 
