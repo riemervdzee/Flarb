@@ -8,3 +8,6 @@
 #scp -r ./flarb_mapbuilder/bin/   nhl@flarb_main:~/groovy_workspace/flarb/flarb_mapbuilder/
 #scp -r ./flarb_motorcontrol/bin/ nhl@flarb_main:~/groovy_workspace/flarb/flarb_motorcontrol/
 #scp -r ./flarb_VDMixer/bin/      nhl@flarb_main:~/groovy_workspace/flarb/flarb_VDMixer/
+
+#scp  ./keyboard.launch nhl@flarb_main:~/groovy_workspace/flarb/
+#scp  ./main.launch     nhl@flarb_main:~/groovy_workspace/flarb/
