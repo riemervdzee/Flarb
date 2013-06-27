@@ -114,13 +114,13 @@ void cRosCom::ProcessHelloMessage( const struct CanMessage &canmessage)
 	switch( device_type)
 	{
 		case crisis_hello::DUAL_DC_MOTOR_DRIVER:
-			cout << "[OPCODE] Dual DC motor driver registered" << endl;
+			cout << "[OPCODE] Dual DC motor driver registered, id " << canmessage.identifier << endl;
 			_devSpeedID = canmessage.identifier;
 			break;
 
 		// TODO use real value..
 		case 2:
-			cout << "[OPCODE] GPO registered" << endl;
+			cout << "[OPCODE] GPO registered, id " << canmessage.identifier << endl;
 			_devGPIOID = canmessage.identifier;
 			break;
 
