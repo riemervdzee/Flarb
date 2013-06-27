@@ -10,7 +10,10 @@ using namespace std;
 //
 void cFrame::Create( ros::NodeHandle *rosNode)
 {
-	rosNode->param<bool>( "UseHalf", Use180, false);
+	rosNode->param<bool>( "UseFullRange", UseFullRange, false);
+
+	rosNode->param<double>( "RangeMin", RangeMin, 0.0);
+	rosNode->param<double>( "RangeMax", RangeMax, M_PI);
 }
 
 /*
@@ -43,11 +46,11 @@ void cFrame::GenerateFrame( const sensor_msgs::LaserScan &msg)
 	// Go through all range points
 	for( unsigned int i = 0; i < msg.ranges.size(); i++, angle += msg.angle_increment)
 	{
-		if( Use180)
+		if( !UseFullRange)
 		{
-			if( angle < 0)
+			if( angle < RangeMin)
 				continue;
-			if( angle > M_PI)
+			if( angle > RangeMax)
 				continue;
 		}
 

@@ -15,7 +15,7 @@ class cFrame
 {
 public:
 	// C-tor
-	cFrame() : Use180( false) {}
+	cFrame() : UseFullRange( true) {}
 
 	// Passes rosnode
 	void Create( ros::NodeHandle *rosNode);
@@ -26,8 +26,10 @@ public:
 	// Our result, in public domain for easy access
 	std::vector<tVector> _dataPoints;
 
-	//
-	bool Use180;
+	// Param values
+	bool UseFullRange;
+	double RangeMin;
+	double RangeMax;
 };
 
 #endif // CLASS_FRAME_H

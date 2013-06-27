@@ -6,7 +6,9 @@
 	</node>
 
 	<node name="mapbuilder" pkg="flarb_mapbuilder" type="mapbuilder" respawn="true" >
-		<param name="UseHalf" value="false" />
+		<param name="UseFullRange" value="false" />
+		<param name="RangeMin" value="0.0" />
+		<param name="RangeMax" value="3.141592654" />
 	</node>
 
 	<node name="controller"   pkg="flarb_controller"   type="controller"   respawn="true" />
@@ -18,7 +20,7 @@
 	</node>
 
 
-	<node name="mobile"       pkg="flarb_mobile"       type="mobile"       respawn="true" />
+	<node name="mobile" pkg="flarb_mobile" type="mobile" respawn="true" />
 
 	<node name="compass" pkg="flarb_compass" type="compass" respawn="true" >
 		<param name="UseCalibrated" value="true" />
