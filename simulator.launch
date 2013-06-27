@@ -1,8 +1,30 @@
 <launch>
-	<node name="mapbuilder"   pkg="flarb_mapbuilder"   type="mapbuilder"   respawn="true" />
+	<node name="mapbuilder" pkg="flarb_mapbuilder" type="mapbuilder" respawn="true" >
+		<param name="UseFullRange" value="false" />
+		<param name="RangeMin" value="0.0" />
+		<param name="RangeMax" value="3.141592654" />
+	</node>
+
 	<node name="mapshow"      pkg="flarb_mapshow"      type="mapshow"      respawn="true" />
-	<node name="controller"   pkg="flarb_controller"   type="controller"   respawn="true" />
-	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true" />
+	<node name="controller" pkg="flarb_controller" type="controller" respawn="true" >
+		<param name="StartCheckRange"   value="0.50" />
+		<param name="StartSpeed"        value="0.50" />
+		<param name="FollowExtraRadius" value="0.02" />
+		<param name="FollowSpeed"       value="0.50" />
+		<param name="FollowOffset"      value="12.0" />
+		<param name="FollowDecBlocked"  value="3.00" />
+		<param name="FindSpeed"         value="0.35" />
+		<param name="FindSpeedAngle"    value="1.05" />
+		<param name="FindGoalAngle"     value="0.15" />
+		<param name="FindSpeedFollow"   value="0.40" />
+		<param name="AvoidWaitTime"     value="3.00" />
+		<param name="AvoidSpeed"        value="0.30" />
+		<param name="AvoidGoalAngle"    value="0.18" />
+	</node>
+	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true">
+		<param name="ParamUseFrontOnly" value="false" />
+		<param name="StrengthXFactor"   value="1.0" />
+	</node>
 
 	<node name="simulation"   pkg="flarb_simulation"   type="simulation"   respawn="true" args="map3.xml" />
 </launch>
