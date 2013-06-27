@@ -26,7 +26,7 @@ class cRosCom
 {
 public:
 	// C-tor
-	cRosCom() : _devSpeedID( -1), _devGPIOID( -1), SwitchLeftRight( false), SwitchForwardBackward( false) {}
+	cRosCom() : _devSpeedID( 0x101), _devGPIOID( 0x102), SwitchLeftRight( false), SwitchForwardBackward( false) {}
 
 	// Functions executed at the beginning and end of the Application
 	int Create( ros::NodeHandle *rosNode, cCanbus *canbus);

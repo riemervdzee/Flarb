@@ -109,6 +109,9 @@ void cRosCom::MessageReceived( const struct CanMessage &canmessage)
  */
 void cRosCom::ProcessHelloMessage( const struct CanMessage &canmessage)
 {
+	// TODO update protocol, whoops..
+	return;
+
 	uint8_t device_type = canmessage.data[1];
 
 	switch( device_type)
