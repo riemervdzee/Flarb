@@ -39,8 +39,8 @@ void cController::Update()
 	if( INPUT_DOWN)  y -= 0.06f;
 
 	// Try to get the vector back to ( 0, 0)
-	//if( x > 0) x -= 0.02f; else if( x < 0) x += 0.02f;
-	//if( y > 0) y -= 0.02f; else if( y < 0) y += 0.02f;
+	if( x > 0) x -= 0.02f; else if( x < 0) x += 0.02f;
+	if( y > 0) y -= 0.02f; else if( y < 0) y += 0.02f;
 
 	// Put a limit of the vector at 0.5
 	float size = sqrt(x*x + y*y);
