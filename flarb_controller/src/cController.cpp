@@ -312,7 +312,7 @@ void cController::MapCallback( cMap &map)
 	if( tries >= 5)
 	{
 		cerr << "[controller] While-looped exceeded 5 loops, oh dear.." << endl;
-		_state = STATE_STOPPED;
+		//_state = STATE_STOPPED;
 		return;
 	}
 
