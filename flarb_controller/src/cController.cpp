@@ -25,6 +25,9 @@ bool cController::Create()
 
 	// Params
 	ros::NodeHandle n("~");
+	bool   FollowVersionTwo;
+	bool   FollowVTRecheck;
+
 	double StartCheckRange;
 	double StartSpeed;
 	double FollowExtraRadius;
@@ -38,6 +41,10 @@ bool cController::Create()
 	double AvoidWaitTime;
 	double AvoidSpeed;
 	double AvoidGoalAngle;
+
+	n.param<bool>  ( "UseAvoidObstacle", _UseAvoidObstacle,  true);
+	n.param<bool>  ( "FollowVersionTwo",  FollowVersionTwo,  false);
+	n.param<bool>  ( "FollowVTRecheck",   FollowVTRecheck,   false);
 
 	n.param<double>( "StartCheckRange",   StartCheckRange,   0.50);
 	n.param<double>( "StartSpeed",        StartSpeed,        0.15);
@@ -55,7 +62,7 @@ bool cController::Create()
 
 	// Create sub-controllers
 	_segmentStart  = new cSegmentStart ( StartCheckRange, StartSpeed);
-	_segmentFollow = new cSegmentFollow( FollowExtraRadius, FollowSpeed, FollowOffset, FollowDecBlocked);
+	_segmentFollow = new cSegmentFollow( FollowExtraRadius, FollowSpeed, FollowOffset, FollowDecBlocked, FollowVersionTwo, FollowVTRecheck);
 	_segmentFind   = new cSegmentFind  ( FindSpeed, FindSpeedAngle, FindGoalAngle, FindSpeedFollow);
 	_avoidObstacle = new cAvoidObstacle( AvoidWaitTime, AvoidSpeed, AvoidGoalAngle);
 	_plantQuality  = new cPlantQuality ( );
@@ -176,12 +183,19 @@ void cController::MapCallback( cMap &map)
 		// AvoidObstacle first
 		if( _blocked == true)
 		{
-			ret = _avoidObstacle->Execute( output, vdState, map);
-			if( ret == RET_SUCCESS)
-				exec = true;
-			else // Avoidance is completed
+			if( _UseAvoidObstacle)
+			{
+				ret = _avoidObstacle->Execute( output, vdState, map);
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else // Avoidance is completed
+					_blocked = false;
+				continue;
+			}
+			else
+			{
 				_blocked = false;
-			continue;
+			}
 		}
 
 		// Execute the current sub-controller
