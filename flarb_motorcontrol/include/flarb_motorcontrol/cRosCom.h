@@ -30,6 +30,10 @@ private:
 	void EncoderCallback( const flarb_msgs::DualMotorEncoder msg);
 
 
+	// Parameters
+	bool  ParamUseFrontOnly;
+	float StrengthXFactor;
+
 	// Ref to the controler
 	cController *_controller;
 

@@ -1,5 +1,8 @@
 <launch>
-	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" />
+	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol">
+		<param name="ParamUseFrontOnly" value="false" />
+		<param name="StrengthXFactor"   value="1.0" />
+	</node>
 
 	<node name="canbus" pkg="flarb_canbus" type="canbus" respawn="true" >
 		<param name="SwitchLeftRight"       value="false" />

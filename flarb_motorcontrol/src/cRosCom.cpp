@@ -32,6 +32,14 @@ union mix_t {
 
 int cRosCom::Create( cController *controller, ros::NodeHandle *rosNode)
 {
+	// Params
+	ros::NodeHandle n("~");
+	double x;
+
+	n.param<bool>  ( "ParamUseFrontOnly", ParamUseFrontOnly, false);
+	n.param<double>(   "StrengthXFactor",                 x, 1.00);
+	StrengthXFactor = x;
+
 	// Set ref
 	_controller = controller;
 
@@ -80,6 +88,13 @@ void cRosCom::WVCallback( const flarb_msgs::WaypointVector msg)
 	// Msg X/Y
 	float x = msg.x;
 	float y = msg.y;
+
+	// Only allow negative Y for QuickTurning
+	if( ParamUseFrontOnly && !msg.QuickTurn && y < 0)
+		y = 0;
+
+	// Apply X factor
+	x *= StrengthXFactor;
 
 	// resize to VECTOR_MAXSEC
 	// TODO buggy

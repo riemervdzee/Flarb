@@ -27,7 +27,10 @@
 		<param name="AvoidGoalAngle"    value="0.18" />
 	</node>
 
-	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true" />
+	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true">
+		<param name="ParamUseFrontOnly" value="false" />
+		<param name="StrengthXFactor"   value="1.0" />
+	</node>
 
 	<node name="canbus" pkg="flarb_canbus" type="canbus" respawn="true" >
 		<param name="SwitchLeftRight"       value="false" />
