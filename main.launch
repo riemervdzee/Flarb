@@ -22,9 +22,9 @@
 		<param name="FollowSpeed"       value="0.30" />
 		<param name="FollowOffset"      value="12.0" />
 		<param name="FollowDecBlocked"  value="3.00" />
-		<param name="FindSpeed"         value="0.10" />
+		<param name="FindSpeed"         value="0.25" />
 		<param name="FindSpeedAngle"    value="1.05" />
-		<param name="FindGoalAngle"     value="0.25" />
+		<param name="FindGoalAngle"     value="0.15" />
 		<param name="FindSpeedFollow"   value="0.17" />
 		<param name="AvoidWaitTime"     value="2.00" />
 		<param name="AvoidSpeed"        value="0.20" />
