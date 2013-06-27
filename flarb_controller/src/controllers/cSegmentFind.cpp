@@ -221,11 +221,11 @@ enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDStat
 		switch( _segment.rowdir)
 		{
 			case DIR_LEFT:
-				_GoalDir += (M_PI/2);
+				_GoalDir = state.response.axisZ + (M_PI/2);
 				break;
 
 			case DIR_RIGHT:
-				_GoalDir -= (M_PI/2);
+				_GoalDir = state.response.axisZ + (M_PI/2);
 				break;
 
 			default:
@@ -248,7 +248,7 @@ enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDStat
 enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// First check if there is room at both sides
-	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.3f));
+	/*tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.3f));
 	if(map.CheckIntersectionRegion( b))
 	{
 		return RET_NEXT;
@@ -258,5 +258,6 @@ enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDStat
 	tVector direction = tVector( 0.0f, _ParamSpeedFollow);
 	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
-	return RET_SUCCESS;
+	return RET_SUCCESS;*/
+	return RET_NEXT;
 }
