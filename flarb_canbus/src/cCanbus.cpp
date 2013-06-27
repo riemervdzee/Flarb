@@ -200,6 +200,14 @@ int cCanbus::PortRead()
 #endif
 
 		}
+		// Ignore
+		else if(str[0] == 'Z')
+		{}
+		else
+		{
+			cout << str << endl;
+		}
+
 	}catch(timeout_exception e){}
 
 	return 0;
