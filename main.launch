@@ -7,8 +7,8 @@
 
 	<node name="mapbuilder" pkg="flarb_mapbuilder" type="mapbuilder" respawn="true" >
 		<param name="UseFullRange" value="false" />
-		<param name="RangeMin" value="0.0" />
-		<param name="RangeMax" value="3.141592654" />
+		<param name="RangeMin" value="-0.18" />
+		<param name="RangeMax" value="3.312592654" />
 	</node>
 
 	<node name="controller" pkg="flarb_controller" type="controller" respawn="true" >
