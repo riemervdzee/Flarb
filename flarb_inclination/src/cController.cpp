@@ -103,53 +103,38 @@ int cController::Openport()
  */
 int cController::getPackage()
 {
-	char buffer[255];  /* Input buffer 				*/
-	bool XX = false;
-	bool YY = false;
+	//bool XX = false;
+	//bool YY = false;
 
-
-	int a = _serial.Read(buffer, sizeof(buffer));
-	if(a != 0){
-		for(int i = 0; i < a; i++){
-			if(buffer[i] == 'X' && ( buffer[i + 9] == '\r'))
-			{
-				int cntx = 0;
-		        char x[5];
-		        for (int j = 2+i; j < 9+i; j++){
-		                x[cntx]=buffer[j];
-		                cntx++;
-		        }
-		        xaxis = ::atof(x);
-				if(x[4] == '+')
-					xaxis = +25;
-				if(x[4] == '-')
-					xaxis = -25;
-				XX =true;
-				//cout<<"Found X: "<< xaxis<< endl;
-			
-			}
-			if(buffer[i] == 'Y' && ( buffer[i + 9] == '\r'))
-			{
-				int cnty = 0;
-		        char y[5];
-		        for (int j = 2+i; j < 9+i; j++){
-		                y[cnty]=buffer[j];
-		                cnty++;
-		        }
-		        yaxis = ::atof(y);
-				if(y[4] == '+') 
-					yaxis = +25;
-				if(y[4] == '-')
-					yaxis = -25;
-				YY=true;
-				//cout<<"Found Y: "<< yaxis<< endl;
-			}
-			if(XX && YY){
-				return (1);
-			}
-		}
+	char r;
+	while(r != 'X') {
+		_serial.Read(&r, 1);
 	}
-	return (-1);			
+
+	char buffer[64];
+	int x;
+	_serial.Read(&r, 1); // =
+	for(x = 0; buffer[x] != '\r' && x < sizeof(buffer); x++) {
+		_serial.Read(&buffer[x], 1);
+	}
+	if(x == sizeof(buffer)) {
+		return -1;
+	}
+	buffer[x] = '\0';
+	xaxis = atof(buffer);
+
+	while(r != 'Y') {
+		_serial.Read(&r, 1);
+	}
+
+	_serial.Read(&r, 1); // =
+	for(x = 0; buffer[x] != '\r' && x < sizeof(buffer); x++) {
+		_serial.Read(&buffer[x], 1);
+	}
+	if(x == sizeof(buffer)) {
+		return -1;
+	}
+	buffer[x] = '\0';
+	yaxis = atof(buffer);
+	return 1;
 }
-
-
