@@ -39,19 +39,19 @@ bool cController::Create()
 	double AvoidSpeed;
 	double AvoidGoalAngle;
 
-	n.param<double>(   "StartCheckRange",   StartCheckRange, 0.50);
-	n.param<double>(        "StartSpeed",        StartSpeed, 0.15);
+	n.param<double>( "StartCheckRange",   StartCheckRange,   0.50);
+	n.param<double>( "StartSpeed",        StartSpeed,        0.15);
 	n.param<double>( "FollowExtraRadius", FollowExtraRadius, 0.02);
-	n.param<double>(       "FollowSpeed",       FollowSpeed, 0.17);
-	n.param<double>(      "FollowOffset",      FollowOffset, 12.0);
-	n.param<double>(  "FollowDecBlocked",  FollowDecBlocked, 3.00);
-	n.param<double>(         "FindSpeed",         FindSpeed, 0.10);
-	n.param<double>(    "FindSpeedAngle",    FindSpeedAngle, 1.05);
-	n.param<double>(     "FindGoalAngle",     FindGoalAngle, 0.15);
-	n.param<double>(   "FindSpeedFollow",   FindSpeedFollow, 0.17);
-	n.param<double>(     "AvoidWaitTime",     AvoidWaitTime, 3.00);
-	n.param<double>(        "AvoidSpeed",        AvoidSpeed, 0.09);
-	n.param<double>(    "AvoidGoalAngle",    AvoidGoalAngle, 0.18);
+	n.param<double>( "FollowSpeed",       FollowSpeed,       0.17);
+	n.param<double>( "FollowOffset",      FollowOffset,      12.0);
+	n.param<double>( "FollowDecBlocked",  FollowDecBlocked,  3.00);
+	n.param<double>( "FindSpeed",         FindSpeed,         0.10);
+	n.param<double>( "FindSpeedAngle",    FindSpeedAngle,    1.05);
+	n.param<double>( "FindGoalAngle",     FindGoalAngle,     0.15);
+	n.param<double>( "FindSpeedFollow",   FindSpeedFollow,   0.17);
+	n.param<double>( "AvoidWaitTime",     AvoidWaitTime,     3.00);
+	n.param<double>( "AvoidSpeed",        AvoidSpeed,        0.09);
+	n.param<double>( "AvoidGoalAngle",    AvoidGoalAngle,    0.18);
 
 	// Create sub-controllers
 	_segmentStart  = new cSegmentStart ( StartCheckRange, StartSpeed);
