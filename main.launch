@@ -11,14 +11,28 @@
 		<param name="RangeMax" value="3.141592654" />
 	</node>
 
-	<node name="controller"   pkg="flarb_controller"   type="controller"   respawn="true" />
+	<node name="controller" pkg="flarb_controller" type="controller" respawn="true" >
+		<param name="StartCheckRange"   value="0.50" />
+		<param name="StartSpeed"        value="0.15" />
+		<param name="FollowExtraRadius" value="0.02" />
+		<param name="FollowSpeed"       value="0.17" />
+		<param name="FollowOffset"      value="12.0" />
+		<param name="FollowDecBlocked"  value="3.00" />
+		<param name="FindSpeed"         value="0.10" />
+		<param name="FindSpeedAngle"    value="1.05" />
+		<param name="FindGoalAngle"     value="0.15" />
+		<param name="FindSpeedFollow"   value="0.17" />
+		<param name="AvoidWaitTime"     value="3.00" />
+		<param name="AvoidSpeed"        value="0.09" />
+		<param name="AvoidGoalAngle"    value="0.18" />
+	</node>
+
 	<node name="motorcontrol" pkg="flarb_motorcontrol" type="motorcontrol" respawn="true" />
 
 	<node name="canbus" pkg="flarb_canbus" type="canbus" respawn="true" >
 		<param name="SwitchLeftRight"       value="false" />
 		<param name="SwitchForwardBackward" value="true" />
 	</node>
-
 
 	<node name="mobile" pkg="flarb_mobile" type="mobile" respawn="true" />
 
