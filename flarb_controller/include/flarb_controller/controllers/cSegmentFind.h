@@ -25,9 +25,9 @@ class cSegmentFind
 {
 public:
 	// C-tor
-	cSegmentFind( float Speed, float SpeedAngle, float GoalAngle):
-		_ParamSpeed( Speed), _ParamSpeedAngle( SpeedAngle),
-		_ParamGoalAngle( GoalAngle), _GoalDir(0) {}
+	cSegmentFind( float Speed, float SpeedAngle, float GoalAngle, float SpeedFollow):
+		_ParamSpeed( Speed), _ParamSpeedAngle( SpeedAngle), _ParamGoalAngle( GoalAngle),
+		_ParamSpeedFollow( SpeedFollow), _GoalDir(0) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -51,6 +51,7 @@ private:
 	float _ParamSpeed;
 	float _ParamSpeedAngle;
 	float _ParamGoalAngle;
+	float _ParamSpeedFollow;
 
 	// The current segment we execute
 	sSegment _segment;

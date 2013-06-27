@@ -23,13 +23,43 @@ bool cController::Create()
 	// Init RosCom object
 	_rosCom.Create( &_rosNode, this);
 
+	// Params
+	ros::NodeHandle n("~");
+	double StartCheckRange;
+	double StartSpeed;
+	double FollowExtraRadius;
+	double FollowSpeed;
+	double FollowOffset;
+	double FollowDecBlocked;
+	double FindSpeed;
+	double FindSpeedAngle;
+	double FindGoalAngle;
+	double FindSpeedFollow;
+	double AvoidWaitTime;
+	double AvoidSpeed;
+	double AvoidGoalAngle;
+
+	n.param<double>(   "StartCheckRange",   StartCheckRange, 0.50);
+	n.param<double>(        "StartSpeed",        StartSpeed, 0.15);
+	n.param<double>( "FollowExtraRadius", FollowExtraRadius, 0.02);
+	n.param<double>(       "FollowSpeed",       FollowSpeed, 0.17);
+	n.param<double>(      "FollowOffset",      FollowOffset, 12.0);
+	n.param<double>(  "FollowDecBlocked",  FollowDecBlocked, 3.00);
+	n.param<double>(         "FindSpeed",         FindSpeed, 0.10);
+	n.param<double>(    "FindSpeedAngle",    FindSpeedAngle, 1.05);
+	n.param<double>(     "FindGoalAngle",     FindGoalAngle, 0.15);
+	n.param<double>(   "FindSpeedFollow",   FindSpeedFollow, 0.17);
+	n.param<double>(     "AvoidWaitTime",     AvoidWaitTime, 3.00);
+	n.param<double>(        "AvoidSpeed",        AvoidSpeed, 0.09);
+	n.param<double>(    "AvoidGoalAngle",    AvoidGoalAngle, 0.18);
+
 	// Create sub-controllers
-	_segmentStart  = new cSegmentStart();
-	_segmentFollow = new cSegmentFollow();
-	_segmentFind   = new cSegmentFind();
-	_avoidObstacle = new cAvoidObstacle();
-	_plantQuality  = new cPlantQuality();
-	_freeRun       = new cFreeRun();
+	_segmentStart  = new cSegmentStart ( StartCheckRange, StartSpeed);
+	_segmentFollow = new cSegmentFollow( FollowExtraRadius, FollowSpeed, FollowOffset, FollowDecBlocked);
+	_segmentFind   = new cSegmentFind  ( FindSpeed, FindSpeedAngle, FindGoalAngle, FindSpeedFollow);
+	_avoidObstacle = new cAvoidObstacle( AvoidWaitTime, AvoidSpeed, AvoidGoalAngle);
+	_plantQuality  = new cPlantQuality ( );
+	_freeRun       = new cFreeRun      ( );
 	
 	// Init sub-controllers
 	_segmentStart->Create();

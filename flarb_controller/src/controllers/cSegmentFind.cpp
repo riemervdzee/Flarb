@@ -208,7 +208,7 @@ enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDStat
 	if( _skip > 0)
 	{
 		// Just drive straight ahead
-		tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
+		tVector direction = tVector( 0.0f, _ParamSpeed);
 		map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, false);
 		return RET_SUCCESS;
 	}
@@ -255,7 +255,7 @@ enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDStat
 	}
 
 	// Just drive straight ahead
-	tVector direction = tVector( 0.0f, FLARB_FOLLOW_SPEED);
+	tVector direction = tVector( 0.0f, _ParamSpeedFollow);
 	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
 	return RET_SUCCESS;
