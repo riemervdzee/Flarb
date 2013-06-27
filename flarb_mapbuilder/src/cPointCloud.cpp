@@ -26,10 +26,16 @@ void cPointCloud::ProcessMessage( const sensor_msgs::LaserScan &msg)
 {
 	// First pass the message to the current Frame
 	_frame.GenerateFrame( msg);
+	
+	// Clear the obj list
+	_objects.clear();
+
+	// Never happens in real-life, but in the sim it does..
+	if( _frame._dataPoints.size() == 0)
+		return;
 
 	// TODO this is a very basic algorithm..
-	// Clear the object list, get first datapoint = first object
-	_objects.clear();
+	// Get first datapoint = first object
 	sObject obj = { .index = 0, .length = 1};
 	_objects.push_back( obj);
 
