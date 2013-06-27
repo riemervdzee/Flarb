@@ -127,8 +127,13 @@ void cController::SmartphoneCallback( const std::string &str)
 	_rosCom.GetVDState( vdState);
 
 
+	// Stop the controller
+	if( str[0] == 'Q')
+	{
+		_state = STATE_STOPPED;
+	}
 	// We received a correct string, create a new cInputString obj
-	if( str[0] == 'S')
+	else if( str[0] == 'S')
 	{
 		_inputString = cInputString( str);
 		_state       = STATE_SEGMENT_START;
