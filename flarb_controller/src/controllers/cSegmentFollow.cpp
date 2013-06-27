@@ -75,7 +75,7 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 
 		// Even wanted?
 		if( _ParamFollowVTRecheck)
-			map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
+			map.FindFreePath( _ParamRadius, direction, output, true);
 
 		//
 		return RET_SUCCESS;
@@ -88,7 +88,7 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 		tVector direction = tVector( 0.0f, _ParamSpeed);
 
 		// Attempt to find a path with an extra big radius
-		float result = map.FindFreePath( FLARB_EXTRA_RADIUS + _ParamExtraRadius, direction, output, true);
+		float result = map.FindFreePath( FLARB_EXTRA_RADIUS + _ParamRadius, direction, output, true);
 
 		// Try it again but with the standard car-radius
 		// TODO this is getting quite crappy..

@@ -17,8 +17,8 @@ class cSegmentFollow
 {
 public:
 	// C-tor
-	cSegmentFollow(float ExtraRadius, float Speed, float Offset, float DecBlocked, bool FollowVersionTwo, bool FollowVTRecheck) :
-		_ParamExtraRadius( ExtraRadius), _ParamSpeed( Speed), _ParamOffset( Offset),
+	cSegmentFollow(float Radius, float Speed, float Offset, float DecBlocked, bool FollowVersionTwo, bool FollowVTRecheck) :
+		_ParamRadius( Radius), _ParamSpeed( Speed), _ParamOffset( Offset),
 		_ParamDecBlocked( DecBlocked), _ParamFollowVersionTwo( FollowVersionTwo),
 		_ParamFollowVTRecheck( FollowVTRecheck), _StartDistance(0.0f), _GoalDistance( 0.0f) {}
 
@@ -36,7 +36,7 @@ public:
 private:
 
 	// Parameterized values
-	float _ParamExtraRadius;
+	float _ParamRadius;
 	float _ParamSpeed;
 	float _ParamOffset;
 	float _ParamDecBlocked;
