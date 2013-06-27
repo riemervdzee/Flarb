@@ -35,7 +35,9 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 		}
 	}
 
-	// Version 2
+	/*********************************
+	 * Version 2
+	 *********************************/
 	if( _ParamFollowVersionTwo)
 	{
 		// The area
@@ -81,7 +83,9 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 		return RET_SUCCESS;
 
 	}
-	// Version 1
+	/*********************************
+	 * Version 1
+	 *********************************/
 	else
 	{
 		// Just drive straight ahead
