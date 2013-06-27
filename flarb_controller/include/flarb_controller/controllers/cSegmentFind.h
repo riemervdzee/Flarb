@@ -25,9 +25,9 @@ class cSegmentFind
 {
 public:
 	// C-tor
-	cSegmentFind( float Speed, float SpeedAngle, float GoalAngle, float SpeedFollow):
-		_ParamSpeed( Speed), _ParamSpeedAngle( SpeedAngle), _ParamGoalAngle( GoalAngle),
-		_ParamSpeedFollow( SpeedFollow), _GoalDir(0) {}
+	cSegmentFind( float Speed, float SpeedAngle, float GoalAngle, float SpeedFollow, bool FindVersionTwo, int FindSeen):
+		_ParamSpeed( Speed), _ParamSpeedAngle( SpeedAngle), _ParamGoalAngle( GoalAngle), _ParamSpeedFollow( SpeedFollow),
+		_ParamFindVersionTwo( FindVersionTwo), _ParamFindSeen( FindSeen), _GoalDir(0) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -52,6 +52,8 @@ private:
 	float _ParamSpeedAngle;
 	float _ParamGoalAngle;
 	float _ParamSpeedFollow;
+	bool  _ParamFindVersionTwo;
+	int   _ParamFindSeen;
 
 	// The current segment we execute
 	sSegment _segment;
@@ -66,6 +68,9 @@ private:
 	int          _skip;     // Amount we still need to skip
 	bool         _previous; // Whether the previous frame was blocked or not
 	tBoundingBox _bb;       // BoundingBox where we need to check at
+
+	// For version 2
+	int _seen;
 };
 
 #endif // CLASS_SEGMENT_FIND_H

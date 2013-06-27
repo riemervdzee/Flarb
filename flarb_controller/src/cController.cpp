@@ -27,6 +27,7 @@ bool cController::Create()
 	ros::NodeHandle n("~");
 	bool   FollowVersionTwo;
 	bool   FollowVTRecheck;
+	bool   FindVersionTwo;
 
 	double StartCheckRange;
 	double StartSpeed;
@@ -38,13 +39,15 @@ bool cController::Create()
 	double FindSpeedAngle;
 	double FindGoalAngle;
 	double FindSpeedFollow;
+	int    FindSeen;
 	double AvoidWaitTime;
 	double AvoidSpeed;
 	double AvoidGoalAngle;
 
 	n.param<bool>  ( "UseAvoidObstacle", _UseAvoidObstacle,  true);
-	n.param<bool>  ( "FollowVersionTwo",  FollowVersionTwo,  false);
-	n.param<bool>  ( "FollowVTRecheck",   FollowVTRecheck,   false);
+	n.param<bool>  ( "FollowVersionTwo",  FollowVersionTwo,  true);
+	n.param<bool>  ( "FollowVTRecheck",   FollowVTRecheck,   true); //FindVersionTwo
+	n.param<bool>  ( "FindVersionTwo",    FindVersionTwo,    false);
 
 	n.param<double>( "StartCheckRange",   StartCheckRange,   0.50);
 	n.param<double>( "StartSpeed",        StartSpeed,        0.15);
@@ -56,6 +59,7 @@ bool cController::Create()
 	n.param<double>( "FindSpeedAngle",    FindSpeedAngle,    1.05);
 	n.param<double>( "FindGoalAngle",     FindGoalAngle,     0.15);
 	n.param<double>( "FindSpeedFollow",   FindSpeedFollow,   0.17);
+	n.param<int>   ( "FindSeen",          FindSeen,            6);
 	n.param<double>( "AvoidWaitTime",     AvoidWaitTime,     3.00);
 	n.param<double>( "AvoidSpeed",        AvoidSpeed,        0.09);
 	n.param<double>( "AvoidGoalAngle",    AvoidGoalAngle,    0.18);
@@ -63,7 +67,7 @@ bool cController::Create()
 	// Create sub-controllers
 	_segmentStart  = new cSegmentStart ( StartCheckRange, StartSpeed);
 	_segmentFollow = new cSegmentFollow( FollowExtraRadius, FollowSpeed, FollowOffset, FollowDecBlocked, FollowVersionTwo, FollowVTRecheck);
-	_segmentFind   = new cSegmentFind  ( FindSpeed, FindSpeedAngle, FindGoalAngle, FindSpeedFollow);
+	_segmentFind   = new cSegmentFind  ( FindSpeed, FindSpeedAngle, FindGoalAngle, FindSpeedFollow, FindVersionTwo, FindSeen);
 	_avoidObstacle = new cAvoidObstacle( AvoidWaitTime, AvoidSpeed, AvoidGoalAngle);
 	_plantQuality  = new cPlantQuality ( );
 	_freeRun       = new cFreeRun      ( );
