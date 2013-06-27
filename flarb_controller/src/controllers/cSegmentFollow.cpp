@@ -41,8 +41,8 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	if( _ParamFollowVersionTwo)
 	{
 		// The area
-		tBoundingBox boxLeft ( tVector( 0.0f, 0.0f), tVector( -0.5f, 0.7f));
-		tBoundingBox boxRight( tVector( 0.0f, 0.0f), tVector( +0.5f, 0.7f));
+		tBoundingBox boxLeft ( tVector( 0.0f, 0.0f), tVector( -0.5f, 0.5f));
+		tBoundingBox boxRight( tVector( 0.0f, 0.0f), tVector( +0.5f, 0.5f));
 
 		//
 		float xLeft, xRight;
