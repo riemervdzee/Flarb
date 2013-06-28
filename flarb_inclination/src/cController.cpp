@@ -1,6 +1,7 @@
 // Include order: cppstd, ROS, Boost, own-module includes
 #include <iostream>
 #include <sstream>
+#include <string>
 
 #include "ros/ros.h"
 #include "std_msgs/String.h"
@@ -14,12 +15,13 @@
 #include <fcntl.h>   					// File control definitions 
 #include <errno.h>   					//	Error number definitions 
 #include <termios.h> 					//	POSIX terminal control definitions 
+using namespace std;
+
 
 // Settings
 #define DEV_PORT		"/dev/ttyS1" 	//port 
-#define BAUD_RATE		B9600			//Baudrate port
+#define BAUD_RATE		9600			//Baudrate port
 
-using namespace std;
 
 /*
  *	Functions executed at the beginning and end of the Node
@@ -41,7 +43,7 @@ int cController::Create()
 void cController::Destroy()
 {
 	//always close the port
-	_serial.PortClose();
+	_serial.close();
 	//now shutdown ros
 	ros::shutdown();
 }
@@ -72,18 +74,18 @@ void cController::Update()
  */
 int cController::Openport()
 {
-	int ret = -1;
-
-	while( ret != 0 && ros::ok())
+	while( !_serial.isOpen() && ros::ok())
 	{
-		ret = _serial.PortOpen(DEV_PORT, BAUD_RATE);
+		_serial.open(DEV_PORT, BAUD_RATE);
 
-		if( ret != 0)
+		if( !_serial.isOpen())
 			sleep(1);
 	}
-	if(ret == 0)
+
+	if( _serial.isOpen()) {
 		cout<< "Opened serial " <<endl;
-	
+		_serial.setTimeout( boost::posix_time::milliseconds(200));
+	}
 
 	return 0;
 }
@@ -101,6 +103,44 @@ int cController::Openport()
  *		Example: "X=+01.123\r\nY=-12.123\r\n"
  *		Return: 0 = Serial ok, -1 = Serial bad 
  */
+#if 1
+int cController::getPackage()
+{
+	try {
+		string str1, str2;
+		// Read the whole messages
+		str1 = _serial.readStringUntil( "\r\n");
+		if( str1[0] == 'X')
+			str2 = _serial.readStringUntil( "\r\n");
+		else
+			return -1;
+		
+		// Process, format: "X=+01.123\r\nY=-12.123"
+		char *chrX = strchr( &str1[0], 'X');
+		char *chrY = strchr( &str2[0], 'Y');
+
+		// Check for correct
+		if( chrX != NULL && chrY != NULL)
+		{
+			xaxis = atof( chrX + 2);
+			yaxis = atof( chrY + 2);
+			return 1;
+		}
+		else
+		{
+			static int i = 0;
+			i++;
+			cout << str1 << endl;
+			cout << str2 << endl;
+			cout << "thrown away " << i << endl << endl;
+		}
+	}
+	catch(...){}
+
+	return -1;
+}
+
+#else
 int cController::getPackage()
 {
 	//bool XX = false;
@@ -108,14 +148,14 @@ int cController::getPackage()
 
 	char r;
 	while(r != 'X') {
-		_serial.Read(&r, 1);
+		_serial.read(&r, 1);
 	}
 
 	char buffer[64];
 	int x;
-	_serial.Read(&r, 1); // =
+	_serial.read(&r, 1); // =
 	for(x = 0; buffer[x] != '\r' && x < sizeof(buffer); x++) {
-		_serial.Read(&buffer[x], 1);
+		_serial.read(&buffer[x], 1);
 	}
 	if(x == sizeof(buffer)) {
 		return -1;
@@ -124,12 +164,12 @@ int cController::getPackage()
 	xaxis = atof(buffer);
 
 	while(r != 'Y') {
-		_serial.Read(&r, 1);
+		_serial.read(&r, 1);
 	}
 
-	_serial.Read(&r, 1); // =
+	_serial.read(&r, 1); // =
 	for(x = 0; buffer[x] != '\r' && x < sizeof(buffer); x++) {
-		_serial.Read(&buffer[x], 1);
+		_serial.read(&buffer[x], 1);
 	}
 	if(x == sizeof(buffer)) {
 		return -1;
@@ -138,3 +178,4 @@ int cController::getPackage()
 	yaxis = atof(buffer);
 	return 1;
 }
+#endif
