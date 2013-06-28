@@ -25,6 +25,10 @@ bool cController::Create()
 
 	// Params
 	ros::NodeHandle n("~");
+	bool   FollowVersionTwo;
+	bool   FollowVTRecheck;
+	bool   FindVersionTwo;
+
 	double StartCheckRange;
 	double StartSpeed;
 	double FollowExtraRadius;
@@ -35,9 +39,15 @@ bool cController::Create()
 	double FindSpeedAngle;
 	double FindGoalAngle;
 	double FindSpeedFollow;
+	int    FindSeen;
 	double AvoidWaitTime;
 	double AvoidSpeed;
 	double AvoidGoalAngle;
+
+	n.param<bool>  ( "UseAvoidObstacle", _UseAvoidObstacle,  true);
+	n.param<bool>  ( "FollowVersionTwo",  FollowVersionTwo,  true);
+	n.param<bool>  ( "FollowVTRecheck",   FollowVTRecheck,   true); //FindVersionTwo
+	n.param<bool>  ( "FindVersionTwo",    FindVersionTwo,    false);
 
 	n.param<double>( "StartCheckRange",   StartCheckRange,   0.50);
 	n.param<double>( "StartSpeed",        StartSpeed,        0.15);
@@ -49,14 +59,15 @@ bool cController::Create()
 	n.param<double>( "FindSpeedAngle",    FindSpeedAngle,    1.05);
 	n.param<double>( "FindGoalAngle",     FindGoalAngle,     0.15);
 	n.param<double>( "FindSpeedFollow",   FindSpeedFollow,   0.17);
+	n.param<int>   ( "FindSeen",          FindSeen,            6);
 	n.param<double>( "AvoidWaitTime",     AvoidWaitTime,     3.00);
 	n.param<double>( "AvoidSpeed",        AvoidSpeed,        0.09);
 	n.param<double>( "AvoidGoalAngle",    AvoidGoalAngle,    0.18);
 
 	// Create sub-controllers
 	_segmentStart  = new cSegmentStart ( StartCheckRange, StartSpeed);
-	_segmentFollow = new cSegmentFollow( FollowExtraRadius, FollowSpeed, FollowOffset, FollowDecBlocked);
-	_segmentFind   = new cSegmentFind  ( FindSpeed, FindSpeedAngle, FindGoalAngle, FindSpeedFollow);
+	_segmentFollow = new cSegmentFollow( FollowExtraRadius, FollowSpeed, FollowOffset, FollowDecBlocked, FollowVersionTwo, FollowVTRecheck);
+	_segmentFind   = new cSegmentFind  ( FindSpeed, FindSpeedAngle, FindGoalAngle, FindSpeedFollow, FindVersionTwo, FindSeen);
 	_avoidObstacle = new cAvoidObstacle( AvoidWaitTime, AvoidSpeed, AvoidGoalAngle);
 	_plantQuality  = new cPlantQuality ( );
 	_freeRun       = new cFreeRun      ( );
@@ -116,8 +127,13 @@ void cController::SmartphoneCallback( const std::string &str)
 	_rosCom.GetVDState( vdState);
 
 
+	// Stop the controller
+	if( str[0] == 'Q')
+	{
+		_state = STATE_STOPPED;
+	}
 	// We received a correct string, create a new cInputString obj
-	if( str[0] == 'S')
+	else if( str[0] == 'S')
 	{
 		_inputString = cInputString( str);
 		_state       = STATE_SEGMENT_START;
@@ -176,12 +192,19 @@ void cController::MapCallback( cMap &map)
 		// AvoidObstacle first
 		if( _blocked == true)
 		{
-			ret = _avoidObstacle->Execute( output, vdState, map);
-			if( ret == RET_SUCCESS)
-				exec = true;
-			else // Avoidance is completed
+			if( _UseAvoidObstacle)
+			{
+				ret = _avoidObstacle->Execute( output, vdState, map);
+				if( ret == RET_SUCCESS)
+					exec = true;
+				else // Avoidance is completed
+					_blocked = false;
+				continue;
+			}
+			else
+			{
 				_blocked = false;
-			continue;
+			}
 		}
 
 		// Execute the current sub-controller
@@ -298,7 +321,7 @@ void cController::MapCallback( cMap &map)
 	if( tries >= 5)
 	{
 		cerr << "[controller] While-looped exceeded 5 loops, oh dear.." << endl;
-		_state = STATE_STOPPED;
+		//_state = STATE_STOPPED;
 		return;
 	}
 

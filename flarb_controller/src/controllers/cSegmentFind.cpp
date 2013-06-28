@@ -23,38 +23,69 @@ void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString 
 {
 	// Set vars
 	_segment = str.segments[ str.currentSegment];
-	_GoalDir = state.response.axisZ;
+	_seen    = 0;
 
-	// Depending on the direction, set the goal dir
-	switch( _segment.rowdir)
+	/*********************************
+	 * Version 2
+	 *********************************/
+	if( _ParamFindVersionTwo)
 	{
-		// We are cheating here, we just say it is blocked so AvoidObstacle gets called
-		case DIR_RETURN:
-			_state = SEGFIND_TURNAXIS;
-			return;
+		// Depending on the direction, set the goal dir
+		switch( _segment.rowdir)
+		{
+			// We are cheating here, we just say it is blocked so AvoidObstacle gets called
+			case DIR_RETURN:
+				_state = SEGFIND_TURNAXIS;
+				return;
 
-		case DIR_LEFT:
-			_GoalDir += (M_PI/2);
-			_bb = tBoundingBox( tVector( -0.5f, 0.0f), tVector( 0.0f, 0.1f));
-			break;
+			case DIR_LEFT:
+				_bb = tBoundingBox( tVector( 0.0f, 0.0f), tVector( 0.3f, 0.1f));
+				break;
 
-		case DIR_RIGHT:
-			_GoalDir -= (M_PI/2);
-			_bb = tBoundingBox( tVector( 0.0f, 0.0f), tVector( 0.5f, 0.1f));
-			break;
+			case DIR_RIGHT:
+				_bb = tBoundingBox( tVector( -0.3f, 0.0f), tVector( 0.0f, 0.1f));
+				break;
+		}
 	}
+	/*********************************
+	 * Version 1
+	 *********************************/
+	else
+	{
+		// Set vars
+		_GoalDir = state.response.axisZ;
 
-	// Clamp: 0 <= _direction <= 2xPI
-	if( _GoalDir > (2*M_PI))
-		_GoalDir -= (2*M_PI);
-	else if( _GoalDir < 0)
-		_GoalDir += (2*M_PI);
+		// Depending on the direction, set the goal dir
+		switch( _segment.rowdir)
+		{
+			// We are cheating here, we just say it is blocked so AvoidObstacle gets called
+			case DIR_RETURN:
+				_state = SEGFIND_TURNAXIS;
+				return;
 
-	// We need to turn first
-	_state = SEGFIND_TURN1;
+			case DIR_LEFT:
+				_GoalDir += (M_PI/2);
+				_bb = tBoundingBox( tVector( -0.5f, 0.0f), tVector( 0.0f, 0.1f));
+				break;
 
-	// The amount of rows we need to skip
-	_skip = _segment.row_count - 1;
+			case DIR_RIGHT:
+				_GoalDir -= (M_PI/2);
+				_bb = tBoundingBox( tVector( 0.0f, 0.0f), tVector( 0.5f, 0.1f));
+				break;
+		}
+
+		// Clamp: 0 <= _direction <= 2xPI
+		if( _GoalDir > (2*M_PI))
+			_GoalDir -= (2*M_PI);
+		else if( _GoalDir < 0)
+			_GoalDir += (2*M_PI);
+
+		// We need to turn first
+		_state = SEGFIND_TURN1;
+
+		// The amount of rows we need to skip
+		_skip = _segment.row_count - 1;
+	}
 }
 
 
@@ -62,91 +93,125 @@ void cSegmentFind::Reinit( const flarb_msgs::VDState &state, const cInputString 
 // Executes the SegmentFind sub-controller based on the rest of the arguments
 enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
-	// Vars
-	enum SUBRETURN ret = RET_BLOCKED;
-	bool exec = false;
-	int tries = 0;
-	output    = tVector();
-
-	while( !exec && tries < 5)
+	/*********************************
+	 * Version 2
+	 *********************************/
+	if( _ParamFindVersionTwo)
 	{
-		tries++;
+		tBoundingBox bb2 = tBoundingBox( tVector( -0.03f, 0.0f), tVector( 0.03f, 0.3f));
 
-		switch( _state)
+		if( map.CheckIntersectionRegion( _bb) && !map.CheckIntersectionRegion( bb2))
 		{
-			case SEGFIND_TURNAXIS:
-				_state = SEGFIND_GETINROW;;
-				ret    = RET_BLOCKED;
-				exec   = true;
-				break;
-
-
-			case SEGFIND_TURN1:
-				ret = Turn( output, state, map);
-				if( ret == RET_SUCCESS)
-				{
-					exec = true;
-				}
-				else
-				{
-					_previous = map.CheckIntersectionRegion( _bb);
-					_state = SEGFIND_DRIVESTRAIGHT;
-					cout << "[SegmentFind] Turn1 completed" << endl;
-				}
-				break;
-
-
-			case SEGFIND_DRIVESTRAIGHT:
-				ret = Straight( output, state, map);
-				if( ret == RET_SUCCESS)
-				{
-					exec = true;
-				}
-				else
-				{
-					_state = SEGFIND_TURN2;
-					cout << "[SegmentFind] Drive straight completed" << endl;
-				}
-				break;
-
-
-			case SEGFIND_TURN2:
-				ret = Turn( output, state, map);
-				if( ret == RET_SUCCESS)
-				{
-					exec = true;
-				}
-				else
-				{
-					_state = SEGFIND_GETINROW;
-					cout << "[SegmentFind] Turn2 completed" << endl;
-				}
-				break;
-
-
-			case SEGFIND_GETINROW:
-				ret = GetInRow( output, state, map);
-				if( ret == RET_SUCCESS)
-				{
-					exec = true;
-				}
-				else
-				{
-					exec = true;
-					cout << "[SegmentFind] GetInRow completed" << endl;
-				}
-				break;
+			_seen++;
+			if( _seen >= _ParamFindSeen)
+				return RET_NEXT;
 		}
-	}
 
-	// Tries reached 5, oh dear..
-	if( tries >= 5)
+		float dir = (M_PI / 2);
+
+		if( _segment.rowdir == DIR_LEFT)
+			dir += _ParamSpeedAngle;
+		else
+			dir -= _ParamSpeedAngle;
+
+		tVector vec (
+			cos( dir) * _ParamSpeed,
+			sin( dir) * _ParamSpeed);
+
+		map.FindFreePath( FLARB_EXTRA_RADIUS, vec, output, false);	
+		return RET_SUCCESS;
+	}
+	/*********************************
+	 * Version 1
+	 *********************************/
+	else
 	{
-		cerr << "[SegmentFind] While-looped exceeded 5 loops, oh dear.." << endl;
-		ret = RET_BLOCKED;
-	}
+		// Vars
+		enum SUBRETURN ret = RET_SUCCESS;
+		bool exec = false;
+		int tries = 0;
+		output    = tVector();
 
-	return ret;
+		while( !exec && tries < 5)
+		{
+			tries++;
+
+			switch( _state)
+			{
+				case SEGFIND_TURNAXIS:
+					_state = SEGFIND_GETINROW;;
+					ret    = RET_BLOCKED;
+					exec   = true;
+					break;
+
+
+				case SEGFIND_TURN1:
+					ret = Turn( output, state, map);
+					if( ret == RET_SUCCESS)
+					{
+						exec = true;
+					}
+					else
+					{
+						_previous = map.CheckIntersectionRegion( _bb);
+						_state = SEGFIND_DRIVESTRAIGHT;
+						cout << "[SegmentFind] Turn1 completed" << endl;
+					}
+					break;
+
+
+				case SEGFIND_DRIVESTRAIGHT:
+					ret = Straight( output, state, map);
+					if( ret == RET_SUCCESS)
+					{
+						exec = true;
+					}
+					else
+					{
+						_state = SEGFIND_TURN2;
+						cout << "[SegmentFind] Drive straight completed" << endl;
+					}
+					break;
+
+
+				case SEGFIND_TURN2:
+					ret = Turn( output, state, map);
+					if( ret == RET_SUCCESS)
+					{
+						exec = true;
+					}
+					else
+					{
+						_state = SEGFIND_GETINROW;
+						cout << "[SegmentFind] Turn2 completed" << endl;
+					}
+					break;
+
+
+				case SEGFIND_GETINROW:
+					ret = GetInRow( output, state, map);
+					if( ret == RET_SUCCESS)
+					{
+						exec = true;
+					}
+					else
+					{
+						exec = true;
+						cout << "[SegmentFind] GetInRow completed" << endl;
+					}
+					break;
+			}
+		}
+
+		// Tries reached 5, oh dear..
+		if( tries >= 5)
+		{
+			cerr << "[SegmentFind] While-looped exceeded 5 loops, oh dear.." << endl;
+			//ret = RET_BLOCKED;
+		}
+
+		return ret;
+	}
 }
 
 
@@ -166,6 +231,10 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 	if( difference > -_ParamGoalAngle && difference < _ParamGoalAngle)
 		return RET_NEXT;
 
+#if 1
+	cout << "Current " << state.response.axisZ << ", goal " << _GoalDir <<
+		", diff " << difference << endl;
+#endif
 
 	// Strengthen difference, to get a better turn
 	difference *= 4;
@@ -221,11 +290,11 @@ enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDStat
 		switch( _segment.rowdir)
 		{
 			case DIR_LEFT:
-				_GoalDir += (M_PI/2);
+				_GoalDir = state.response.axisZ + (M_PI/2);
 				break;
 
 			case DIR_RIGHT:
-				_GoalDir -= (M_PI/2);
+				_GoalDir = state.response.axisZ + (M_PI/2);
 				break;
 
 			default:
@@ -248,7 +317,7 @@ enum SUBRETURN cSegmentFind::Straight( tVector &output, const flarb_msgs::VDStat
 enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDState &state, cMap &map)
 {
 	// First check if there is room at both sides
-	tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.3f));
+	/*tBoundingBox b( tVector( -0.5f, 0), tVector( 0.5f, 0.3f));
 	if(map.CheckIntersectionRegion( b))
 	{
 		return RET_NEXT;
@@ -258,5 +327,6 @@ enum SUBRETURN cSegmentFind::GetInRow( tVector &output, const flarb_msgs::VDStat
 	tVector direction = tVector( 0.0f, _ParamSpeedFollow);
 	map.FindFreePath( FLARB_EXTRA_RADIUS, direction, output, true);
 
-	return RET_SUCCESS;
+	return RET_SUCCESS;*/
+	return RET_NEXT;
 }

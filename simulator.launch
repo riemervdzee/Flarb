@@ -7,6 +7,11 @@
 
 	<node name="mapshow"      pkg="flarb_mapshow"      type="mapshow"      respawn="true" />
 	<node name="controller" pkg="flarb_controller" type="controller" respawn="true" >
+		<param name="UseAvoidObstacle"  value="true" />
+		<param name="FollowVersionTwo"  value="true" />
+		<param name="FollowVTRecheck"   value="true" />
+		<param name="FindVersionTwo"    value="true" />
+
 		<param name="StartCheckRange"   value="0.50" />
 		<param name="StartSpeed"        value="0.50" />
 		<param name="FollowExtraRadius" value="0.02" />
@@ -17,6 +22,7 @@
 		<param name="FindSpeedAngle"    value="1.05" />
 		<param name="FindGoalAngle"     value="0.15" />
 		<param name="FindSpeedFollow"   value="0.40" />
+		<param name="FindSeen"          value="4"    />
 		<param name="AvoidWaitTime"     value="3.00" />
 		<param name="AvoidSpeed"        value="0.30" />
 		<param name="AvoidGoalAngle"    value="0.18" />
@@ -26,5 +32,5 @@
 		<param name="StrengthXFactor"   value="1.0" />
 	</node>
 
-	<node name="simulation"   pkg="flarb_simulation"   type="simulation"   respawn="true" args="map3.xml" />
+	<node name="simulation" pkg="flarb_simulation" type="simulation" respawn="true" args="map2.xml" />
 </launch>

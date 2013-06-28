@@ -17,10 +17,10 @@ class cSegmentFollow
 {
 public:
 	// C-tor
-	cSegmentFollow(float ExtraRadius, float Speed, float Offset, float DecBlocked) :
-		_ParamExtraRadius( ExtraRadius), _ParamSpeed( Speed),
-		_ParamOffset( Offset), _ParamDecBlocked( DecBlocked),
-		_StartDistance(0.0f), _GoalDistance( 0.0f) {}
+	cSegmentFollow(float Radius, float Speed, float Offset, float DecBlocked, bool FollowVersionTwo, bool FollowVTRecheck) :
+		_ParamRadius( Radius), _ParamSpeed( Speed), _ParamOffset( Offset),
+		_ParamDecBlocked( DecBlocked), _ParamFollowVersionTwo( FollowVersionTwo),
+		_ParamFollowVTRecheck( FollowVTRecheck), _StartDistance(0.0f), _GoalDistance( 0.0f) {}
 
 	// Functions executed at the beginning and end of the Application
 	bool Create();
@@ -36,10 +36,12 @@ public:
 private:
 
 	// Parameterized values
-	float _ParamExtraRadius;
+	float _ParamRadius;
 	float _ParamSpeed;
 	float _ParamOffset;
 	float _ParamDecBlocked;
+	bool  _ParamFollowVersionTwo;
+	bool  _ParamFollowVTRecheck;
 
 	// We try to get atleast past this goal distance after checking for segment-end
 	float _StartDistance;

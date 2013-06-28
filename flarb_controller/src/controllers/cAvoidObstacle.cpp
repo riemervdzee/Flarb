@@ -129,6 +129,11 @@ enum SUBRETURN cAvoidObstacle::Turn( tVector &output, const flarb_msgs::VDState 
 		difference += (2*M_PI);
 	}
 
+#if 1
+	cout << "Current " << state.response.axisZ << ", goal " << _GoalDir <<
+		", diff " << difference << endl;
+#endif
+
 	// Is the difference quite small?
 	if( difference > -_ParamGoalAngle && difference < _ParamGoalAngle)
 	{

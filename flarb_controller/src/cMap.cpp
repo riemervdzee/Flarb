@@ -1,4 +1,5 @@
 #include <cmath>
+#include <cfloat>
 #include <algorithm>
 #include <iostream>
 #include "flarb_controller/cMap.h"
@@ -263,4 +264,68 @@ bool cMap::BoundingBoxCircleCollision( tBoundingBox box, tVector circle, float r
 	// Get the difference and test whether it is inside the radius
 	tVector dif = circle - pos;
 	return (dif.LengthSquared() < radius*radius);
+}
+
+// To be used for the Right
+bool cMap::RegionMinimalX( const tBoundingBox box, float &result)
+{
+	result     = FLT_MAX;
+	bool Found = false;
+
+	// Go through all objects, check for collisions
+	for( unsigned int i = 0; i < _map->list.size(); i++)
+	{
+		flarb_msgs::MapObject obj = _map->list[i];
+		tVector c = tVector( obj.x, obj.y);
+		float r   = obj.radius;
+
+		if( BoundingBoxCircleCollision( box, c, r))
+		{
+			float cX = obj.x - r;
+			if( Found)
+			{
+				if( cX < result)
+					result = cX;
+			}
+			else
+			{
+				result = cX;
+				Found  = true;
+			}
+		}
+	}
+
+	return Found;
+}
+
+// To be used for the Left
+bool cMap::RegionMaximalX( const tBoundingBox box, float &result)
+{
+	result     = FLT_MIN;
+	bool Found = false;
+
+	// Go through all objects, check for collisions
+	for( unsigned int i = 0; i < _map->list.size(); i++)
+	{
+		flarb_msgs::MapObject obj = _map->list[i];
+		tVector c = tVector( obj.x, obj.y);
+		float r   = obj.radius;
+
+		if( BoundingBoxCircleCollision( box, c, r))
+		{
+			float cX = obj.x + r;
+			if( Found)
+			{
+				if( cX > result)
+					result = cX;
+			}
+			else
+			{
+				result = cX;
+				Found  = true;
+			}
+		}
+	}
+
+	return Found;
 }

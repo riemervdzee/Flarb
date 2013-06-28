@@ -67,6 +67,8 @@ public:
 	void SmartphoneCallback( const std::string &str);
 
 private:
+	//
+	bool _UseAvoidObstacle;
 
 	// Reference to the ros node handle
 	ros::NodeHandle _rosNode;

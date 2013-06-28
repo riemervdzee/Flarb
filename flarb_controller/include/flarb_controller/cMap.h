@@ -73,6 +73,12 @@ public:
 	 */
 	bool BoundingBoxCircleCollision( tBoundingBox box, tVector circle, float radius);
 
+	/*
+	 * Get the minimal and maximal X in the given BBAA
+	 */
+	bool RegionMinimalX( const tBoundingBox box, float &result);
+	bool RegionMaximalX( const tBoundingBox box, float &result);
+
 
 private:
 	// Used in FindFreePath
