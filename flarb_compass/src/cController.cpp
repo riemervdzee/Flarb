@@ -4,6 +4,7 @@
 
 #include "ros/ros.h"
 #include "flarb_msgs/Compass.h"
+#include "flarb_msgs/Axis.h"
 
 #include "flarb_compass/cController.h"
 #include "flarb_compass/cSerial.h"
@@ -39,6 +40,9 @@ bool cController::Create()
 
 	// Open compass
 	_Compass = _rosNode.advertise<flarb_msgs::Compass>("sensor/compass", 1);
+
+	//subscribe topic
+	Inclino = _rosNode.subscribe<flarb_msgs::Axis>("/sensor/inclination", 1, &cController::axismsgcb, this);
 	Openport();
 
 	return true;
@@ -161,10 +165,33 @@ int cController::readDeviceCal()
 		float x = atof( chrX + 1);
 		float y = atof( chrY + 1);
 
+		float z = sqrt(3*3 - x*x + y*y);
+		if(isnan(z)) {
+			z = 1.0f;
+		}
+
+		
+		float pitch = static_cast<float>(axismsg.y)*DEG2RAD;
+		float roll = static_cast<float>(axismsg.x)*DEG2RAD;
+
 		flarb_msgs::Compass msg;
 		msg.angle = c;
-		msg.x     = x;
-		msg.y     = y;
+		
+		msg.x = x*cos(pitch) + z*sin(pitch);
+		msg.y = x*sin(roll)*sin(pitch)+ y * cos(roll) - z * sin(roll) * cos(pitch);
+
+ 		//msg.x     = cos((static_cast<float>(axismsg.x) * M_PI) / 180.0f ) * x;
+		//msg.y     = cos((static_cast<float>(axismsg.y) * M_PI) / 180.0f ) * y;
+		msg.angle = -(atan2(msg.y,msg.x)* RAD2DEG);
+
+		cout << "Correction: " << axismsg.x << "/" << axismsg.y << "-->" << cos((static_cast<float>(axismsg.x) * M_PI)/180.0f) << " / " << cos((static_cast<float>(axismsg.y) * M_PI)/180.0f) << endl;
+		if(msg.angle < 0)
+			msg.angle += 360;
+
+		cout<< "Original value x: " << x << "	Adjusted Value x: " << msg.x<< endl;
+		cout<< "Original value y: " << y << "	Adjusted Value y: " << msg.y<< endl;
+		cout << "Z axis: " << z << endl;
+		cout<< "Original Angle: " << c << " 	new angle: " << msg.angle << endl; 				
 		_Compass.publish(msg);
 
 		//cout << str << endl;
@@ -179,6 +206,14 @@ int cController::readDeviceCal()
 	}
 
 	return 0;
+}
+
+/*
+ * Callback inclination
+ */
+void cController::axismsgcb(const flarb_msgs::Axis msgr)
+{
+	axismsg = msgr;
 }
 
 
