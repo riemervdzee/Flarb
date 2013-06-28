@@ -231,6 +231,10 @@ enum SUBRETURN cSegmentFind::Turn( tVector &output, const flarb_msgs::VDState &s
 	if( difference > -_ParamGoalAngle && difference < _ParamGoalAngle)
 		return RET_NEXT;
 
+#if 1
+	cout << "Current " << state.response.axisZ << ", goal " << _GoalDir <<
+		", diff " << difference << endl;
+#endif
 
 	// Strengthen difference, to get a better turn
 	difference *= 4;
