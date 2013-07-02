@@ -41,8 +41,8 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 	if( _ParamFollowVersionTwo)
 	{
 		// The area
-		tBoundingBox boxLeft ( tVector( 0.0f, 0.0f), tVector( -0.5f, 0.5f));
-		tBoundingBox boxRight( tVector( 0.0f, 0.0f), tVector( +0.5f, 0.5f));
+		tBoundingBox boxLeft ( tVector( 0.0f, 0.0f), tVector( -0.4f, 0.5f));
+		tBoundingBox boxRight( tVector( 0.0f, 0.0f), tVector( +0.4f, 0.5f));
 
 		//
 		float xLeft, xRight;
@@ -51,9 +51,9 @@ enum SUBRETURN cSegmentFollow::Execute( tVector &output, const flarb_msgs::VDSta
 		bool resRight = map.RegionMinimalX( boxRight, xRight);
 
 		if( !resLeft)
-			xLeft  = -0.5f;
+			xLeft  = -0.3f;
 		if( !resRight)
-			xRight =  0.5f;
+			xRight =  0.3f;
 
 		float difference = xRight -  xLeft;
 		float offset     = xLeft + (difference / 2);

@@ -98,7 +98,7 @@ enum SUBRETURN cSegmentFind::Execute( tVector &output, const flarb_msgs::VDState
 	 *********************************/
 	if( _ParamFindVersionTwo)
 	{
-		tBoundingBox bb2 = tBoundingBox( tVector( -0.03f, 0.0f), tVector( 0.03f, 0.3f));
+		tBoundingBox bb2 = tBoundingBox( tVector( -0.03f, 0.0f), tVector( 0.03f, 0.15f));
 
 		if( map.CheckIntersectionRegion( _bb) && !map.CheckIntersectionRegion( bb2))
 		{
